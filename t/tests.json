@@ -1,0 +1,154 @@
+{
+  "file": [{
+    "template": {
+      "Fn::Include": "includes/foobar.json"
+    },
+    "output": {
+      "foo": "bar"
+    }
+  }, {
+    "template": {
+      "Version": "2009-09-09",
+      "Mappings": {
+        "IPRanges": {
+          "Fn::Include": "includes/foobar.json"
+        },
+        "AMIs": {
+          "Fn::Include": "includes/foobar.json"
+        }
+      }
+    },
+    "output": {
+      "Version": "2009-09-09",
+      "Mappings": {
+        "IPRanges": {
+          "foo": "bar"
+        },
+        "AMIs": {
+          "foo": "bar"
+        }
+      }
+    }
+  }, {
+    "template": {
+      "Version": "2009-09-09",
+      "Mappings": {
+        "IPRanges": [{
+          "something": "else"
+        }, {
+          "Fn::Include": "includes/foobar.json"
+        }]
+      }
+    },
+    "output": {
+      "Version": "2009-09-09",
+      "Mappings": {
+        "IPRanges": [{
+          "something": "else"
+        }, {
+          "foo": "bar"
+        }]
+      }
+    }
+  }, {
+    "template": {
+      "Fn::Include": "includes/deep.json"
+    },
+    "output": {
+      "foo": "bar"
+    }
+  }, {
+    "template": {
+      "Fn::Include": "includes/verydeep.json"
+    },
+    "output": {
+      "foo": "bar"
+    }
+  }, {
+    "template": {
+      "Fn::Include": "includes/subfolder.json"
+    },
+    "output": {
+      "Mappings": {
+        "Mapping1": {
+          "foo": "bar"
+        },
+        "Mapping2": {
+          "foo": "bar"
+        }
+      }
+    }
+  }],
+  "s3": [{
+    "template": {
+      "Fn::Include": "s3://cfn-include-test/v0.0.1/includes/foobar.json"
+    },
+    "output": {
+      "foo": "bar"
+    }
+  }, {
+    "template": {
+      "Fn::Include": "s3://cfn-include-test/v0.0.1/includes/deep.json"
+    },
+    "output": {
+      "foo": "bar"
+    }
+  }, {
+    "template": {
+      "Fn::Include": "s3://cfn-include-test/v0.0.1/includes/verydeep.json"
+    },
+    "output": {
+      "foo": "bar"
+    }
+  }, {
+    "template": {
+      "Fn::Include": "s3://cfn-include-test/v0.0.1/includes/subfolder.json"
+    },
+    "output": {
+      "Mappings": {
+        "Mapping1": {
+          "foo": "bar"
+        },
+        "Mapping2": {
+          "foo": "bar"
+        }
+      }
+    }
+  }],
+  "http": [{
+    "template": {
+      "Fn::Include": "https://s3.amazonaws.com/cfn-include-test/v0.0.1/includes/foobar.json"
+    },
+    "output": {
+      "foo": "bar"
+    }
+  }, {
+    "template": {
+      "Fn::Include": "https://s3.amazonaws.com/cfn-include-test/v0.0.1/includes/deep.json"
+    },
+    "output": {
+      "foo": "bar"
+    }
+  }, {
+    "template": {
+      "Fn::Include": "https://s3.amazonaws.com/cfn-include-test/v0.0.1/includes/verydeep.json"
+    },
+    "output": {
+      "foo": "bar"
+    }
+  }, {
+    "template": {
+      "Fn::Include": "https://s3.amazonaws.com/cfn-include-test/v0.0.1/includes/subfolder.json"
+    },
+    "output": {
+      "Mappings": {
+        "Mapping1": {
+          "foo": "bar"
+        },
+        "Mapping2": {
+          "foo": "bar"
+        }
+      }
+    }
+  }]
+}

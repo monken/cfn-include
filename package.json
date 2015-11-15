@@ -1,0 +1,38 @@
+{
+  "name": "cfn-include",
+  "version": "0.1.0",
+  "description": "Include statement for CloudFormation templates",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --bail t/"
+  },
+  "bin": {
+    "cfn-include": "bin/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/monken/cfn-include.git"
+  },
+  "keywords": [
+    "aws",
+    "cfn",
+    "cloudformation",
+    "include"
+  ],
+  "author": "Moritz Onken <onken@netcubed.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/monken/cfn-include/issues"
+  },
+  "homepage": "https://github.com/monken/cfn-include#readme",
+  "dependencies": {
+    "aws-sdk": "^2.2.17",
+    "bluebird": "^3.0.5",
+    "lodash": "^3.10.1",
+    "nomnom": "^1.8.1",
+    "request": "^2.65.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.3.3"
+  }
+}
