@@ -31,8 +31,8 @@ function recurse(base, object) {
 }
 
 function include(base, location) {
-  var location = parseLocation(location),
-    json, absolute;
+  location = parseLocation(location);
+  var json, absolute;
   if (!location.protocol) location.protocol = base.protocol;
   if (location.protocol === 'file') {
     absolute = location.relative ? path.join(path.dirname(base.path), location.host, location.path || '') : [location.host, location.path].join('');
@@ -49,8 +49,8 @@ function include(base, location) {
       Key: key,
     }).get('Body');
   } else if (location.protocol.match(/^https?$/)) {
-    var basedir = path.parse(base.path).dir + '/';
-    absolute = location.relative ? url.resolve(location.protocol + '://' + base.host + basedir, location.raw) : location.raw;
+    var basepath = path.parse(base.path).dir + '/';
+    absolute = location.relative ? url.resolve(location.protocol + '://' + base.host + basepath, location.raw) : location.raw;
     json = request({
       url: absolute,
     }).get('body');
