@@ -1,0 +1,65 @@
+{
+  "HVM64": {
+    "Metadata": {
+      "Name": "Windows_Server-2012-R2_RTM-English-64Bit-Base-2015.10.26",
+      "CreationDate": "2015-10-23T00:16:47.000Z"
+    },
+    "us-east-1": {
+      "AMI": "ami-1df0ac78"
+    },
+    "eu-central-1": {
+      "AMI": "ami-f2f5f9ef"
+    },
+    "us-west-2": {
+      "AMI": "ami-f8f715cb"
+    },
+    "us-west-1": {
+      "AMI": "ami-91f93ad5"
+    },
+    "sa-east-1": {
+      "AMI": "ami-02952d6e"
+    },
+    "eu-west-1": {
+      "AMI": "ami-2fcbf458"
+    },
+    "ap-northeast-1": {
+      "AMI": "ami-3e93fe3e"
+    },
+    "ap-southeast-2": {
+      "AMI": "ami-7bda9041"
+    },
+    "ap-southeast-1": {
+      "AMI": "ami-faedfea8"
+    }
+  },
+  "HVMG2": {
+    "Metadata": {
+      "Name": "Windows_Server-2012-R2_RTM-English-64Bit-NVIDIA-2015.08.12-d1eb75a2-b582-4b25-91a9-66db8f4694d8-ami-6de86f06.2",
+      "CreationDate": "2015-09-01T19:12:30.000Z"
+    },
+    "us-east-1": {
+      "AMI": "ami-6dad2b06"
+    },
+    "eu-central-1": {
+      "AMI": "ami-5c1d1c41"
+    },
+    "us-west-1": {
+      "AMI": "ami-793ac13d"
+    },
+    "us-west-2": {
+      "AMI": "ami-a1485b91"
+    },
+    "eu-west-1": {
+      "AMI": "ami-d1f1d5a6"
+    },
+    "ap-northeast-1": {
+      "AMI": "ami-72e06f72"
+    },
+    "ap-southeast-2": {
+      "AMI": "ami-2135791b"
+    },
+    "ap-southeast-1": {
+      "AMI": "ami-80040fd2"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "HVM64": {
+    "Fn::Include": "https://rjfctzfei2.execute-api.us-east-1.amazonaws.com/latest/ami/lookup?architecture=HVM64"
+  },
+  "PV64": {
+    "Fn::Include": "https://rjfctzfei2.execute-api.us-east-1.amazonaws.com/latest/ami/lookup?architecture=PV64"
+  },
+  "HVMG2": {
+    "Fn::Include": "https://rjfctzfei2.execute-api.us-east-1.amazonaws.com/latest/ami/lookup?architecture=HVMG2"
+  }
+}
