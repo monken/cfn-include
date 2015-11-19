@@ -1,5 +1,14 @@
 {
   "file": [{
+    "name": "nested include",
+    "template": {
+      "Fn::Include": "includes/nested.json"
+    },
+    "output": {
+      "foo": "bar",
+      "More": { "foo": "bar"}
+    }
+  }, {
     "template": {
       "Fn::Include": "includes/foobar.json"
     },

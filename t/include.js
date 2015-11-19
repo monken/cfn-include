@@ -5,7 +5,7 @@ var include = require('../index'),
 for (var category in tests) {
   describe(category, function() {
     tests[category].forEach(function(test) {
-      it('include', function(done) {
+      it(test.name || 'include', function(done) {
         include({
           template: test.template,
           url: 'file://' + __dirname + '/template.json',

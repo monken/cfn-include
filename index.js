@@ -18,14 +18,14 @@ module.exports = function(options) {
 function recurse(base, object) {
   if (_.isArray(object)) return Promise.all(object.map(_.bind(recurse, this, base)));
   else if (_.isPlainObject(object)) {
-    if (object["Fn::Include"]) {
-      return include(base, object["Fn::Include"]).then(function(json) {
-        delete object["Fn::Include"];
-        _.extend(object, json);
-      });
-    } else {
-      return Promise.all(_.values(object).map(_.bind(recurse, this, base)));
-    }
+    return Promise.all(_.values(object).map(_.bind(recurse, this, base))).then(function() {
+      if (object["Fn::Include"]) {
+        return include(base, object["Fn::Include"]).then(function(json) {
+          delete object["Fn::Include"];
+          _.extend(object, json);
+        });
+      }
+    });
   }
   return Promise.resolve();
 }
