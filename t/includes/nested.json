@@ -1,0 +1,6 @@
+{
+  "Fn::Include": "foobar.json",
+  "More": {
+    "Fn::Include": "foobar.json"
+  }
+}

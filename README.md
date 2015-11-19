@@ -64,6 +64,10 @@ This will process a template, minimize it and upload the result to S3.
 cfn-include example.template -m | aws s3 cp - s3://bucket-name/output.template
 ```
 
+## Proxy Support
+
+`cfn-include` supports proxies defined in the `https_proxy` environmental variable. The module will attempt to load `proxy-agent`. Make sure `proxy-agent` is installed since it is not a dependency for this module.
+
 ## Roadmap
 
 * use a different parser such as json5, yaml
