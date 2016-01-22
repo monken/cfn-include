@@ -21,8 +21,24 @@ Options:
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Mappings": {
-    "AWSRegionArch2AMI" : {
-      "Fn::Include": "AWSRegionArch2AMI.json"
+    "Region2AMI" : {
+      "Fn::Include": "Region2AMI.json"
+    }
+  }, {
+    "Resources": {
+      "Instance": {
+        "Parameters": {
+          "UserData": {
+            "Fn::Include": {
+              "type": "literal",
+              "location": "userdata.txt",
+              "context": {
+                "stack": { "Ref": "StackId" }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
@@ -32,14 +48,57 @@ Options:
 cfn-include example.template > output.template
 ```
 
+```json
+# example.template
+{
+  "AWSTemplateFormatVersion" : "2010-09-09",
+  "Mappings": {
+    "Region2AMI" : {
+      "us-east-1": {
+        "AMI": "ami-60b6c60a"
+      },
+      "eu-central-1": {
+        "AMI": "ami-bc5b48d0"
+      }
+    }
+  }, {
+    "Resources": {
+      "Instance": {
+        "Parameters": {
+          "UserData": {
+            "Fn::Join": ["", [
+              "#!/bin/bash\n"
+            ]]
+          }
+        }
+      }
+    }
+  }
+}
+```
+
 ##  Fn::Include
 
-The `Fn::Include` function can be located anywhere in the template and can occur multiple times. The function accepts one argument. The location to the file can be relative or absolute. A relative location is interpreted relative to the template. Included files can in turn include more files, i.e. recursion is supported.
+The `Fn::Include` function can be located anywhere in the template and can occur multiple times. The function accepts an object. Parameters are:
+
+* location: The location to the file can be relative or absolute. A relative location is interpreted relative to the template. Included files can in turn include more files, i.e. recursion is supported.
+* type (optional): either `json` or `literal`. Defaults to `json`. `literal` will include the file literally, i.e. transforming the context of the file into JSON using the infamous `Fn::Join` syntax.
+* context (optional): If `type` is `literal` a context object with variables can be provided. The object can contain plain values or references to parameters or resources in the CloudFormation template (e.g. `{ "Ref": "StackId" }`). Use Mustache like syntax in the file.
+
+Instead of using an object, a plain string can be provided which assumes the file is of type `json`.
 
 Include a file from a URL
 
 ```json
 { "Fn::Include": "https://example.com/include.json" }
+
+// equivalent to
+
+{ "Fn::Include": {
+    "type": "json",
+    "location": "https://example.com/include.json"
+  }
+}
 ```
 
 Include a file from an S3 bucket. Authentication is handled by `aws-sdk`. See [Setting AWS Credentials](https://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-configuring.html#Setting_AWS_Credentials) for details.
@@ -54,6 +113,19 @@ Include a file in the same folder
 { "Fn::Include": "include.json" }
 ```
 
+Include a file literally
+
+```json
+{ "Fn::Include": {
+    "type": "literal",
+    "location": "https://example.com/userdata.txt",
+    "context": {
+      "stack": { "Ref": "AWS::StackId" }
+    }
+  }
+}
+```
+
 ## Examples
 
 See [/examples](https://github.com/monken/cfn-include/tree/master/examples) for templates that call an API Gateway endpoint to collect AMI IDs for all regions.
@@ -66,11 +138,10 @@ cfn-include example.template -m | aws s3 cp - s3://bucket-name/output.template
 
 ## Proxy Support
 
-`cfn-include` supports proxies defined in the `https_proxy` environmental variable. The module will attempt to load `proxy-agent`. Make sure `proxy-agent` is installed since it is not a dependency for this module.
+`cfn-include` honors proxy settings defined in the `https_proxy` environmental variable. The module will attempt to load `proxy-agent`. Make sure `proxy-agent` is installed since it is not a dependency for this module.
 
 ## Roadmap
 
 * use a different parser such as json5, yaml
-* Include files literally, e.g. for user-data
-* provide context to template
+* ignore casing of config object keys
 * Detect infinite recursion

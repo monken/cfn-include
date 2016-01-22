@@ -1,0 +1,7 @@
+cfn-signal {{stack}} foobar
+{{stack}} delimiter {{stack}}
+variable at the end {{stack}}
+{{stack}} variable at the beginning
+just the variable
+{{stack}}
+{{stack}}

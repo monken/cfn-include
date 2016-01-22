@@ -1,19 +1,23 @@
 var include = require('../index'),
-  tests = require('./tests.json'),
-  assert = require('assert');
+  assert = require('assert'),
+  fs = require('fs');
 
-for (var category in tests) {
-  describe(category, function() {
-    tests[category].forEach(function(test) {
-      it(test.name || 'include', function(done) {
-        include({
-          template: test.template,
-          url: 'file://' + __dirname + '/template.json',
-        }).then(function(json) {
-          assert.deepEqual(json, test.output);
-          done();
+
+['literal'].forEach(function(file) {
+  var tests = require('./tests/' + file + '.json');
+  for (var category in tests) {
+    describe(category, function() {
+      tests[category].forEach(function(test) {
+        it(test.name || 'include', function(done) {
+          include({
+            template: test.template,
+            url: 'file://' + __dirname + '/template.json',
+          }).then(function(json) {
+            assert.deepEqual(json, test.output);
+            done();
+          });
         });
       });
     });
-  });
-}
+  }
+});

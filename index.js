@@ -16,8 +16,8 @@ if (proxy) {
         agent: agent(proxy),
       },
     });
-  } catch(e) {
-    if(e.code === 'MODULE_NOT_FOUND') console.log('Install proxy-agent for proxy support.');
+  } catch (e) {
+    if (e.code === 'MODULE_NOT_FOUND') console.log('Install proxy-agent for proxy support.');
     else throw e;
   }
 }
@@ -45,13 +45,16 @@ function recurse(base, object) {
   return Promise.resolve();
 }
 
-function include(base, location) {
-  location = parseLocation(location);
-  var json, absolute;
+function include(base, args) {
+  args = _.isPlainObject(args) ? args : {
+    location: args,
+    type: 'json',
+  };
+  var body, absolute, location = parseLocation(args.location);
   if (!location.protocol) location.protocol = base.protocol;
   if (location.protocol === 'file') {
     absolute = location.relative ? path.join(path.dirname(base.path), location.host, location.path || '') : [location.host, location.path].join('');
-    json = fs.readFileAsync(absolute);
+    body = fs.readFileAsync(absolute);
     absolute = location.protocol + '://' + absolute;
   } else if (location.protocol === 's3') {
     var basedir = path.parse(base.path).dir;
@@ -59,23 +62,69 @@ function include(base, location) {
       key = location.relative ? url.resolve(basedir + '/', location.raw) : location.path;
     key = key.replace(/^\//, '');
     absolute = location.protocol + '://' + [bucket, key].join('/');
-    json = s3.getObjectAsync({
+    body = s3.getObjectAsync({
       Bucket: bucket,
       Key: key,
     }).get('Body');
   } else if (location.protocol.match(/^https?$/)) {
     var basepath = path.parse(base.path).dir + '/';
     absolute = location.relative ? url.resolve(location.protocol + '://' + base.host + basepath, location.raw) : location.raw;
-    json = request({
+    body = request({
       url: absolute,
     }).get('body');
   }
-  return json.then(JSON.parse).then(function(template) {
-    return module.exports({
-      template: template,
-      url: absolute,
-    }).return(template);
+  if (args.type === 'json') {
+    return body.then(JSON.parse).then(function(template) {
+      return module.exports({
+        template: template,
+        url: absolute,
+      }).return(template);
+    });
+  } else if (args.type === 'literal') {
+    return body.then(function(template) {
+      var lines = JSONifyString(template);
+
+      if (_.isPlainObject(args.context)) {
+        lines = lines.map(function(line) {
+          var parts = [];
+          line.split(/({{\w+?}})/g).map(function(line) {
+            var match = line.match(/^{{(\w+)}}$/), value = match ? args.context[match[1]] : undefined;
+            if (!match) return line;
+            else if(_.isUndefined(value)) { return '' }
+            else {
+              return value;
+            }
+          }).forEach(function(part) {
+            var last = parts[parts.length-1];
+            if(_.isPlainObject(part) || _.isPlainObject(last) || !parts.length) {
+              parts.push(part);
+            } else if(parts.length) {
+              parts[parts.length-1] = last + part;
+            }
+          });
+          return parts.filter(function(part) { return part !== '' });
+        });
+      }
+      console.log(lines);
+      return {
+        "Fn::Join": ["", _.flatten(lines)]
+      };
+    });
+  }
+
+}
+
+function JSONifyString(string) {
+  var lines = [],
+    split = string.toString().split(/(\r?\n)/);
+  split.forEach(function(line, idx) {
+    if (idx % 2) {
+      lines[(idx - 1) / 2] = lines[(idx - 1) / 2] + line;
+    } else {
+      lines.push(line);
+    }
   });
+  return lines;
 }
 
 function parseLocation(location) {

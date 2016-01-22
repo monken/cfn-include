@@ -1,0 +1,103 @@
+{
+  "mustache": [{
+    "name": "no context",
+    "template": {
+      "Fn::Include": {
+        "location": "includes/literal.txt",
+        "type": "literal"
+      }
+    },
+    "output": {
+      "Fn::Join": ["", ["#!/bin/bash\n",
+        "\n",
+        "cfn-signal {{stack}} foobar"
+      ]]
+    }
+  }, {
+    "name": "empty context",
+    "template": {
+      "Fn::Include": {
+        "location": "includes/literal.txt",
+        "type": "literal",
+        "context": {}
+      }
+    },
+    "output": {
+      "Fn::Join": ["", ["#!/bin/bash\n",
+        "\n",
+        "cfn-signal  foobar"
+      ]]
+    }
+  }, {
+    "name": "with context",
+    "template": {
+      "Fn::Include": {
+        "location": "includes/literal.txt",
+        "type": "literal",
+        "context": {
+          "stack": "StackID"
+        }
+      }
+    },
+    "output": {
+      "Fn::Join": ["", ["#!/bin/bash\n",
+        "\n",
+        "cfn-signal StackID foobar"
+      ]]
+    }
+  }, {
+    "name": "with ref in context",
+    "template": {
+      "Fn::Include": {
+        "location": "includes/literal.txt",
+        "type": "literal",
+        "context": {
+          "stack": {
+            "Ref": "AWS::StackId"
+          }
+        }
+      }
+    },
+    "output": {
+      "Fn::Join": ["", ["#!/bin/bash\n",
+        "\n",
+        "cfn-signal ", {
+          "Ref": "AWS::StackId"
+        }, " foobar"
+      ]]
+    }
+  }, {
+    "name": "more refs in context",
+    "template": {
+      "Fn::Include": {
+        "location": "includes/literalcontext.txt",
+        "type": "literal",
+        "context": {
+          "stack": {
+            "Ref": "AWS::StackId"
+          }
+        }
+      }
+    },
+    "output": {
+      "Fn::Join": ["", [
+        "cfn-signal ", {
+          "Ref": "AWS::StackId"
+        }, " foobar\n", {
+          "Ref": "AWS::StackId"
+        }, " delimiter ", {
+          "Ref": "AWS::StackId"
+        }, "\n", "variable at the end ", {
+          "Ref": "AWS::StackId"
+        }, "\n", {
+          "Ref": "AWS::StackId"
+        }, " variable at the beginning\n",
+        "just the variable\n", {
+          "Ref": "AWS::StackId"
+        }, "\n", {
+          "Ref": "AWS::StackId"
+        }
+      ]]
+    }
+  }]
+}
