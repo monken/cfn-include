@@ -105,7 +105,6 @@ function include(base, args) {
           return parts.filter(function(part) { return part !== '' });
         });
       }
-      console.log(lines);
       return {
         "Fn::Join": ["", _.flatten(lines)]
       };
