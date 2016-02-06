@@ -138,6 +138,10 @@ cfn-include example.template -m | aws s3 cp - s3://bucket-name/output.template
 
 `cfn-include` honors proxy settings defined in the `https_proxy` environmental variable. The module will attempt to load `proxy-agent`. Make sure `proxy-agent` is installed since it is not a dependency for this module.
 
+## Compatibility
+
+Node.js versions 0.10 and up are supported.
+
 ## Roadmap
 
 * use a different parser such as json5, yaml
