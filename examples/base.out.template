@@ -1,0 +1,111 @@
+{
+  "Mappings": {
+    "HVM64": {
+      "Metadata": {
+        "Name": "amzn-ami-hvm-2015.09.1.x86_64-gp2",
+        "Owner": "amazon",
+        "CreationDate": "2015-10-29T18:17:23.000Z"
+      },
+      "us-east-1": {
+        "AMI": "ami-60b6c60a"
+      },
+      "eu-central-1": {
+        "AMI": "ami-bc5b48d0"
+      },
+      "us-west-1": {
+        "AMI": "ami-d5ea86b5"
+      },
+      "sa-east-1": {
+        "AMI": "ami-6817af04"
+      },
+      "ap-northeast-2": {
+        "AMI": "ami-249b554a"
+      },
+      "eu-west-1": {
+        "AMI": "ami-bff32ccc"
+      },
+      "ap-northeast-1": {
+        "AMI": "ami-383c1956"
+      },
+      "us-west-2": {
+        "AMI": "ami-f0091d91"
+      },
+      "ap-southeast-1": {
+        "AMI": "ami-c9b572aa"
+      },
+      "ap-southeast-2": {
+        "AMI": "ami-48d38c2b"
+      }
+    },
+    "PV64": {
+      "Metadata": {
+        "Name": "amzn-ami-pv-2015.09.1.x86_64-ebs",
+        "Owner": "amazon",
+        "CreationDate": "2015-10-29T18:13:58.000Z"
+      },
+      "us-east-1": {
+        "AMI": "ami-5fb8c835"
+      },
+      "eu-central-1": {
+        "AMI": "ami-794a5915"
+      },
+      "us-west-1": {
+        "AMI": "ami-56ea8636"
+      },
+      "eu-west-1": {
+        "AMI": "ami-95e33ce6"
+      },
+      "sa-east-1": {
+        "AMI": "ami-7d15ad11"
+      },
+      "us-west-2": {
+        "AMI": "ami-d93622b8"
+      },
+      "ap-northeast-1": {
+        "AMI": "ami-393c1957"
+      },
+      "ap-southeast-1": {
+        "AMI": "ami-34bd7a57"
+      },
+      "ap-southeast-2": {
+        "AMI": "ami-ced887ad"
+      }
+    },
+    "HVMG2": {
+      "Metadata": {
+        "Name": "amzn-ami-graphics-hvm-2015.09.1.x86_64-ebs-d3fbf14b-243d-46e0-916c-82a8bf6955b4-ami-b0b8c8da.2",
+        "Owner": "aws-marketplace",
+        "CreationDate": "2015-11-02T17:27:53.000Z"
+      },
+      "eu-central-1": {
+        "AMI": "ami-ba1a09d6"
+      },
+      "us-east-1": {
+        "AMI": "ami-e998ea83"
+      },
+      "us-west-1": {
+        "AMI": "ami-943956f4"
+      },
+      "eu-west-1": {
+        "AMI": "ami-83fd23f0"
+      },
+      "us-west-2": {
+        "AMI": "ami-315f4850"
+      },
+      "ap-northeast-1": {
+        "AMI": "ami-08e5c166"
+      },
+      "ap-southeast-1": {
+        "AMI": "ami-5a15d239"
+      },
+      "ap-southeast-2": {
+        "AMI": "ami-0c1a446f"
+      }
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket"
+    }
+  }
+}

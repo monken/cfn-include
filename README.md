@@ -15,6 +15,7 @@
 Options:
 
 * `-m, --minimize`   minimize JSON output  [false]
+* `-t, --validate`   validate compiled template  [false]
 
 ```json
 # example.template
@@ -128,10 +129,10 @@ Include a file literally
 
 See [/examples](https://github.com/monken/cfn-include/tree/master/examples) for templates that call an API Gateway endpoint to collect AMI IDs for all regions.
 
-This will process a template, minimize it and upload the result to S3.
+This will process a template, validate it against the [validate-template](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/validate-template.html) API, minimize it and upload the result to S3.
 
 ```bash
-cfn-include example.template -m | aws s3 cp - s3://bucket-name/output.template
+cfn-include example.template -t -m | aws s3 cp - s3://bucket-name/output.template
 ```
 
 ## Proxy Support
@@ -147,3 +148,4 @@ Node.js versions 0.10 and up are supported.
 * use a different parser such as json5, yaml
 * ignore casing of config object keys
 * Detect infinite recursion
+* Validate compiled template with AWS validation service
