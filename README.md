@@ -24,17 +24,16 @@ Options:
     "Region2AMI" : {
       "Fn::Include": "Region2AMI.json"
     }
-  }, {
-    "Resources": {
-      "Instance": {
-        "Parameters": {
-          "UserData": {
-            "Fn::Include": {
-              "type": "literal",
-              "location": "userdata.txt",
-              "context": {
-                "stack": { "Ref": "StackId" }
-              }
+  },
+  "Resources": {
+    "Instance": {
+      "Parameters": {
+        "UserData": {
+          "Fn::Include": {
+            "type": "literal",
+            "location": "userdata.txt",
+            "context": {
+              "stack": { "Ref": "StackId" }
             }
           }
         }
@@ -61,15 +60,14 @@ cfn-include example.template > output.template
         "AMI": "ami-bc5b48d0"
       }
     }
-  }, {
-    "Resources": {
-      "Instance": {
-        "Parameters": {
-          "UserData": {
-            "Fn::Join": ["", [
-              "#!/bin/bash\n"
-            ]]
-          }
+  },
+  "Resources": {
+    "Instance": {
+      "Parameters": {
+        "UserData": {
+          "Fn::Join": ["", [
+            "#!/bin/bash\n"
+          ]]
         }
       }
     }
