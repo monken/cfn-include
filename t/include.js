@@ -3,7 +3,7 @@ var include = require('../index'),
   fs = require('fs');
 
 
-['literal'].forEach(function(file) {
+['literal', 'location'].forEach(function(file) {
   var tests = require('./tests/' + file + '.json');
   for (var category in tests) {
     describe(category, function() {
