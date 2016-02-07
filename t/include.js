@@ -2,8 +2,10 @@ var include = require('../index'),
   assert = require('assert'),
   fs = require('fs');
 
+var tests = ['literal', 'location'];
+if(process.env['TEST_S3']) tests.push('s3');
 
-['literal', 'location'].forEach(function(file) {
+tests.forEach(function(file) {
   var tests = require('./tests/' + file + '.json');
   for (var category in tests) {
     describe(category, function() {

@@ -88,42 +88,6 @@
       }
     }
   }],
-  "s3": [{
-    "template": {
-      "Fn::Include": "s3://cfn-include-test/v0.0.1/includes/foobar.json"
-    },
-    "output": {
-      "foo": "bar"
-    }
-  }, {
-    "template": {
-      "Fn::Include": "s3://cfn-include-test/v0.0.1/includes/deep.json"
-    },
-    "output": {
-      "foo": "bar"
-    }
-  }, {
-    "template": {
-      "Fn::Include": "s3://cfn-include-test/v0.0.1/includes/verydeep.json"
-    },
-    "output": {
-      "foo": "bar"
-    }
-  }, {
-    "template": {
-      "Fn::Include": "s3://cfn-include-test/v0.0.1/includes/subfolder.json"
-    },
-    "output": {
-      "Mappings": {
-        "Mapping1": {
-          "foo": "bar"
-        },
-        "Mapping2": {
-          "foo": "bar"
-        }
-      }
-    }
-  }],
   "http": [{
     "template": {
       "Fn::Include": "https://s3.amazonaws.com/cfn-include-test/v0.0.1/includes/foobar.json"
