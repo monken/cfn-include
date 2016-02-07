@@ -4,6 +4,12 @@
 
 `cfn-include` is a preprocessor for CloudFormation templates. It parses a given template and includes contents of files defined by the custom `Fn::Include` [intrinsic function](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html). Referenced files can be local, a URL or an S3 bucket location.
 
+## Installation
+
+```
+npm install --global cfn-include
+```
+
 ## Synopsis
 
     cfn-include <path> [options]

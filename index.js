@@ -3,6 +3,7 @@ var _ = require('lodash'),
   path = require('path'),
   Promise = require('bluebird'),
   readFile = Promise.promisify(require('fs').readFile),
+  pathParse = require('path-parse'),
   request = Promise.promisify(require('request')),
   AWS = require('aws-sdk'),
   s3 = new AWS.S3(),
@@ -58,7 +59,7 @@ function include(base, args) {
     body = readFile(absolute).call('toString');
     absolute = location.protocol + '://' + absolute;
   } else if (location.protocol === 's3') {
-    var basedir = path.parse(base.path).dir;
+    var basedir = pathParse(base.path).dir;
     var bucket = location.relative ? base.host : location.host,
       key = location.relative ? url.resolve(basedir + '/', location.raw) : location.path;
     key = key.replace(/^\//, '');
@@ -68,7 +69,7 @@ function include(base, args) {
       Key: key,
     }).get('Body').call('toString');
   } else if (location.protocol.match(/^https?$/)) {
-    var basepath = path.parse(base.path).dir + '/';
+    var basepath = pathParse(base.path).dir + '/';
     absolute = location.relative ? url.resolve(location.protocol + '://' + base.host + basepath, location.raw) : location.raw;
     body = request({
       url: absolute,
