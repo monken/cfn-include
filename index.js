@@ -72,7 +72,7 @@ function include(base, args) {
     absolute = location.relative ? url.resolve(location.protocol + '://' + base.host + basepath, location.raw) : location.raw;
     body = request({
       url: absolute,
-    }).get('body');
+    }).get('body').call('toString');
   }
   if (args.type === 'json') {
     return body.then(jsonlint.parse).then(function(template) {
