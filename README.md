@@ -148,4 +148,3 @@ Node.js versions 0.10 and up are supported.
 * use a different parser such as json5, yaml
 * ignore casing of config object keys
 * Detect infinite recursion
-* Validate compiled template with AWS validation service

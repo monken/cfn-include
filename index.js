@@ -5,8 +5,8 @@ var _ = require('lodash'),
   readFile = Promise.promisify(require('fs').readFile),
   request = Promise.promisify(require('request')),
   AWS = require('aws-sdk'),
-  s3 = new AWS.S3()
-  ;
+  s3 = new AWS.S3(),
+  jsonlint = require('jsonlint');
 
 var proxy = process.env['HTTPS_PROXY'] || process.env['https_proxy'];
 if (proxy) {
@@ -55,7 +55,7 @@ function include(base, args) {
   if (!location.protocol) location.protocol = base.protocol;
   if (location.protocol === 'file') {
     absolute = location.relative ? path.join(path.dirname(base.path), location.host, location.path || '') : [location.host, location.path].join('');
-    body = readFile(absolute);
+    body = readFile(absolute).call('toString');
     absolute = location.protocol + '://' + absolute;
   } else if (location.protocol === 's3') {
     var basedir = path.parse(base.path).dir;
@@ -66,7 +66,7 @@ function include(base, args) {
     body = Promise.promisify(s3.getObject).call(s3, {
       Bucket: bucket,
       Key: key,
-    }).get('Body');
+    }).get('Body').call('toString');
   } else if (location.protocol.match(/^https?$/)) {
     var basepath = path.parse(base.path).dir + '/';
     absolute = location.relative ? url.resolve(location.protocol + '://' + base.host + basepath, location.raw) : location.raw;
@@ -75,7 +75,7 @@ function include(base, args) {
     }).get('body');
   }
   if (args.type === 'json') {
-    return body.then(JSON.parse).then(function(template) {
+    return body.then(jsonlint.parse).then(function(template) {
       return module.exports({
         template: template,
         url: absolute,
