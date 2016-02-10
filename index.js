@@ -5,24 +5,10 @@ var _ = require('lodash'),
   readFile = Promise.promisify(require('fs').readFile),
   pathParse = require('path-parse'),
   request = Promise.promisify(require('request')),
-  AWS = require('aws-sdk'),
+  AWS = require('./aws-sdk-proxy'),
   s3 = new AWS.S3(),
   jsonlint = require('jsonlint');
 
-var proxy = process.env['HTTPS_PROXY'] || process.env['https_proxy'];
-if (proxy) {
-  try {
-    var agent = require('proxy-agent');
-    s3.config.update({
-      httpOptions: {
-        agent: agent(proxy),
-      },
-    });
-  } catch (e) {
-    if (e.code === 'MODULE_NOT_FOUND') console.log('Install proxy-agent for proxy support.');
-    else throw e;
-  }
-}
 
 module.exports = function(options) {
   var template = options.template;

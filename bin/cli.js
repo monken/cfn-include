@@ -33,10 +33,10 @@ include({
 }).then(function(template) {
   var promise = Promise.resolve();
   if (opts.validate) {
-    var cfn = Promise.promisifyAll(new(require('aws-sdk').CloudFormation)({
+    var cfn = new(require('cfn-include/aws-sdk-proxy').CloudFormation)({
       region: 'us-east-1'
-    }));
-    promise = cfn.validateTemplateAsync({
+    });
+    promise = Promise.promisify(cfn.validateTemplate).call(cfn, {
       TemplateBody: JSON.stringify(template),
     });
   }
