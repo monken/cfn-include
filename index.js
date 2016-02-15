@@ -14,7 +14,7 @@ module.exports = function(options) {
   var template = options.template;
   var base = parseLocation(options.url);
   if (base.relative) throw "url cannot be relative";
-  if (template) return recurse(base, template).return(template);
+  if (template) return recurse(base, template);
   else return include(base, options.url);
 }
 
@@ -26,7 +26,10 @@ function recurse(base, object) {
         return include(base, object["Fn::Include"]).then(function(json) {
           delete object["Fn::Include"];
           _.extend(object, json);
+          return object;
         });
+      } else {
+        return object;
       }
     });
   }
