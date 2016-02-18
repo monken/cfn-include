@@ -1,0 +1,206 @@
+{
+  "basics": [{
+    "name": "simple iteration with string",
+    "template": {
+      "Fn::Map": [
+        [1, 2, 3], "_"
+      ]
+    },
+    "output": [1, 2, 3]
+  }, {
+    "name": "replace in object",
+    "template": {
+      "Fn::Map": [
+        [1, 2, 3], {
+          "Value": "_",
+          "Key": "Foo"
+        }
+      ]
+    },
+    "output": [{
+      "Value": "1",
+      "Key": "Foo"
+    }, {
+      "Value": "2",
+      "Key": "Foo"
+    }, {
+      "Value": "3",
+      "Key": "Foo"
+    }]
+  }, {
+    "name": "replace in deep object",
+    "template": {
+      "Fn::Map": [
+        [1, 2], {
+          "Nested": {
+            "Value": "_"
+          }
+        }
+      ]
+    },
+    "output": [{
+      "Nested": {
+        "Value": "1"
+      }
+    }, {
+      "Nested": {
+        "Value": "2"
+      }
+    }]
+  }, {
+    "name": "replace in deep object in array",
+    "template": {
+      "Fn::Map": [
+        [1, 2], {
+          "Nested": {
+            "Value": ["_", "_"]
+          }
+        }
+      ]
+    },
+    "output": [{
+      "Nested": {
+        "Value": ["1", "1"]
+      }
+    }, {
+      "Nested": {
+        "Value": ["2", "2"]
+      }
+    }]
+  }],
+  "custom placeholder": [{
+    "name": "simple iteration with string",
+    "template": {
+      "Fn::Map": [
+        [1, 2, 3], "$", "$"
+      ]
+    },
+    "output": [1, 2, 3]
+  }, {
+    "name": "replace in object",
+    "template": {
+      "Fn::Map": [
+        [1, 2, 3], "$", {
+          "Value": "$",
+          "Key": "Foo"
+        }
+      ]
+    },
+    "output": [{
+      "Value": "1",
+      "Key": "Foo"
+    }, {
+      "Value": "2",
+      "Key": "Foo"
+    }, {
+      "Value": "3",
+      "Key": "Foo"
+    }]
+  }],
+  "nested map": [{
+    "name": "nesting with underscore",
+    "template": {
+      "Fn::Map": [
+        [1, 2], {
+          "Fn::Map": [
+            [3, 4], {
+              "foo": "_"
+            }
+          ]
+        }
+      ]
+    },
+    "output": [
+      [{
+        "foo": "3"
+      }, {
+        "foo": "4"
+      }],
+      [{
+        "foo": "3"
+      }, {
+        "foo": "4"
+      }]
+    ]
+  }, {
+    "name": "custom placeholder",
+    "template": {
+      "Fn::Map": [
+        [1, 2], "$", {
+          "Fn::Map": [
+            [3, 4], {
+              "foo": "_",
+              "bar": "$"
+            }
+          ]
+        }
+      ]
+    },
+    "output": [
+      [{
+        "foo": "3",
+        "bar": "1"
+      }, {
+        "foo": "4",
+        "bar": "1"
+      }],
+      [{
+        "foo": "3",
+        "bar": "2"
+      }, {
+        "foo": "4",
+        "bar": "2"
+      }]
+    ]
+  }, {
+    "name": "nesting with underscore and includes",
+    "template": {
+      "Fn::Map": [
+        ["includes/foobar.json", "includes/subfolder/include2.json"], {
+          "Fn::Map": [
+            ["includes/foobar.json", "includes/subfolder/include2.json"], {
+              "foo": "bar"
+            }
+          ]
+        }
+      ]
+    },
+    "output": [
+      [{
+        "foo": "bar"
+      }, {
+        "foo": "bar"
+      }],
+      [{
+        "foo": "bar"
+      }, {
+        "foo": "bar"
+      }]
+    ]
+  }],
+  "include": [{
+    "name": "include basics",
+    "template": {
+      "Fn::Map": [
+        ["includes/foobar.json", "includes/subfolder/include2.json"], {
+          "Fn::Include": "_"
+        }
+      ]
+    },
+    "output": [{
+      "foo": "bar"
+    }, {
+      "foo": "bar"
+    }]
+  }, {
+    "name": "include template with a map at root level",
+    "template": {
+      "Fn::Include": "includes/map.json"
+    },
+    "output": [{
+      "Value": "1"
+    }, {
+      "Value": "2"
+    }]
+  }]
+}

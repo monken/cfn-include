@@ -131,6 +131,36 @@ Include a file literally
 }
 ```
 
+## Fn::Map
+
+`Fn::Map` is the equivalent of the JavaScript `map()` function allowing for the trasformation of an input array to an output array.
+By default the string `_` is used as the variable in the map function.
+
+```json
+{
+  "Fn::Map": [
+    [80, 443],
+    {
+      "CirdIp": "0.0.0.0/0",
+      "FromPort": "_",
+      "ToPort": "_"
+    }
+  ]
+}
+```
+
+```json
+[{
+  "CirdIp": "0.0.0.0/0",
+  "FromPort": "80",
+  "ToPort": "80"
+}, {
+  "CirdIp": "0.0.0.0/0",
+  "FromPort": "443",
+  "ToPort": "443"
+}]
+```
+
 ## Examples
 
 See [/examples](https://github.com/monken/cfn-include/tree/master/examples) for templates that call an API Gateway endpoint to collect AMI IDs for all regions.

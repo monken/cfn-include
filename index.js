@@ -14,26 +14,62 @@ module.exports = function(options) {
   var template = options.template;
   var base = parseLocation(options.url);
   if (base.relative) throw "url cannot be relative";
-  if (template) return recurse(base, template);
+  if (template) return Promise.resolve(recurse(base, {}, template));
   else return include(base, options.url);
 }
 
-function recurse(base, object) {
-  if (_.isArray(object)) return Promise.all(object.map(_.bind(recurse, this, base)));
+function recurse(base, scope, object) {
+  scope = _.clone(scope);
+  if (_.isArray(object)) return Promise.all(object.map(_.bind(recurse, this, base, scope)));
   else if (_.isPlainObject(object)) {
-    return Promise.all(_.values(object).map(_.bind(recurse, this, base))).then(function() {
-      if (object["Fn::Include"]) {
+    return Promise.try(function() {
+      if (object["Fn::Map"]) {
+        var args = object["Fn::Map"],
+          list = args[0],
+          placeholder = args[1],
+          body = args[args.length - 1];
+        if (args.length === 2) placeholder = '_';
+        return Promise.resolve(list.map(function(replace) {
+          scope = _.clone(scope);
+          scope[placeholder] = replace;
+          var replaced = findAndReplace(scope, _.cloneDeep(body));
+          return recurse(base, scope, replaced);
+        }));
+      } else if (object["Fn::Include"]) {
         return include(base, object["Fn::Include"]).then(function(json) {
           delete object["Fn::Include"];
           _.extend(object, json);
           return object;
-        });
+        }).then(_.bind(recurse, this, base, scope));
       } else {
         return object;
       }
+    }).then(function(object) {
+      return Promise.props(_.mapValues(object, _.bind(recurse, this, base, scope)));
     });
+  } else {
+    return object;
   }
-  return Promise.resolve();
+}
+
+function findAndReplace(scope, object) {
+  _.forEach(scope, function(replace, find) {
+    if (_.isString(object) && object === find) {
+      object = replace;
+    } else if (_.isArray(object)) {
+      object = object.map(_.bind(findAndReplace, this, scope));
+    } else if (_.isPlainObject(object)) {
+      _.keys(object).forEach(function(key) {
+        if (key === 'Fn::Map') return;
+        object[key] = findAndReplace(scope, object[key]);
+      });
+      return object;
+      return _.mapValues(object, _.bind(findAndReplace, this, scope));
+    } else {
+      return object;
+    }
+  });
+  return object;
 }
 
 function include(base, args) {
@@ -79,21 +115,25 @@ function include(base, args) {
         lines = lines.map(function(line) {
           var parts = [];
           line.split(/({{\w+?}})/g).map(function(line) {
-            var match = line.match(/^{{(\w+)}}$/), value = match ? args.context[match[1]] : undefined;
+            var match = line.match(/^{{(\w+)}}$/),
+              value = match ? args.context[match[1]] : undefined;
             if (!match) return line;
-            else if(_.isUndefined(value)) { return '' }
-            else {
+            else if (_.isUndefined(value)) {
+              return ''
+            } else {
               return value;
             }
           }).forEach(function(part) {
-            var last = parts[parts.length-1];
-            if(_.isPlainObject(part) || _.isPlainObject(last) || !parts.length) {
+            var last = parts[parts.length - 1];
+            if (_.isPlainObject(part) || _.isPlainObject(last) || !parts.length) {
               parts.push(part);
-            } else if(parts.length) {
-              parts[parts.length-1] = last + part;
+            } else if (parts.length) {
+              parts[parts.length - 1] = last + part;
             }
           });
-          return parts.filter(function(part) { return part !== '' });
+          return parts.filter(function(part) {
+            return part !== '';
+          });
         });
       }
       return {
