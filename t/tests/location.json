@@ -16,6 +16,15 @@
       "foo": "bar"
     }
   }, {
+    "name": "don't overwrite existing elements",
+    "template": {
+      "foo": "baz",
+      "Fn::Include": "includes/foobar.json"
+    },
+    "output": {
+      "foo": "baz"
+    }
+  }, {
     "template": {
       "Version": "2009-09-09",
       "Mappings": {

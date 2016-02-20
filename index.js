@@ -37,7 +37,7 @@ function recurse(base, scope, object) {
     } else if (object["Fn::Include"]) {
       return include(base, object["Fn::Include"]).then(function(json) {
         delete object["Fn::Include"];
-        _.extend(object, json);
+        _.defaults(object, json);
         return object;
       }).then(_.bind(findAndReplace, this, scope)).then(_.bind(recurse, this, base, scope));
     } else if (object["Fn::Flatten"]) {
