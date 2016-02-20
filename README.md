@@ -133,7 +133,7 @@ Include a file literally
 
 ## Fn::Map
 
-`Fn::Map` is the equivalent of the JavaScript `map()` function allowing for the trasformation of an input array to an output array.
+`Fn::Map` is the equivalent of the JavaScript `map()` function allowing for the transformation of an input array to an output array.
 By default the string `_` is used as the variable in the map function.
 
 ```json

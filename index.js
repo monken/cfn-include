@@ -40,7 +40,7 @@ function recurse(base, scope, object) {
           delete object["Fn::Include"];
           _.extend(object, json);
           return object;
-        }).then(_.bind(recurse, this, base, scope));
+        }).then(_.bind(findAndReplace, this, scope)).then(_.bind(recurse, this, base, scope));
       } else {
         return object;
       }
