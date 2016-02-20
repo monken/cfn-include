@@ -43,7 +43,7 @@ include({
   promise.then(function(res) {
     console.log(JSON.stringify(template, null, opts.minimize ? null : 2));
   }, function(err) {
-    console.log('Validation failed:', err.message);
+    console.error('Validation failed:', err.message);
     process.exit(1);
   });
 });
