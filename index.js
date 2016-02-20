@@ -22,31 +22,31 @@ function recurse(base, scope, object) {
   scope = _.clone(scope);
   if (_.isArray(object)) return Promise.all(object.map(_.bind(recurse, this, base, scope)));
   else if (_.isPlainObject(object)) {
-    return Promise.try(function() {
-      if (object["Fn::Map"]) {
-        var args = object["Fn::Map"],
-          list = args[0],
-          placeholder = args[1],
-          body = args[args.length - 1];
-        if (args.length === 2) placeholder = '_';
-        return Promise.resolve(list.map(function(replace) {
-          scope = _.clone(scope);
-          scope[placeholder] = replace;
-          var replaced = findAndReplace(scope, _.cloneDeep(body));
-          return recurse(base, scope, replaced);
-        }));
-      } else if (object["Fn::Include"]) {
-        return include(base, object["Fn::Include"]).then(function(json) {
-          delete object["Fn::Include"];
-          _.extend(object, json);
-          return object;
-        }).then(_.bind(findAndReplace, this, scope)).then(_.bind(recurse, this, base, scope));
-      } else {
+    if (object["Fn::Map"]) {
+      var args = object["Fn::Map"],
+        list = args[0],
+        placeholder = args[1],
+        body = args[args.length - 1];
+      if (args.length === 2) placeholder = '_';
+      return Promise.all(list.map(function(replace) {
+        scope = _.clone(scope);
+        scope[placeholder] = replace;
+        var replaced = findAndReplace(scope, _.cloneDeep(body));
+        return recurse(base, scope, replaced);
+      }));
+    } else if (object["Fn::Include"]) {
+      return include(base, object["Fn::Include"]).then(function(json) {
+        delete object["Fn::Include"];
+        _.extend(object, json);
         return object;
-      }
-    }).then(function(object) {
-      return Promise.props(_.mapValues(object, _.bind(recurse, this, base, scope)));
-    });
+      }).then(_.bind(findAndReplace, this, scope)).then(_.bind(recurse, this, base, scope));
+    } else if (object["Fn::Flatten"]) {
+      return recurse(base, scope, object["Fn::Flatten"]).then(function(json) {
+        return _.flatten(json);
+      });
+    } else {
+      return Promise.props(_.mapValues(object, _.bind(recurse, this, base, scope)))
+    }
   } else {
     return object;
   }

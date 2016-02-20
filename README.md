@@ -161,6 +161,58 @@ By default the string `_` is used as the variable in the map function.
 }]
 ```
 
+## Fn::Flatten
+
+This function flattens an array a single level. This is useful for flattening out nested `Fn::Map` calls.
+
+```json
+{
+  "Fn::Flatten": {
+    "Fn::Map": [
+      [80, 443], "$", {
+        "Fn::Map": [
+          ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"], {
+            "CirdIp": "_",
+            "FromPort": "$",
+            "ToPort": "$"
+          }
+        ]
+      }
+    ]
+  }
+},
+```
+
+Results in:
+
+```json
+[{
+  "CirdIp": "10.0.0.0/8",
+  "FromPort": "80",
+  "ToPort": "80"
+}, {
+  "CirdIp": "172.16.0.0/12",
+  "FromPort": "80",
+  "ToPort": "80"
+}, {
+  "CirdIp": "192.168.0.0/16",
+  "FromPort": "80",
+  "ToPort": "80"
+}, {
+  "CirdIp": "10.0.0.0/8",
+  "FromPort": "443",
+  "ToPort": "443"
+}, {
+  "CirdIp": "172.16.0.0/12",
+  "FromPort": "443",
+  "ToPort": "443"
+}, {
+  "CirdIp": "192.168.0.0/16",
+  "FromPort": "443",
+  "ToPort": "443"
+}]
+```
+
 ## Examples
 
 See [/examples](https://github.com/monken/cfn-include/tree/master/examples) for templates that call an API Gateway endpoint to collect AMI IDs for all regions.

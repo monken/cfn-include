@@ -2,10 +2,10 @@ var include = require('../index'),
   assert = require('assert'),
   fs = require('fs');
 
-var tests = ['map', 'literal', 'location'];
+var tests = ['location', 'literal', 'map', 'flatten'];
 if(process.env['TEST_S3']) tests.push('s3');
 
-//var tests = ['map'];
+//var tests = ['flatten'];
 
 tests.forEach(function(file) {
   var tests = require('./tests/' + file + '.json');

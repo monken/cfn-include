@@ -1,0 +1,178 @@
+{
+  "basics": [{
+    "name": "flatten flat list",
+    "template": {
+      "Fn::Flatten": [1, 2, 3]
+    },
+    "output": [1, 2, 3]
+  }],
+  "flatten nested map": [{
+    "name": "nesting with underscore",
+    "template": {
+      "Fn::Flatten": {
+        "Fn::Map": [
+          [1, 2], {
+            "Fn::Map": [
+              [3, 4], {
+                "foo": "_"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "output": [{
+      "foo": "3"
+    }, {
+      "foo": "4"
+    }, {
+      "foo": "3"
+    }, {
+      "foo": "4"
+    }]
+
+  }, {
+    "name": "flatten custom placeholder",
+    "template": {
+      "Fn::Flatten": {
+        "Fn::Map": [
+          [1, 2], "$", {
+            "Fn::Map": [
+              [3, 4], {
+                "foo": "_",
+                "bar": "$"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "output": [{
+      "foo": "3",
+      "bar": "1"
+    }, {
+      "foo": "4",
+      "bar": "1"
+    }, {
+      "foo": "3",
+      "bar": "2"
+    }, {
+      "foo": "4",
+      "bar": "2"
+    }]
+
+  }, {
+    "name": "nesting with underscore and includes",
+    "template": {
+      "Fn::Flatten": {
+        "Fn::Map": [
+          ["includes/foobar.json", "includes/subfolder/include2.json"], {
+            "Fn::Map": [
+              ["includes/foobar.json", "includes/subfolder/include2.json"], {
+                "foo": "bar"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "output": [{
+      "foo": "bar"
+    }, {
+      "foo": "bar"
+    }, {
+      "foo": "bar"
+    }, {
+      "foo": "bar"
+    }]
+
+  }],
+  "include": [{
+    "name": "include template with variables",
+    "template": {
+      "Fn::Flatten": {
+        "Fn::Map": [
+          [1, 2], "$", {
+            "Fn::Map": [
+              [3, 4], {
+                "Fn::Include": "includes/mapvariable.json"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "output": [{
+      "foo": "3",
+      "bar": "1",
+      "baz": [{
+        "foo": "3",
+        "bar": "1"
+      }]
+    }, {
+      "foo": "4",
+      "bar": "1",
+      "baz": [{
+        "foo": "4",
+        "bar": "1"
+      }]
+    }, {
+      "foo": "3",
+      "bar": "2",
+      "baz": [{
+        "foo": "3",
+        "bar": "2"
+      }]
+    }, {
+      "foo": "4",
+      "bar": "2",
+      "baz": [{
+        "foo": "4",
+        "bar": "2"
+      }]
+    }]
+  }],
+  "synopsis": [{
+    "name": "flatten nested map",
+    "template": {
+      "Fn::Flatten": {
+        "Fn::Map": [
+          [80, 443], "$", {
+            "Fn::Map": [
+              ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"], {
+                "CirdIp": "_",
+                "FromPort": "$",
+                "ToPort": "$"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "output": [{
+      "CirdIp": "10.0.0.0/8",
+      "FromPort": "80",
+      "ToPort": "80"
+    }, {
+      "CirdIp": "172.16.0.0/12",
+      "FromPort": "80",
+      "ToPort": "80"
+    }, {
+      "CirdIp": "192.168.0.0/16",
+      "FromPort": "80",
+      "ToPort": "80"
+    }, {
+      "CirdIp": "10.0.0.0/8",
+      "FromPort": "443",
+      "ToPort": "443"
+    }, {
+      "CirdIp": "172.16.0.0/12",
+      "FromPort": "443",
+      "ToPort": "443"
+    }, {
+      "CirdIp": "192.168.0.0/16",
+      "FromPort": "443",
+      "ToPort": "443"
+    }]
+  }]
+}
