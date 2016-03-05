@@ -1,0 +1,2 @@
+#!/bin/bash
+"/opt/aws/bin/cfn-init -s {{stack}} -r MyInstance --region {{region}}
