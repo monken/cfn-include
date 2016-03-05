@@ -3,7 +3,7 @@
 # cfn-include
 
 `cfn-include` is a preprocessor for CloudFormation templates which extends CloudFormation's [intrinsic functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html).
-For example, `Fn::Include` provides a convenient way to include other files, which can be local, a URL or an S3 bucket location.
+For example, `Fn::Include` provides a convenient way to include other files, which can be local, a URL or an S3 bucket location (with authentication).
 
 `cfn-include` tries to be minimally invasive, meaning that the template will still look and feel like an ordinary CloudFormation template. This is what sets `cfn-include` apart from other CloudFormation preprocessors such as [CFNDSL](https://github.com/stevenjack/cfndsl) and [AWSBoxen](https://github.com/mozilla/awsboxen). There is no need to use a scripting language or adjust to new syntax.
 
@@ -26,8 +26,11 @@ Options:
 * `-m, --minimize`   minimize JSON output  [false]
 * `-t, --validate`   validate compiled template  [false]
 
-```json
-# example.template
+
+### Example
+
+```javascript
+// synopsis.json
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Mappings": {
@@ -56,14 +59,16 @@ Options:
 }
 ```
 
-This is what the `userdata.txt` would look like:
+This is what the `userdata.txt` looks like:
 ```bash
 #!/bin/bash
 "/opt/aws/bin/cfn-init -s {{stack}} -r MyInstance --region {{region}}
 ```
 
 ```bash
-cfn-include example.template > output.template
+cfn-include synopsis.json > output.template
+# you can also compile remote files
+cfn-include https://raw.githubusercontent.com/monken/cfn-include/master/examples/synopsis.json > output.template
 ```
 
 The output will be something like this:
