@@ -2,7 +2,10 @@
 
 # cfn-include
 
-`cfn-include` is a preprocessor for CloudFormation templates. It parses a given template and includes contents of files defined by the custom `Fn::Include` [intrinsic function](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html). Referenced files can be local, a URL or an S3 bucket location.
+`cfn-include` is a preprocessor for CloudFormation templates which extends CloudFormation's [intrinsic functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html).
+For example, `Fn::Include` provides a convenient way to include other files, which can be local, a URL or an S3 bucket location.
+
+`cfn-include` tries to be minimally invasive, meaning that the template will still look and feel like an ordinary CloudFormation template. This is what sets `cfn-include` apart from other CloudFormation preprocessors such as [CFNDSL](https://github.com/stevenjack/cfndsl) and [AWSBoxen](https://github.com/mozilla/awsboxen). There is no need to use a scripting language or adjust to new syntax.
 
 ## Installation
 
@@ -29,18 +32,21 @@ Options:
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Mappings": {
     "Region2AMI" : {
-      "Fn::Include": "Region2AMI.json"
+      "Fn::Include": "https://rjfctzfei2.execute-api.us-east-1.amazonaws.com/latest/ami/lookup?architecture=HVM64"
     }
   },
   "Resources": {
     "Instance": {
       "Parameters": {
         "UserData": {
-          "Fn::Include": {
-            "type": "literal",
-            "location": "userdata.txt",
-            "context": {
-              "stack": { "Ref": "StackId" }
+          "Fn::Base64": {
+            "Fn::Include": {
+              "type": "literal",
+              "location": "userdata.txt",
+              "context": {
+                "stack": { "Ref": "AWS::StackName" },
+                "region": { "Ref": "AWS::Region" }
+              }
             }
           }
         }
@@ -50,31 +56,48 @@ Options:
 }
 ```
 
+This is what the `userdata.txt` would look like:
+```bash
+#!/bin/bash
+"/opt/aws/bin/cfn-init -s {{stack}} -r MyInstance --region {{region}}
+```
+
 ```bash
 cfn-include example.template > output.template
 ```
 
-```json
-# example.template
+The output will be something like this:
+```javascript
 {
-  "AWSTemplateFormatVersion" : "2010-09-09",
+  "AWSTemplateFormatVersion": "2010-09-09",
   "Mappings": {
-    "Region2AMI" : {
-      "us-east-1": {
-        "AMI": "ami-60b6c60a"
+    "Region2AMI": {
+      "Metadata": {
+        "Name": "amzn-ami-hvm-2015.09.2.x86_64-gp2",
+        "Owner": "amazon",
+        "CreationDate": "2016-02-10T23:44:07.000Z"
       },
-      "eu-central-1": {
-        "AMI": "ami-bc5b48d0"
+      "us-east-1": {
+        "AMI": "ami-8fcee4e5"
       }
+      // and so on
     }
   },
   "Resources": {
     "Instance": {
       "Parameters": {
         "UserData": {
-          "Fn::Join": ["", [
-            "#!/bin/bash\n"
-          ]]
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash\n",
+                "\"/opt/aws/bin/cfn-init -s ", { "Ref": "AWS::StackName" },
+                " -r MyInstance",
+                " --region ", { "Ref": "AWS::Region" }, "\n"
+              ]
+            ]
+          }
         }
       }
     }
@@ -84,13 +107,15 @@ cfn-include example.template > output.template
 
 ##  Fn::Include
 
-The `Fn::Include` function can be located anywhere in the template and can occur multiple times. The function accepts an object. Parameters are:
+Place `Fn::Include` anywhere in the template and it will be replaced by the contents it is referring to. The function accepts an object. Parameters are:
 
-* location: The location to the file can be relative or absolute. A relative location is interpreted relative to the template. Included files can in turn include more files, i.e. recursion is supported.
-* type (optional): either `json` or `literal`. Defaults to `json`. `literal` will include the file literally, i.e. transforming the context of the file into JSON using the infamous `Fn::Join` syntax.
-* context (optional): If `type` is `literal` a context object with variables can be provided. The object can contain plain values or references to parameters or resources in the CloudFormation template (e.g. `{ "Ref": "StackId" }`). Use Mustache like syntax in the file.
+* **location**: The location to the file can be relative or absolute. A relative location is interpreted relative to the template. Included files can in turn include more files, i.e. recursion is supported.
+* **type** (optional): either `json` or `literal`. Defaults to `json`. `literal` will include the file literally, i.e. transforming the context of the file into JSON using the infamous `Fn::Join` syntax.
+* **context** (optional): If `type` is `literal` a context object with variables can be provided. The object can contain plain values or references to parameters or resources in the CloudFormation template (e.g. `{ "Ref": "StackId" }`). Use Mustache like syntax in the file.
 
-Instead of using an object, a plain string can be provided which assumes the file is of type `json`.
+You can also use a plain string if you want the default behavior, which is simply including a JSON file.
+
+### Examples
 
 Include a file from a URL
 
@@ -229,7 +254,7 @@ cfn-include example.template -t -m | aws s3 cp - s3://bucket-name/output.templat
 
 ## Compatibility
 
-Node.js versions 0.10 and up are supported.
+Node.js versions 0.10 and up are supported both on Windows and Linux.
 
 ## Roadmap
 
