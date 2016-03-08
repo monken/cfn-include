@@ -171,7 +171,7 @@ By default the string `_` is used as the variable in the map function.
   "Fn::Map": [
     [80, 443],
     {
-      "CirdIp": "0.0.0.0/0",
+      "CidrIp": "0.0.0.0/0",
       "FromPort": "_",
       "ToPort": "_"
     }
@@ -181,11 +181,11 @@ By default the string `_` is used as the variable in the map function.
 
 ```json
 [{
-  "CirdIp": "0.0.0.0/0",
+  "CidrIp": "0.0.0.0/0",
   "FromPort": "80",
   "ToPort": "80"
 }, {
-  "CirdIp": "0.0.0.0/0",
+  "CidrIp": "0.0.0.0/0",
   "FromPort": "443",
   "ToPort": "443"
 }]
@@ -202,7 +202,7 @@ This function flattens an array a single level. This is useful for flattening ou
       [80, 443], "$", {
         "Fn::Map": [
           ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"], {
-            "CirdIp": "_",
+            "CidrIp": "_",
             "FromPort": "$",
             "ToPort": "$"
           }
@@ -217,27 +217,27 @@ Results in:
 
 ```json
 [{
-  "CirdIp": "10.0.0.0/8",
+  "CidrIp": "10.0.0.0/8",
   "FromPort": "80",
   "ToPort": "80"
 }, {
-  "CirdIp": "172.16.0.0/12",
+  "CidrIp": "172.16.0.0/12",
   "FromPort": "80",
   "ToPort": "80"
 }, {
-  "CirdIp": "192.168.0.0/16",
+  "CidrIp": "192.168.0.0/16",
   "FromPort": "80",
   "ToPort": "80"
 }, {
-  "CirdIp": "10.0.0.0/8",
+  "CidrIp": "10.0.0.0/8",
   "FromPort": "443",
   "ToPort": "443"
 }, {
-  "CirdIp": "172.16.0.0/12",
+  "CidrIp": "172.16.0.0/12",
   "FromPort": "443",
   "ToPort": "443"
 }, {
-  "CirdIp": "192.168.0.0/16",
+  "CidrIp": "192.168.0.0/16",
   "FromPort": "443",
   "ToPort": "443"
 }]
