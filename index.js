@@ -102,9 +102,7 @@ function include(base, args) {
     }).get('body').call('toString');
   }
   if (args.type === 'json') {
-    return body.then(function (str) {
-      return jsmin(str);
-    }).then(jsonlint.parse).then(function(template) {
+    return body.then(jsmin).then(jsonlint.parse).then(function(template) {
       return module.exports({
         template: template,
         url: absolute,
