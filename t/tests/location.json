@@ -76,6 +76,14 @@
       "foo": "bar"
     }
   }, {
+    "name": "test some comments",
+    "template": {
+      "Fn::Include": "includes/comment.json"
+    },
+    "output": {
+      "foo": "bar"
+    }
+  }, {
     "template": {
       "Fn::Include": "includes/verydeep.json"
     },

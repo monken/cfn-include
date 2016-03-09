@@ -7,7 +7,8 @@ var _ = require('lodash'),
   request = Promise.promisify(require('request')),
   AWS = require('./aws-sdk-proxy'),
   s3 = new AWS.S3(),
-  jsonlint = require('jsonlint');
+  jsonlint = require('jsonlint'),
+  jsmin = require('jsmin').jsmin;
 
 
 module.exports = function(options) {
@@ -101,7 +102,9 @@ function include(base, args) {
     }).get('body').call('toString');
   }
   if (args.type === 'json') {
-    return body.then(jsonlint.parse).then(function(template) {
+    return body.then(function (str) {
+      return jsmin(str);
+    }).then(jsonlint.parse).then(function(template) {
       return module.exports({
         template: template,
         url: absolute,

@@ -1,0 +1,5 @@
+{
+  // line comment
+  "foo": /* inline comment */ "bar"
+  // more comment
+}
