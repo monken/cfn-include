@@ -99,6 +99,9 @@ function include(base, args) {
     absolute = location.relative ? url.resolve(location.protocol + '://' + base.host + basepath, location.raw) : location.raw;
     body = request({
       url: absolute,
+      followRedirect: false,
+      gzip: true,
+      strictSSL: true,
     }).get('body').call('toString');
   }
   if (args.type === 'json') {
