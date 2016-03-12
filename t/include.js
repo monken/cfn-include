@@ -2,7 +2,7 @@ var include = require('../index'),
   assert = require('assert'),
   fs = require('fs');
 
-var tests = ['location', 'literal', 'map', 'flatten'];
+var tests = ['location', 'literal', 'map', 'flatten', 'jmespath'];
 if(process.env['TEST_S3']) tests.push('s3');
 
 //var tests = ['flatten'];
