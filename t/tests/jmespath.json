@@ -1,0 +1,90 @@
+{
+  "jmespath": [
+    {
+      "name": "complex include",
+      "template": {
+        "Fn::Include": {
+          "location": "includes/complex.json",
+          "type": "json"
+        }
+      },
+      "output": {
+        "foo": "bar",
+        "bar": {
+          "baz": "foobar"
+        },
+        "blub": [
+          {
+            "a": "b"
+          },
+          {
+            "c": "d"
+          }
+        ]
+      }
+    },
+    {
+      "name": "complex include with query",
+      "template": {
+        "Fn::Include": {
+          "location": "includes/complex.json",
+          "type": "json",
+          "query": "@"
+        }
+      },
+      "output": {
+        "foo": "bar",
+        "bar": {
+          "baz": "foobar"
+        },
+        "blub": [
+          {
+            "a": "b"
+          },
+          {
+            "c": "d"
+          }
+        ]
+      }
+    },
+    {
+      "name": "complex include with query",
+      "template": {
+        "Fn::Include": {
+          "location": "includes/complex.json",
+          "type": "json",
+          "query": "bar"
+        }
+      },
+      "output": {
+        "baz": "foobar"
+      }
+    },
+    {
+      "name": "complex include with query",
+      "template": {
+        "Fn::Include": {
+          "location": "includes/complex.json",
+          "type": "json",
+          "query": "blub[0]"
+        }
+      },
+      "output": {
+        "a": "b"
+      }
+    },
+    {
+      "name": "complex include with query",
+      "template": {
+        "Fn::Include": {
+          "location": "includes/complex.json",
+          "type": "json",
+          "query": "blub[?c=='d']|[0]"
+        }
+      },
+      "output": {
+        "c": "d"
+      }
+    }
+  ]
+}
