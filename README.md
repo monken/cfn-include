@@ -123,7 +123,7 @@ Place `Fn::Include` anywhere in the template and it will be replaced by the cont
 * **location**: The location to the file can be relative or absolute. A relative location is interpreted relative to the template. Included files can in turn include more files, i.e. recursion is supported.
 * **type** (optional): either `json` or `literal`. Defaults to `json`. `literal` will include the file literally, i.e. transforming the context of the file into JSON using the infamous `Fn::Join` syntax.
 * **context** (optional): If `type` is `literal` a context object with variables can be provided. The object can contain plain values or references to parameters or resources in the CloudFormation template (e.g. `{ "Ref": "StackId" }`). Use Mustache like syntax in the file.
-* **query** (optional): If `type` is `json` a JMESPath query can be provided. The file to include is then queried using the value as a JMESPath expression.
+* **query** (optional): If `type` is `json` a [JMESPath](http://jmespath.org/) query can be provided. The file to include is then queried using the value as a JMESPath expression.
 
 You can also use a plain string if you want the default behavior, which is simply including a JSON file.
 
