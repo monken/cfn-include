@@ -256,7 +256,7 @@ Results in:
 
 For example, this allows you to merge objects of your template that have been created with [`Fn::Map`](#fnmap). This snippet shows how multiple subnets can be created for each AZ and then merged with the rest of the template.
 
-```
+```json
 {
   "Resources": {
     "Fn::Merge": {
@@ -279,7 +279,7 @@ For example, this allows you to merge objects of your template that have been cr
 ```
 
 
-```
+```json
 {
   "Resources": {
     "SubnetA": {
@@ -295,11 +295,11 @@ For example, this allows you to merge objects of your template that have been cr
 }
 ```
 
-## Examples
+## More Examples
 
-See [/examples](https://github.com/monken/cfn-include/tree/master/examples) for templates that call an API Gateway endpoint to collect AMI IDs for all regions.
+See [/examples](https://github.com/monken/cfn-include/tree/master/examples) for templates that call an API Gateway endpoint to collect AMI IDs for all regions. There is also a good amount of [tests](https://github.com/monken/cfn-include/tree/master/t) that might be helpful.
 
-This will process a template, validate it against the [validate-template](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/validate-template.html) API, minimize it and upload the result to S3.
+A common pattern is to rocess a template, validate it against the AWS [validate-template](https://docs.aws.amazon.com/cli/latest/reference/cloudformation/validate-template.html) API, minimize it and upload the result to S3. You can do this with a single line of code:
 
 ```bash
 cfn-include example.template -t -m | aws s3 cp - s3://bucket-name/output.template
@@ -312,9 +312,3 @@ cfn-include example.template -t -m | aws s3 cp - s3://bucket-name/output.templat
 ## Compatibility
 
 Node.js versions 0.10 and up are supported both on Windows and Linux.
-
-## Roadmap
-
-* use a different parser such as json5, yaml
-* ignore casing of config object keys
-* Detect infinite recursion
