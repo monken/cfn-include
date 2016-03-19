@@ -23,11 +23,12 @@ var _ = require('lodash'),
   }).parse(),
   path = require('path'),
   include = require('../index'),
+  pathParse = require('path-parse'),
   Promise = require('bluebird');
 
 var location, protocol = opts.path.match(/^\w+:\/\//);
 if (protocol) location = opts.path;
-else if (path.isAbsolute(opts.path)) location = 'file://' + opts.path;
+else if (!pathParse(opts.path).root) location = 'file://' + opts.path;
 else location = 'file://' + path.join(process.cwd(), opts.path);
 
 include({
