@@ -36,7 +36,8 @@
     "nomnom": "^1.8.1",
     "path-parse": "^1.0.5",
     "request": "^2.65.0",
-    "jsmin": "1.0.1"
+    "jsmin": "1.0.1",
+    "jmespath": "0.14.1"
   },
   "devDependencies": {
     "mocha": "^2.3.3",

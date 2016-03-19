@@ -8,7 +8,8 @@ var _ = require('lodash'),
   AWS = require('./aws-sdk-proxy'),
   s3 = new AWS.S3(),
   jsonlint = require('jsonlint'),
-  jsmin = require('jsmin').jsmin;
+  jsmin = require('jsmin').jsmin,
+  jmespath = require('jmespath');
 
 
 module.exports = function(options) {
@@ -106,10 +107,14 @@ function include(base, args) {
   }
   if (args.type === 'json') {
     return body.then(jsmin).then(jsonlint.parse).then(function(template) {
+      var content = template;
+      if (args.query) {
+        content = jmespath.search(template, args.query);
+      }
       return module.exports({
-        template: template,
+        template: content,
         url: absolute,
-      }).return(template);
+      }).return(content);
     });
   } else if (args.type === 'literal') {
     return body.then(function(template) {
