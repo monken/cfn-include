@@ -167,7 +167,7 @@ function JSONifyString(string) {
 }
 
 function parseLocation(location) {
-  var parsed = location.match(/^(((\w+):)?\/\/)?(.*?)(\/(.*))?$/);
+  var parsed = location.match(/^(((\w+):)?\/\/)?(.*?)([\\\/](.*))?$/);
   return {
     protocol: parsed[3],
     host: parsed[4],
