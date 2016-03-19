@@ -13,11 +13,14 @@ var _ = require('lodash'),
 
 
 module.exports = function(options) {
-  var template = options.template;
-  var base = parseLocation(options.url);
+  var template = options.template,
+    base = parseLocation(options.url),
+    scope = options.scope || {};
   if (base.relative) throw "url cannot be relative";
-  if (template) return Promise.resolve(recurse(base, {}, template));
-  else return include(base, options.url);
+  template = template || include(base, scope, options.url);
+  return Promise.resolve(template).then(function(template) {
+    return recurse(base, scope, template);
+  });
 }
 
 function recurse(base, scope, object) {
@@ -37,7 +40,7 @@ function recurse(base, scope, object) {
         return recurse(base, scope, replaced);
       }));
     } else if (object["Fn::Include"]) {
-      return include(base, object["Fn::Include"]).then(function(json) {
+      return include(base, scope, object["Fn::Include"]).then(function(json) {
         delete object["Fn::Include"];
         _.defaults(object, json);
         return object;
@@ -74,7 +77,7 @@ function findAndReplace(scope, object) {
   return object;
 }
 
-function include(base, args) {
+function include(base, scope, args) {
   args = _.isPlainObject(args) ? args : {
     location: args,
     type: 'json',
@@ -107,14 +110,14 @@ function include(base, args) {
   }
   if (args.type === 'json') {
     return body.then(jsmin).then(jsonlint.parse).then(function(template) {
-      var content = template;
       if (args.query) {
-        content = jmespath.search(template, args.query);
+        template = jmespath.search(template, args.query);
       }
       return module.exports({
-        template: content,
+        template: template,
         url: absolute,
-      }).return(content);
+        scope: scope,
+      }).return(template);
     });
   } else if (args.type === 'literal') {
     return body.then(function(template) {
