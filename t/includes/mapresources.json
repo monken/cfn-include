@@ -1,0 +1,19 @@
+{
+  "Resources": {
+    "Fn::Merge": {
+      "Fn::Flatten": [{
+        "Fn::Map": [
+          ["A", "B"], "AZ", {
+            "Subnet${AZ}": {
+              "Type": "AWS::EC2::Subnet"
+            }
+          }
+        ]
+      }, {
+        "SG": {
+          "Type": "AWS::EC2::SecurityGroup"
+        }
+      }]
+    }
+  }
+}

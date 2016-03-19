@@ -1,0 +1,28 @@
+{
+  "basics": [{
+    "name": "synopsis",
+    "template": {
+      "Fn::Merge": [{
+        "SubnetA": {
+          "Type": "AWS::EC2::Subnet"
+        }
+      }, {
+        "SubnetA": {
+          "Metadata": {}
+        },
+        "SubnetB": {
+          "Type": "AWS::EC2::Subnet"
+        }
+      }]
+    },
+    "output": {
+      "SubnetA": {
+        "Type": "AWS::EC2::Subnet",
+        "Metadata": {}
+      },
+      "SubnetB": {
+        "Type": "AWS::EC2::Subnet"
+      }
+    }
+  }]
+}

@@ -3,9 +3,15 @@
 # cfn-include
 
 `cfn-include` is a preprocessor for CloudFormation templates which extends CloudFormation's [intrinsic functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html).
-For example, `Fn::Include` provides a convenient way to include files, which can be local, a URL or on an S3 bucket (with proper IAM authentication if necessary).
+For example, [`Fn::Include`](#fninclude) provides a convenient way to include files, which can be local, a URL or on an S3 bucket (with proper IAM authentication if necessary).
 
 `cfn-include` tries to be minimally invasive, meaning that the template will still look and feel like an ordinary CloudFormation template. This is what sets `cfn-include` apart from other CloudFormation preprocessors such as [CFNDSL](https://github.com/stevenjack/cfndsl), [StackFormation](https://github.com/AOEpeople/StackFormation) and [AWSBoxen](https://github.com/mozilla/awsboxen). There is no need to use a scripting language or adjust to new syntax. Check them out though, they might be a better fit for you.
+
+**Functions**
+* [`Fn::Include`](#fninclude)
+* [`Fn::Flatten`](#fnflatten)
+* [`Fn::Map`](#fnmap)
+* [`Fn::Merge`](#fnmerge)
 
 ## Installation
 
@@ -165,7 +171,7 @@ Include a file literally
 ## Fn::Map
 
 `Fn::Map` is the equivalent of the JavaScript `map()` function allowing for the transformation of an input array to an output array.
-By default the string `_` is used as the variable in the map function.
+By default the string `_` is used as the variable in the map function. A custom variable can be provided as a second parameter, see [`Fn::Flatten`](#fnflatten) for an example. If a custom variable is used, the variable will also be replaced if found in the object key, see [`Fn::Merge`](#fnmerge) for an example.
 
 ```json
 {
@@ -194,7 +200,7 @@ By default the string `_` is used as the variable in the map function.
 
 ## Fn::Flatten
 
-This function flattens an array a single level. This is useful for flattening out nested `Fn::Map` calls.
+This function flattens an array a single level. This is useful for flattening out nested [`Fn::Map`](#fnmap) calls.
 
 ```json
 {
@@ -242,6 +248,51 @@ Results in:
   "FromPort": "443",
   "ToPort": "443"
 }]
+```
+
+## Fn::Merge
+
+`Fn::Merge` will merge an array of objects into a single object. See [lodash / merge](https://devdocs.io/lodash~4/index#merge) for details on its behavior.
+
+For example, this allows you to merge objects of your template that have been created with [`Fn::Map`](#fnmap). This snippet shows how multiple subnets can be created for each AZ and then merged with the rest of the template.
+
+```
+{
+  "Resources": {
+    "Fn::Merge": {
+      "Fn::Flatten": [{
+        "Fn::Map": [
+          ["A", "B"], "AZ", {
+            "Subnet${AZ}": {
+              "Type": "AWS::EC2::Subnet"
+            }
+          }
+        ]
+      }, {
+        "SG": {
+          "Type": "AWS::EC2::SecurityGroup"
+        }
+      }]
+    }
+  }
+}
+```
+
+
+```
+{
+  "Resources": {
+    "SubnetA": {
+      "Type": "AWS::EC2::Subnet"
+    },
+    "SubnetB": {
+      "Type": "AWS::EC2::Subnet"
+    },
+    "SG": {
+      "Type": "AWS::EC2::SecurityGroup"
+    }
+  }
+}
 ```
 
 ## Examples

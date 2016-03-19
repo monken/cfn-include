@@ -49,6 +49,10 @@ function recurse(base, scope, object) {
       return recurse(base, scope, object["Fn::Flatten"]).then(function(json) {
         return _.flatten(json);
       });
+    } else if (object["Fn::Merge"]) {
+      return recurse(base, scope, object["Fn::Merge"]).then(function(json) {
+        return _.merge.apply(_, json);
+      });
     } else {
       return Promise.props(_.mapValues(object, _.bind(recurse, this, base, scope)))
     }
@@ -59,11 +63,17 @@ function recurse(base, scope, object) {
 
 function findAndReplace(scope, object) {
   _.forEach(scope, function(replace, find) {
+    var regex = new RegExp('\\${' + find + '}', 'g');
     if (_.isString(object) && object === find) {
       object = replace;
+    } else if (_.isString(object) && find !== '_' && object.match(regex)) {
+      object = object.replace(regex, replace);
     } else if (_.isArray(object)) {
       object = object.map(_.bind(findAndReplace, this, scope));
     } else if (_.isPlainObject(object)) {
+      object = _.mapKeys(object, function(value, key) {
+        return findAndReplace(scope, key);
+      });
       _.keys(object).forEach(function(key) {
         if (key === 'Fn::Map') return;
         object[key] = findAndReplace(scope, object[key]);
