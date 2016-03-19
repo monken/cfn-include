@@ -28,7 +28,7 @@ var _ = require('lodash'),
 
 var location, protocol = opts.path.match(/^\w+:\/\//);
 if (protocol) location = opts.path;
-else if (!pathParse(opts.path).root) location = 'file://' + opts.path;
+else if (pathParse(opts.path).root) location = 'file://' + opts.path;
 else location = 'file://' + path.join(process.cwd(), opts.path);
 
 include({
