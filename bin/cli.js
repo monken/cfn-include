@@ -2,6 +2,7 @@
 
 var _ = require('lodash'),
   exec = require('child_process').execSync,
+  package = require('../package.json'),
   opts = require('nomnom').script('cfn-include').options({
     path: {
       position: 0,
@@ -19,6 +20,13 @@ var _ = require('lodash'),
       default: false,
       flag: true,
       abbr: 't',
+    },
+    version: {
+      flag: true,
+      help: 'print version and exit',
+      callback: function() {
+        return package.version;
+      }
     },
   }).parse(),
   path = require('path'),
