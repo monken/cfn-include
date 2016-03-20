@@ -31,6 +31,7 @@ Options:
 
 * `-m, --minimize`   minimize JSON output  [false]
 * `-t, --validate`   validate compiled template  [false]
+* `--version`        print version and exit
 
 
 ### Example
