@@ -105,7 +105,7 @@ cfn-include https://raw.githubusercontent.com/monken/cfn-include/master/examples
 Alternatively, you can compile the template using the web service
 
 ```
-curl -Ssf -XPOST https://api.netcubed.de/latest/template?validate=true -d '{"Fn::Include":"https://raw.githubusercontent.com/monken/cfn-include/master/examples/synopsis.json"}' > output.template
+curl -Ssf -XPOST https://api.netcubed.de/latest/template -d '{"Fn::Include":"https://raw.githubusercontent.com/monken/cfn-include/master/examples/synopsis.json"}' > output.template
 ```
 
 
@@ -128,7 +128,8 @@ The output will be something like this:
   },
   "Resources": {
     "Instance": {
-      "Parameters": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -153,7 +154,7 @@ The output will be something like this:
 Place `Fn::Include` anywhere in the template and it will be replaced by the contents it is referring to. The function accepts an object. Parameters are:
 
 * **location**: The location to the file can be relative or absolute. A relative location is interpreted relative to the template. Included files can in turn include more files, i.e. recursion is supported.
-* **type** (optional): either `json` or `literal`. Defaults to `json`. `literal` will include the file literally, i.e. transforming the context of the file into JSON using the infamous `Fn::Join` syntax.
+* **type** (optional): either `json` or `literal`. Defaults to `json`. `literal` will include the file literally, i.e. transforming the content into JSON using the infamous `Fn::Join` syntax.
 * **context** (optional): If `type` is `literal` a context object with variables can be provided. The object can contain plain values or references to parameters or resources in the CloudFormation template (e.g. `{ "Ref": "StackId" }`). Use Mustache like syntax in the file.
 * **query** (optional): If `type` is `json` a [JMESPath](http://jmespath.org/) query can be provided. The file to include is then queried using the value as a JMESPath expression.
 
