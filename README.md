@@ -15,11 +15,21 @@ For example, [`Fn::Include`](#fninclude) provides a convenient way to include fi
 
 ## Installation
 
+You can either install `cfn-include` or use a web service to compile templates.
+
 ```
 npm install --global cfn-include
 ```
 
+The web service can be called with your favorite CLI tool such as `curl`.
+
+```
+curl https://api.netcubed.de/latest/template -XPOST -d @template.json
+```
+
 ## Synopsis
+
+### CLI
 
     cfn-include <path> [options]
 
@@ -33,6 +43,19 @@ Options:
 * `-t, --validate`   validate compiled template  [false]
 * `--version`        print version and exit
 
+### Web Service
+
+    curl https://api.netcubed.de/latest/template?[options] -XPOST -d @<path>
+
+* `path`
+
+  the contents of `path` will be `POST`ed to the web service. See `man curl` for details.
+
+Options:
+
+Options are query parameters.
+
+* `validate=false` do not validate template [true]
 
 ### Example
 
@@ -42,7 +65,7 @@ Options:
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Mappings": {
     "Region2AMI" : {
-      "Fn::Include": "https://rjfctzfei2.execute-api.us-east-1.amazonaws.com/latest/ami/lookup?architecture=HVM64"
+      "Fn::Include": "https://api.netcubed.de/latest/ami/lookup?architecture=HVM64"
     }
   },
   "Resources": {

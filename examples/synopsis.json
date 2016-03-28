@@ -2,7 +2,7 @@
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Mappings": {
     "Region2AMI" : {
-      "Fn::Include": "https://rjfctzfei2.execute-api.us-east-1.amazonaws.com/latest/ami/lookup?architecture=HVM64"
+      "Fn::Include": "https://api.netcubed.de/latest/ami/lookup?architecture=HVM64"
     }
   },
   "Resources": {
