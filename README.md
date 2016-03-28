@@ -70,7 +70,8 @@ Options are query parameters.
   },
   "Resources": {
     "Instance": {
-      "Parameters": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
         "UserData": {
           "Fn::Base64": {
             "Fn::Include": {
@@ -100,6 +101,13 @@ cfn-include synopsis.json > output.template
 # you can also compile remote files
 cfn-include https://raw.githubusercontent.com/monken/cfn-include/master/examples/synopsis.json > output.template
 ```
+
+Alternatively, you can compile the template using the web service
+
+```
+curl -Ssf -XPOST https://api.netcubed.de/latest/template?validate=true -d '{"Fn::Include":"https://raw.githubusercontent.com/monken/cfn-include/master/examples/synopsis.json"}' > output.template
+```
+
 
 The output will be something like this:
 ```javascript
