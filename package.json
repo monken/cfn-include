@@ -9,6 +9,11 @@
   "bin": {
     "cfn-include": "bin/cli.js"
   },
+  "files": [
+    "index.js",
+    "aws-sdk-proxy.js",
+    "bin/"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/monken/cfn-include.git"
