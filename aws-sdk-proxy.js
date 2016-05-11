@@ -10,7 +10,7 @@ if (proxy) {
       },
     });
   } catch (e) {
-    if (e.code === 'MODULE_NOT_FOUND') console.log('Install proxy-agent for proxy support.');
+    if (e.code === 'MODULE_NOT_FOUND') console.error('Install proxy-agent for proxy support.');
     else throw e;
   }
 }
