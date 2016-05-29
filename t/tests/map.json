@@ -285,5 +285,25 @@
         }]
       }]
     ]
+  }, {
+    "name": "include statement in first parameter",
+    "template": {
+      "Fn::Map": [{
+        "Fn::Include": {
+          "type": "json",
+          "location": "includes/mapvariable.json",
+          "query": "keys(@)"
+        }
+      }, {
+        "_": true
+      }]
+    },
+    "output": [{
+      "foo": true
+    }, {
+      "bar": true
+    }, {
+      "baz": true
+    }]
   }]
 }

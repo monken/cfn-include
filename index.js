@@ -33,14 +33,15 @@ function recurse(base, scope, object) {
         placeholder = args[1],
         body = args[args.length - 1];
       if (args.length === 2) placeholder = '_';
-      return Promise.all(list.map(function(replace) {
+      return recurse(base, scope, list).map(function(replace) {
         scope = _.clone(scope);
         scope[placeholder] = replace;
         var replaced = findAndReplace(scope, _.cloneDeep(body));
         return recurse(base, scope, replaced);
-      }));
+      });
     } else if (object["Fn::Include"]) {
       return include(base, scope, object["Fn::Include"]).then(function(json) {
+        if(_.isArray(json)) return json;
         delete object["Fn::Include"];
         _.defaults(object, json);
         return object;
