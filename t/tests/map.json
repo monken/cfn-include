@@ -290,7 +290,6 @@
     "template": {
       "Fn::Map": [{
         "Fn::Include": {
-          "type": "json",
           "location": "includes/mapvariable.json",
           "query": "keys(@)"
         }
