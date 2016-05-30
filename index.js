@@ -89,9 +89,9 @@ function findAndReplace(scope, object) {
 }
 
 function include(base, scope, args) {
-  args = _.defaults({ type: 'json' }, _.isPlainObject(args) ? args : {
+  args = _.defaults(_.isPlainObject(args) ? args : {
     location: args,
-  });
+  }, { type: 'json' });
   var body, absolute, location = parseLocation(args.location);
   if (!location.protocol) location.protocol = base.protocol;
   if (location.protocol === 'file') {
