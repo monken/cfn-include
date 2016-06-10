@@ -85,6 +85,21 @@
       "output": {
         "c": "d"
       }
+    },
+    {
+      "name": "complex include literal value with query",
+      "template": {
+        "foo": {
+          "Fn::Include": {
+            "location": "includes/complex.json",
+            "type": "json",
+            "query": "bar.baz"
+          }
+        }
+      },
+      "output": {
+        "foo": "foobar"
+      }
     }
   ]
 }
