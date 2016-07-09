@@ -41,7 +41,7 @@ function recurse(base, scope, object) {
       });
     } else if (object["Fn::Include"]) {
       return include(base, scope, object["Fn::Include"]).then(function(json) {
-        if(_.isArray(json)) return json;
+        if(!_.isPlainObject(json)) return json;
         delete object["Fn::Include"];
         _.defaults(object, json);
         return object;
