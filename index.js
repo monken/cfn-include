@@ -129,6 +129,9 @@ function include(base, scope, args) {
         scope: scope,
       }).return(template);
     });
+  } else if (args.type === 'api') {
+    var handler = require('./lib/include/api');
+    return handler(args);
   } else if (args.type === 'literal') {
     return body.then(function(template) {
       var lines = JSONifyString(template);
@@ -180,6 +183,7 @@ function JSONifyString(string) {
 }
 
 function parseLocation(location) {
+  if(!location) return {};
   var parsed = location.match(/^(((\w+):)?\/\/)?(.*?)([\\\/](.*))?$/);
   return {
     protocol: parsed[3],

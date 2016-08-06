@@ -1,0 +1,14 @@
+{
+    "api": [{
+        "name": "simple load",
+        "template": {
+            "Fn::Include": {
+                "type": "api",
+                "service": "EC2",
+                "action": "describeRegions",
+                "query": ""
+            }
+        },
+        "output": {}
+    }]
+}

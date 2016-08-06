@@ -1,0 +1,11 @@
+{
+  "Fn::Include": {
+    "type": "api",
+    "service": "CloudFormation",
+    "action": "describeStack",
+    "parameters": {
+      "StackName": "foobar",
+    },
+    "query": ""
+  }
+}
