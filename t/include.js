@@ -5,7 +5,7 @@ var include = require('../index'),
 var tests = ['location', 'literal', 'map', 'flatten', 'jmespath', 'merge'];
 if(process.env['TEST_S3']) tests.push('s3');
 
-//var tests = ['map'];
+var tests = ['api'];
 
 tests.forEach(function(file) {
   var tests = require('./tests/' + file + '.json');
@@ -19,7 +19,7 @@ tests.forEach(function(file) {
           }).then(function(json) {
             assert.deepEqual(json, test.output);
             done();
-          });
+          }).catch(done);
         });
       });
     });
