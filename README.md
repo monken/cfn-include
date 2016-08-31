@@ -229,8 +229,8 @@ Include an AWS API response, e.g. loop through all regions and return the image 
             "query": "Images[*].ImageId | [0]",
             "parameters": {
               "Filters": [{
-                "Name": 'manifest-location',
-                "Values": ['amazon/amzn-ami-hvm-2016.03.3.x86_64-gp2'],
+                "Name": "manifest-location",
+                "Values": ["amazon/amzn-ami-hvm-2016.03.3.x86_64-gp2"],
               }]
 } } } } } ] } }
 ```
@@ -241,6 +241,7 @@ Include an AWS API response, e.g. loop through all regions and return the image 
   "ap-southeast-1": { "AMI": "ami-a59b49c6" },
   ...
 }
+```
 
 ## Fn::Map
 
