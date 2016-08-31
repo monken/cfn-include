@@ -9,6 +9,7 @@ var _ = require('lodash'),
   s3 = new AWS.S3(),
   jsonlint = require('jsonlint'),
   jsmin = require('jsmin').jsmin,
+  yaml = require('js-yaml'),
   jmespath = require('jmespath');
 
 
@@ -119,7 +120,9 @@ function include(base, scope, args) {
     }).get('body').call('toString');
   }
   if (args.type === 'json') {
-    return body.then(jsmin).then(jsonlint.parse).then(function(template) {
+    return body.then(yaml.safeLoad).catch(function(res) {
+      return body.then(jsmin).then(JSON.parse);
+    }).then(function(template) {
       if (args.query) {
         template = jmespath.search(template, args.query);
       }
