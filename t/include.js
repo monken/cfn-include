@@ -5,7 +5,7 @@ var include = require('../index'),
 var tests = ['location.json', 'literal.json', 'map.json', 'flatten.json', 'jmespath.json', 'merge.json'];
 if(process.env['TEST_AWS']) tests.push('s3.json', 'api.js');
 
-var tests = ['api.js'];
+//var tests = ['api.js'];
 
 tests.forEach(function(file) {
   var tests = require('./tests/' + file);
