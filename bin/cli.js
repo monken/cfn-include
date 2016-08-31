@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var _ = require('lodash'),
+  yaml = require('js-yaml'),
   exec = require('child_process').execSync,
   package = require('../package.json'),
   opts = require('nomnom').script('cfn-include').options({
@@ -20,6 +21,12 @@ var _ = require('lodash'),
       default: false,
       flag: true,
       abbr: 't',
+    },
+    yaml: {
+      help: 'output yaml instead of json',
+      default: false,
+      flag: true,
+      abbr: 'y',
     },
     version: {
       flag: true,
@@ -64,8 +71,8 @@ include({
       TemplateBody: JSON.stringify(template),
     });
   }
-  promise.then(function(res) {
-    console.log(JSON.stringify(template, null, opts.minimize ? null : 2));
+  return promise.then(function(res) {
+    console.log(opts.yaml ? yaml.safeDump(template) : JSON.stringify(template, null, opts.minimize ? null : 2));
   }, function(err) {
     console.error('Validation failed:', err.message);
     process.exit(1);

@@ -3,7 +3,7 @@
 # cfn-include
 
 `cfn-include` is a preprocessor for CloudFormation templates which extends CloudFormation's [intrinsic functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html).
-For example, [`Fn::Include`](#fninclude) provides a convenient way to include files, which can be local, a URL or on an S3 bucket (with proper IAM authentication if necessary).
+For example, [`Fn::Include`](#fninclude) provides a convenient way to include files, which can be local, a URL or on an S3 bucket (with proper IAM authentication if necessary). It supports both JSON and YAML as input format.
 
 `cfn-include` tries to be minimally invasive, meaning that the template will still look and feel like an ordinary CloudFormation template. This is what sets `cfn-include` apart from other CloudFormation preprocessors such as [CFNDSL](https://github.com/stevenjack/cfndsl), [StackFormation](https://github.com/AOEpeople/StackFormation) and [AWSBoxen](https://github.com/mozilla/awsboxen). There is no need to use a scripting language or adjust to new syntax. Check them out though, they might be a better fit for you.
 
@@ -41,6 +41,7 @@ Options:
 
 * `-m, --minimize`   minimize JSON output  [false]
 * `-t, --validate`   validate compiled template  [false]
+* `-y, --yaml`       output yaml instead of json  [false]
 * `--version`        print version and exit
 
 ### Web Service
