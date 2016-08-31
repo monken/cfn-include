@@ -93,7 +93,7 @@ function include(base, scope, args) {
     location: args,
   }, { type: 'json' });
   var body, absolute, location = parseLocation(args.location);
-  if (!location.protocol) location.protocol = base.protocol;
+  if (!_.isEmpty(location) && !location.protocol) location.protocol = base.protocol;
   if (location.protocol === 'file') {
     absolute = location.relative ? path.join(path.dirname(base.path), location.host, location.path || '') : [location.host, location.path].join('');
     body = readFile(absolute).call('toString');
@@ -108,7 +108,7 @@ function include(base, scope, args) {
       Bucket: bucket,
       Key: key,
     }).get('Body').call('toString');
-  } else if (location.protocol.match(/^https?$/)) {
+  } else if (location.protocol && location.protocol.match(/^https?$/)) {
     var basepath = pathParse(base.path).dir + '/';
     absolute = location.relative ? url.resolve(location.protocol + '://' + base.host + basepath, location.raw) : location.raw;
     body = request({

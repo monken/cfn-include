@@ -3,7 +3,7 @@ var include = require('../index'),
   fs = require('fs');
 
 var tests = ['location.json', 'literal.json', 'map.json', 'flatten.json', 'jmespath.json', 'merge.json'];
-if(process.env['TEST_S3']) tests.push('s3.json');
+if(process.env['TEST_AWS']) tests.push('s3.json', 'api.js');
 
 var tests = ['api.js'];
 

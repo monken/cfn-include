@@ -4,7 +4,7 @@
   "description": "Include statement for CloudFormation templates",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --timeout 10000 --bail t/"
+    "test": "mocha --timeout 20000 --bail t/include.js"
   },
   "bin": {
     "cfn-include": "bin/cli.js"

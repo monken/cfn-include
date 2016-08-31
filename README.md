@@ -154,9 +154,16 @@ The output will be something like this:
 Place `Fn::Include` anywhere in the template and it will be replaced by the contents it is referring to. The function accepts an object. Parameters are:
 
 * **location**: The location to the file can be relative or absolute. A relative location is interpreted relative to the template. Included files can in turn include more files, i.e. recursion is supported.
-* **type** (optional): either `json` or `literal`. Defaults to `json`. `literal` will include the file literally, i.e. transforming the content into JSON using the infamous `Fn::Join` syntax.
+* **type** (optional): either `json`, `literal` or `api`. Defaults to `json`. `literal` will include the file literally, i.e. transforming the content into JSON using the infamous `Fn::Join` syntax. `api` will call any AWS API and return the response which can be included in the template.
 * **context** (optional): If `type` is `literal` a context object with variables can be provided. The object can contain plain values or references to parameters or resources in the CloudFormation template (e.g. `{ "Ref": "StackId" }`). Use Mustache like syntax in the file.
 * **query** (optional): If `type` is `json` a [JMESPath](http://jmespath.org/) query can be provided. The file to include is then queried using the value as a JMESPath expression.
+
+Only applicable if **type** is `api`:
+
+* **service**: Service to call (see [AWSJavaScriptSDK](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html), case sensitive, e.g. `EC2`, `CloudFormation`)
+* **action**: Action to call (case sensitive, e.g. `updateStack`, `describeRegions`)
+* **parameters** (optional): Parameters passed to **action** (e.g. `{ StackName:  "MyStack" }`)
+* **region** (optional): Either `AWS_DEFAULT_REGION` or this parameter have to be set which specifies the region where the API call is made.
 
 You can also use a plain string if you want the default behavior, which is simply including a JSON file.
 
@@ -200,6 +207,40 @@ Include a file literally
   }
 }
 ```
+
+Include an AWS API response, e.g. loop through all regions and return the image id of a specific AMI:
+
+```json
+{ "Fn::Merge": {
+    "Fn::Map": [{
+      "Fn::Include": {
+        "type": "api",
+        "service": "EC2",
+        "action": "describeRegions",
+        "query": "Regions[*].RegionName[]"
+    } }, {
+      "_": {
+        "AMI": {
+          "Fn::Include": {
+            "type": "api",
+            "service": "EC2",
+            "action": "describeImages",
+            "region": "_",
+            "query": "Images[*].ImageId | [0]",
+            "parameters": {
+              "Filters": [{
+                "Name": 'manifest-location',
+                "Values": ['amazon/amzn-ami-hvm-2016.03.3.x86_64-gp2'],
+              }]
+} } } } } ] } }
+```
+
+```
+{ "ap-south-1": { "AMI": "ami-ffbdd790" },
+  "eu-west-1": {"AMI": "ami-f9dd458a" },
+  "ap-southeast-1": { "AMI": "ami-a59b49c6" },
+  ...
+}
 
 ## Fn::Map
 
