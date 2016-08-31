@@ -235,7 +235,7 @@ Include an AWS API response, e.g. loop through all regions and return the image 
 } } } } } ] } }
 ```
 
-```
+```json
 { "ap-south-1": { "AMI": "ami-ffbdd790" },
   "eu-west-1": {"AMI": "ami-f9dd458a" },
   "ap-southeast-1": { "AMI": "ami-a59b49c6" },
