@@ -120,8 +120,12 @@ function include(base, scope, args) {
     }).get('body').call('toString');
   }
   if (args.type === 'json') {
-    return body.then(yaml.safeLoad).catch(function(res) {
-      return body.then(jsmin).then(JSON.parse);
+    return body.then(yaml.safeLoad).catch(function(yamlErr) {
+      return body.then(jsmin).then(JSON.parse).catch(function(jsonErr) {
+       var err = new Error([yamlErr, jsonErr]);
+       err.name = 'SyntaxError';
+       throw err;
+      });
     }).then(function(template) {
       if (args.query) {
         template = jmespath.search(template, args.query);

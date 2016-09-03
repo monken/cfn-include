@@ -2,10 +2,10 @@ var include = require('../index'),
   assert = require('assert'),
   fs = require('fs');
 
-var tests = ['location.json', 'literal.json', 'map.json', 'flatten.json', 'jmespath.json', 'merge.json'];
+var tests = ['location.json', 'literal.json', 'map.json', 'flatten.json', 'jmespath.json', 'merge.json', 'errors.js'];
 if(process.env['TEST_AWS']) tests.push('s3.json', 'api.js');
 
-//var tests = ['api.js'];
+//var tests = ['errors.js'];
 
 tests.forEach(function(file) {
   var tests = require('./tests/' + file);
@@ -19,7 +19,10 @@ tests.forEach(function(file) {
           }).then(function(json) {
             typeof(test.output) === 'function' ? assert.ok(test.output(json) === true) : assert.deepEqual(json, test.output);
             done();
-          }).catch(done);
+          }).catch(test.catch ? function(err) {
+              assert.ok(test.catch(err) === true);
+              done();
+          } : done);
         });
       });
     });
