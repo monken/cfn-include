@@ -1,6 +1,6 @@
 {
   "name": "cfn-include",
-  "version": "0.6.4",
+  "version": "0.7.0",
   "description": "Include statement for CloudFormation templates",
   "main": "index.js",
   "scripts": {
