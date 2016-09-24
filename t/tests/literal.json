@@ -67,6 +67,16 @@
       ]]
     }
   }, {
+    "name": "single line with Fn::Sub",
+    "template": {
+      "Fn::Sub": {
+      "Fn::Include": "includes/literalsub.txt"
+      }
+    },
+    "output": {
+      "Fn::Sub": "cfn-signal ${AWS::StackId} foobar"
+    }
+  }, {
     "name": "more refs in context",
     "template": {
       "Fn::Include": {
