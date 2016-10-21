@@ -12,7 +12,8 @@
   "files": [
     "index.js",
     "aws-sdk-proxy.js",
-    "bin/"
+    "bin/",
+    "lib/"
   ],
   "repository": {
     "type": "git",
