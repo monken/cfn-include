@@ -1,0 +1,14 @@
+{
+  "yaml": [{
+    "name": "tags",
+    "template": {
+      "Fn::Include": "includes/yaml/fnsub.yml"
+    },
+    "output": {
+      "Fn::Join": ["", ["#!/bin/bash\n",
+        "\n",
+        "cfn-signal {{stack}} foobar"
+      ]]
+    }
+  }]
+}
