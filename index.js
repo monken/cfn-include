@@ -10,6 +10,7 @@ var _ = require('lodash'),
   jsonlint = require('jsonlint'),
   jsmin = require('jsmin').jsmin,
   yaml = require('js-yaml'),
+  yamlSchema = require('./lib/schema'),
   jmespath = require('jmespath');
   parseLocation = require('./lib/parselocation');
 
@@ -122,7 +123,7 @@ function include(base, scope, args) {
   }
   body.catch(bail);
   if (args.type === 'json') {
-    return body.then(yaml.safeLoad).catch(function(yamlErr) {
+    return body.then(function(res) { return yaml.safeLoad(res, { schema: yamlSchema }) }).catch(function(yamlErr) {
       return body.then(jsmin).then(JSON.parse).catch(function(jsonErr) {
        var err = new Error([yamlErr, jsonErr]);
        err.name = 'SyntaxError';
