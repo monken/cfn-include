@@ -1,0 +1,14 @@
+---
+  AWSTemplateFormatVersion: "2010-09-09"
+  Mappings:
+    Region2AMI:
+      !Include https://api.netcubed.de/latest/ami/lookup?architecture=HVM64
+  Resources:
+    Instance:
+      Type: AWS::EC2::Instance
+      Properties:
+        ImageId: !FindInMap [Region2AMI, !Ref AWS::Region, AMI]
+        UserData:
+          Fn::Base64:
+            Fn::Sub:
+              !Include { type: literal, location: userdata.sh }

@@ -5,10 +5,15 @@
       "Fn::Include": "includes/yaml/fnsub.yml"
     },
     "output": {
-      "Fn::Join": ["", ["#!/bin/bash\n",
-        "\n",
-        "cfn-signal {{stack}} foobar"
-      ]]
+      "Resources": {"Foo":"bar"}
+    }
+  }, {
+    "name": "synopsis",
+    "template": {
+      "Fn::Include": "includes/synopsis.yml"
+    },
+    "output": {
+      "Resources": {"Foo":"bar"}
     }
   }]
 }

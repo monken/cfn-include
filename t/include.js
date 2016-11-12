@@ -17,6 +17,7 @@ tests.forEach(function(file) {
             template: test.template,
             url: 'file://' + __dirname + '/template.json',
           }).then(function(json) {
+            console.log(JSON.stringify(json, null, 2));
             typeof(test.output) === 'function' ? assert.ok(test.output(json) === true) : assert.deepEqual(json, test.output);
             done();
           }).catch(test.catch ? function(err) {
