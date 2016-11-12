@@ -64,7 +64,7 @@ include({
     }
   });
   if (opts.validate) {
-    var cfn = new(require('../aws-sdk-proxy').CloudFormation)({
+    var cfn = new(require('aws-sdk-proxy').CloudFormation)({
       region: 'us-east-1'
     });
     promise = Promise.promisify(cfn.validateTemplate).call(cfn, {
