@@ -11,6 +11,7 @@ var _ = require('lodash'),
   jsmin = require('jsmin').jsmin,
   yaml = require('js-yaml'),
   jmespath = require('jmespath');
+  parseLocation = require('./lib/parselocation');
 
 
 module.exports = function(options) {
@@ -119,6 +120,7 @@ function include(base, scope, args) {
       strictSSL: true,
     }).get('body').call('toString');
   }
+  body.catch(bail);
   if (args.type === 'json') {
     return body.then(yaml.safeLoad).catch(function(yamlErr) {
       return body.then(jsmin).then(JSON.parse).catch(function(jsonErr) {
@@ -189,14 +191,7 @@ function JSONifyString(string) {
   return lines;
 }
 
-function parseLocation(location) {
-  if(!location) return {};
-  var parsed = location.match(/^(((\w+):)?\/\/)?(.*?)([\\\/](.*))?$/);
-  return {
-    protocol: parsed[3],
-    host: parsed[4],
-    path: parsed[5],
-    relative: _.isUndefined(parsed[1]) ? true : false,
-    raw: location,
-  };
+function bail(err) {
+  console.error(err.toString());
+  process.exit(1);
 }
