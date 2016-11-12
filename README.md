@@ -3,7 +3,7 @@
 # cfn-include
 
 `cfn-include` is a preprocessor for CloudFormation templates which extends CloudFormation's [intrinsic functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html).
-For example, [`Fn::Include`](#fninclude) provides a convenient way to include files, which can be local, a URL or on an S3 bucket (with proper IAM authentication if necessary). It supports both JSON and YAML as input format.
+For example, [`Fn::Include`](#fninclude) provides a convenient way to include files, which can be local, a URL or on an S3 bucket (with proper IAM authentication if necessary). It supports both JSON and YAML as input and output format. CloudFormation's tag syntax for YAML (e.g. `!GetAtt`) is supported as well.
 
 `cfn-include` tries to be minimally invasive, meaning that the template will still look and feel like an ordinary CloudFormation template. This is what sets `cfn-include` apart from other CloudFormation preprocessors such as [CFNDSL](https://github.com/stevenjack/cfndsl), [StackFormation](https://github.com/AOEpeople/StackFormation) and [AWSBoxen](https://github.com/mozilla/awsboxen). There is no need to use a scripting language or adjust to new syntax. Check them out though, they might be a better fit for you.
 
@@ -12,6 +12,8 @@ For example, [`Fn::Include`](#fninclude) provides a convenient way to include fi
 * [`Fn::Flatten`](#fnflatten)
 * [`Fn::Map`](#fnmap)
 * [`Fn::Merge`](#fnmerge)
+
+Tag-based syntax is available in YAML templates. For example,`Fn::Include` becomes `!Include`.
 
 ## Installation
 
@@ -72,7 +74,7 @@ Options are query parameters.
     Instance:
       Type: AWS::EC2::Instance
       Properties:
-        ImageId: !FindInMap [Region2AMI, !Ref AWS::Region, AMI]
+        ImageId: !FindInMap [ Region2AMI, !Ref AWS::Region, AMI ]
         UserData:
           Fn::Base64:
             Fn::Sub:
@@ -101,19 +103,8 @@ Options are query parameters.
             "Fn::Sub": {
               "Fn::Include": {
                 "type": "literal",
-                "location": "userdata.sh",
-                "context": {
-                  "stack": { "Ref": "AWS::StackName" },
-                  "region": { "Ref": "AWS::Region" }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
+                "location": "userdata.sh"
+} } } } } } } }
 ```
 
 This is what the `userdata.sh` looks like:
@@ -156,11 +147,8 @@ The output will be something like this:
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "ImageId": {
-          "Fn::FindInMap": [
-            "Region2AMI",
-            { "Ref": "AWS::Region" },
-            "AMI"
-        ] },
+          "FindInMap": [ "Region2AMI", { "Ref": "AWS::Region" }, "AMI" ]
+        },
         "UserData": {
           "Fn::Base64": {
             "Fn::Sub": {
@@ -176,7 +164,7 @@ The output will be something like this:
 Place `Fn::Include` anywhere in the template and it will be replaced by the contents it is referring to. The function accepts an object. Parameters are:
 
 * **location**: The location to the file can be relative or absolute. A relative location is interpreted relative to the template. Included files can in turn include more files, i.e. recursion is supported.
-* **type** (optional): either `json`, `literal` or `api`. Defaults to `json`. `literal` will include the file literally, i.e. transforming the content into JSON using the infamous `Fn::Join` syntax. `api` will call any AWS API and return the response which can be included in the template.
+* **type** (optional): either `json`, `literal` or `api`. Defaults to `json`. `literal` will include the file literally, i.e. transforming the content into JSON using the infamous `Fn::Join` syntax. `api` will call any AWS API and return the response which can be included in the template. Choose `json` for both JSON and YAML files.
 * **context** (optional): If `type` is `literal` a context object with variables can be provided. The object can contain plain values or references to parameters or resources in the CloudFormation template (e.g. `{ "Ref": "StackId" }`). Use Mustache like syntax in the file.
 * **query** (optional): If `type` is `json` a [JMESPath](http://jmespath.org/) query can be provided. The file to include is then queried using the value as a JMESPath expression.
 
