@@ -2,10 +2,19 @@ var include = require('../index'),
   assert = require('assert'),
   fs = require('fs');
 
-var tests = ['location.json', 'literal.json', 'map.json', 'flatten.json', 'jmespath.json', 'merge.json', 'errors.js'];
+var tests = [
+  'location.json',
+  'literal.json',
+  'map.json',
+  'flatten.json',
+  'jmespath.json',
+  'merge.json',
+  'errors.js',
+  'yaml.js',
+];
 if(process.env['TEST_AWS']) tests.push('s3.json', 'api.js');
 
-var tests = ['yaml.json'];
+//var tests = ['yaml.js'];
 
 tests.forEach(function(file) {
   var tests = require('./tests/' + file);
@@ -17,7 +26,6 @@ tests.forEach(function(file) {
             template: test.template,
             url: 'file://' + __dirname + '/template.json',
           }).then(function(json) {
-            console.log(JSON.stringify(json, null, 2));
             typeof(test.output) === 'function' ? assert.ok(test.output(json) === true) : assert.deepEqual(json, test.output);
             done();
           }).catch(test.catch ? function(err) {
