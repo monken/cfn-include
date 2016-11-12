@@ -39,7 +39,7 @@
     "aws-sdk-proxy": "^1.0.0",
     "bluebird": "^3.0.5",
     "jmespath": "0.14.1",
-    "js-yaml": "^3.6.1",
+    "js-yaml": "^3.7.0",
     "jsmin": "1.0.1",
     "jsonlint": "^1.6.2",
     "lodash": "^4",
