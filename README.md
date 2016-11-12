@@ -60,8 +60,28 @@ Options are query parameters.
 
 ### Example
 
+**YAML**
+
+```yaml
+---
+  AWSTemplateFormatVersion: "2010-09-09"
+  Mappings:
+    Region2AMI:
+      !Include https://api.netcubed.de/latest/ami/lookup?architecture=HVM64
+  Resources:
+    Instance:
+      Type: AWS::EC2::Instance
+      Properties:
+        ImageId: !FindInMap [Region2AMI, !Ref AWS::Region, AMI]
+        UserData:
+          Fn::Base64:
+            Fn::Sub:
+              !Include { type: literal, location: userdata.sh }
+```
+
+**JSON**
+
 ```javascript
-// synopsis.json
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
   "Mappings": {
@@ -74,13 +94,18 @@ Options are query parameters.
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "UserData": {
+          "ImageId": {
+            "FindInMap": [ "Region2AMI", { "Ref": "AWS::Region" }, "AMI" ]
+          },
           "Fn::Base64": {
-            "Fn::Include": {
-              "type": "literal",
-              "location": "userdata.txt",
-              "context": {
-                "stack": { "Ref": "AWS::StackName" },
-                "region": { "Ref": "AWS::Region" }
+            "Fn::Sub": {
+              "Fn::Include": {
+                "type": "literal",
+                "location": "userdata.sh",
+                "context": {
+                  "stack": { "Ref": "AWS::StackName" },
+                  "region": { "Ref": "AWS::Region" }
+                }
               }
             }
           }
@@ -91,10 +116,10 @@ Options are query parameters.
 }
 ```
 
-This is what the `userdata.txt` looks like:
+This is what the `userdata.sh` looks like:
 ```bash
 #!/bin/bash
-"/opt/aws/bin/cfn-init -s {{stack}} -r MyInstance --region {{region}}
+/opt/aws/bin/cfn-init -s ${AWS::StackId} -r MyInstance --region ${AWS::Region}
 ```
 
 ```bash
@@ -117,37 +142,33 @@ The output will be something like this:
   "Mappings": {
     "Region2AMI": {
       "Metadata": {
-        "Name": "amzn-ami-hvm-2015.09.2.x86_64-gp2",
+        "Name": "amzn-ami-hvm-2016.09.0.20161028-x86_64-gp2",
         "Owner": "amazon",
-        "CreationDate": "2016-02-10T23:44:07.000Z"
+        "CreationDate": "2016-10-29T00:49:47.000Z"
       },
-      "us-east-1": {
-        "AMI": "ami-8fcee4e5"
-      }
-      // and so on
-    }
-  },
+      "us-east-2": {
+        "AMI": "ami-58277d3d"
+      },
+      // ...
+  } },
   "Resources": {
     "Instance": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "Region2AMI",
+            { "Ref": "AWS::Region" },
+            "AMI"
+        ] },
         "UserData": {
           "Fn::Base64": {
-            "Fn::Join": [
-              "",
-              [
-                "#!/bin/bash\n",
-                "\"/opt/aws/bin/cfn-init -s ", { "Ref": "AWS::StackName" },
-                " -r MyInstance",
-                " --region ", { "Ref": "AWS::Region" }, "\n"
-              ]
-            ]
-          }
-        }
-      }
-    }
-  }
-}
+            "Fn::Sub": {
+              "Fn::Join": ["", [
+                  "#!/bin/bash\n",
+                  "\"/opt/aws/bin/cfn-init -s ${AWS::StackId} -r MyInstance --region ${AWS::Region}\n",
+                  ""
+] ] } } } } } } }
 ```
 
 ##  Fn::Include
