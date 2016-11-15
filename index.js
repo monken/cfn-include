@@ -121,7 +121,7 @@ function include(base, scope, args) {
       strictSSL: true,
     }).get('body').call('toString');
   }
-  body.catch(bail);
+  if(body) body.catch(bail);
   if (args.type === 'json') {
     return body.then(function(res) { return yaml.safeLoad(res, { schema: yamlSchema }) }).catch(function(yamlErr) {
       return body.then(jsmin).then(JSON.parse).catch(function(jsonErr) {
