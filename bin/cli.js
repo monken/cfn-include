@@ -32,7 +32,8 @@ var _ = require('lodash'),
       flag: true,
       help: 'print version and exit',
       callback: function() {
-        return package.version;
+        console.log(package.version);
+        process.exit(0);
       }
     },
   }).parse(),
