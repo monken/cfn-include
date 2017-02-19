@@ -67,6 +67,11 @@ module.exports = {
         sequence: {
           "Fn::Sub": ["foobar", { test: 123 }]
         }
+      },
+      Split: {
+        sequence: {
+          "Fn::Split": ["", "foo bar"]
+        }
       }
     }
   }]

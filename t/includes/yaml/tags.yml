@@ -1,3 +1,5 @@
 Sub:
   scalar: !Sub ${Foobar}
   sequence: !Sub [foobar, { test: 123 }]
+Split:
+  sequence: !Split ['', 'foo bar']
