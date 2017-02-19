@@ -54,5 +54,20 @@ module.exports = {
       assert.deepEqual(res, synopsis);
       return true;
     }
+  }, {
+    "name": "yaml tags",
+    "template": {
+      "Fn::Include": "includes/yaml/tags.yml"
+    },
+    "output": {
+      Sub: {
+        scalar: {
+          "Fn::Sub": "${Foobar}"
+        },
+        sequence: {
+          "Fn::Sub": ["foobar", { test: 123 }]
+        }
+      }
+    }
   }]
 }
