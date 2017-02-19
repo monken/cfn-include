@@ -72,6 +72,20 @@ module.exports = {
         sequence: {
           "Fn::Split": ["", "foo bar"]
         }
+      },
+      GetAtt: {
+        sequence: {
+          "Fn::GetAtt": ["Foo", "Bar"]
+        },
+        scalar: {
+          "Fn::GetAtt": ["Foo", "Bar"]
+        },
+        scalarDeep: {
+          "Fn::GetAtt": ["Foo", "Bar.Baz"]
+        },
+        scalarSingle: {
+          "Fn::GetAtt": ["Foobar"]
+        }
       }
     }
   }]

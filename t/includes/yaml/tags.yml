@@ -3,3 +3,8 @@ Sub:
   sequence: !Sub [foobar, { test: 123 }]
 Split:
   sequence: !Split ['', 'foo bar']
+GetAtt:
+  sequence: !GetAtt [Foo, Bar]
+  scalar: !GetAtt Foo.Bar
+  scalarDeep: !GetAtt Foo.Bar.Baz
+  scalarSingle: !GetAtt Foobar
