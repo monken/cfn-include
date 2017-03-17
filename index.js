@@ -91,6 +91,35 @@ function findAndReplace(scope, object) {
   return object;
 }
 
+function interpolate(lines, context, allowObjects) {
+  return lines.map(function(line) {
+    var parts = [];
+    line.split(/({{\w+?}})/g).map(function(line) {
+      var match = line.match(/^{{(\w+)}}$/),
+        value = match ? context[match[1]] : undefined;
+      if (!match) return line;
+      else if (_.isUndefined(value)) {
+        return ''
+      } else {
+        if (_.isPlainObject(value) && !allowObjects) {
+          throw new Error('refs not allowed in strings');
+        }
+        return value;
+      }
+    }).forEach(function(part) {
+      var last = parts[parts.length - 1];
+      if (_.isPlainObject(part) || _.isPlainObject(last) || !parts.length) {
+        parts.push(part);
+      } else if (parts.length) {
+        parts[parts.length - 1] = last + part;
+      }
+    });
+    return parts.filter(function(part) {
+      return part !== '';
+    });
+  });
+}
+
 function include(base, scope, args) {
   args = _.defaults(_.isPlainObject(args) ? args : {
     location: args,
@@ -142,41 +171,25 @@ function include(base, scope, args) {
   } else if (args.type === 'api') {
     var handler = require('./lib/include/api');
     return handler(args);
+  } else if (args.type === 'string') {
+    return body.then(function(template) {
+      var lines = JSONifyString(template);
+      if (_.isPlainObject(args.context)) {
+        lines = interpolate(lines, args.context, false);
+      }
+      return _.flatten(lines).join('');
+    });
   } else if (args.type === 'literal') {
     return body.then(function(template) {
       var lines = JSONifyString(template);
-
       if (_.isPlainObject(args.context)) {
-        lines = lines.map(function(line) {
-          var parts = [];
-          line.split(/({{\w+?}})/g).map(function(line) {
-            var match = line.match(/^{{(\w+)}}$/),
-              value = match ? args.context[match[1]] : undefined;
-            if (!match) return line;
-            else if (_.isUndefined(value)) {
-              return ''
-            } else {
-              return value;
-            }
-          }).forEach(function(part) {
-            var last = parts[parts.length - 1];
-            if (_.isPlainObject(part) || _.isPlainObject(last) || !parts.length) {
-              parts.push(part);
-            } else if (parts.length) {
-              parts[parts.length - 1] = last + part;
-            }
-          });
-          return parts.filter(function(part) {
-            return part !== '';
-          });
-        });
+        lines = interpolate(lines, args.context, true);
       }
       return {
         "Fn::Join": ["", _.flatten(lines)]
       };
     });
   }
-
 }
 
 function JSONifyString(string) {
