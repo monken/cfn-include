@@ -160,7 +160,7 @@ function include(base, scope, args) {
         template = jmespath.search(template, args.query);
       }
       return module.exports({
-        template: _.isUndefined(template) ? '' : template,
+        template: _.isUndefined(template) ? null : template,
         url: absolute,
         scope: scope,
       }).return(template);
