@@ -104,6 +104,16 @@
         }
       }
     }
+  }, {
+    "name": "include empty file",
+    "template": {
+      "Mappings": {
+        "Fn::Include": "includes/empty.txt"
+      }
+    },
+    "output": {
+      "Mappings": null
+    }
   }],
   "http": [{
     "template": {

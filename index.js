@@ -20,7 +20,7 @@ module.exports = function(options) {
     base = parseLocation(options.url),
     scope = options.scope || {};
   if (base.relative) throw "url cannot be relative";
-  template = template || include(base, scope, options.url);
+  template = _.isUndefined(template) ? include(base, scope, options.url) : template;
   return Promise.resolve(template).then(function(template) {
     return recurse(base, scope, template);
   });
@@ -160,7 +160,7 @@ function include(base, scope, args) {
         template = jmespath.search(template, args.query);
       }
       return module.exports({
-        template: template,
+        template: _.isUndefined(template) ? '' : template,
         url: absolute,
         scope: scope,
       }).return(template);
