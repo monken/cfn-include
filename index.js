@@ -91,7 +91,7 @@ function findAndReplace(scope, object) {
   return object;
 }
 
-function interpolate(lines, context, allowObjects) {
+function interpolate(lines, context) {
   return lines.map(function(line) {
     var parts = [];
     line.split(/({{\w+?}})/g).map(function(line) {
@@ -101,9 +101,6 @@ function interpolate(lines, context, allowObjects) {
       else if (_.isUndefined(value)) {
         return ''
       } else {
-        if (_.isPlainObject(value) && !allowObjects) {
-          throw new Error('refs not allowed in strings');
-        }
         return value;
       }
     }).forEach(function(part) {
@@ -172,21 +169,15 @@ function include(base, scope, args) {
     var handler = require('./lib/include/api');
     return handler(args);
   } else if (args.type === 'string') {
-    return body.then(function(template) {
-      var lines = JSONifyString(template);
-      if (_.isPlainObject(args.context)) {
-        lines = interpolate(lines, args.context, false);
-      }
-      return _.flatten(lines).join('');
-    });
+    return body;
   } else if (args.type === 'literal') {
     return body.then(function(template) {
       var lines = JSONifyString(template);
       if (_.isPlainObject(args.context)) {
-        lines = interpolate(lines, args.context, true);
+        lines = interpolate(lines, args.context);
       }
       return {
-        "Fn::Join": ["", _.flatten(lines)]
+        'Fn::Join': ['', _.flatten(lines)]
       };
     });
   }

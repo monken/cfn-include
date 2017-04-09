@@ -17,7 +17,7 @@
         "context": {}
       }
     },
-    "output": "#!/bin/bash\n\ncfn-signal  foobar"
+    "output": "#!/bin/bash\n\ncfn-signal {{stack}} foobar"
   }, {
     "name": "with context",
     "template": {
@@ -29,7 +29,7 @@
         }
       }
     },
-    "output": "#!/bin/bash\n\ncfn-signal StackID foobar"
+    "output": "#!/bin/bash\n\ncfn-signal {{stack}} foobar"
   }, {
     "name": "single line with Fn::Sub",
     "template": {

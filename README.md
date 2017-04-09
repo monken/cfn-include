@@ -78,7 +78,7 @@ Options are query parameters.
         UserData:
           Fn::Base64:
             Fn::Sub:
-              !Include { type: literal, location: userdata.sh }
+              !Include { type: string, location: userdata.sh }
 ```
 
 **JSON**
@@ -102,7 +102,7 @@ Options are query parameters.
           "Fn::Base64": {
             "Fn::Sub": {
               "Fn::Include": {
-                "type": "literal",
+                "type": "string",
                 "location": "userdata.sh"
 } } } } } } } }
 ```
@@ -164,8 +164,8 @@ The output will be something like this:
 Place `Fn::Include` anywhere in the template and it will be replaced by the contents it is referring to. The function accepts an object. Parameters are:
 
 * **location**: The location to the file can be relative or absolute. A relative location is interpreted relative to the template. Included files can in turn include more files, i.e. recursion is supported.
-* **type** (optional): either `json`, `literal` or `api`. Defaults to `json`. `literal` will include the file literally, i.e. transforming the content into JSON using the infamous `Fn::Join` syntax. `api` will call any AWS API and return the response which can be included in the template. Choose `json` for both JSON and YAML files.
-* **context** (optional): If `type` is `literal` a context object with variables can be provided. The object can contain plain values or references to parameters or resources in the CloudFormation template (e.g. `{ "Ref": "StackId" }`). Use Mustache like syntax in the file.
+* **type** (optional): either `json`, `string` or `api`. Defaults to `json`. `string` will include the file literally which is useful in combination with `Fn::Sub`. `api` will call any AWS API and return the response which can be included in the template. Choose `json` for both JSON and YAML files. The `literal` type is deprecated and uses the infamous `Fn::Join` syntax.
+* **context** (optional, deprecated): If `type` is `literal` a context object with variables can be provided. The object can contain plain values or references to parameters or resources in the CloudFormation template (e.g. `{ "Ref": "StackId" }`). Use Mustache like syntax in the file. This option is deprecated in favor of the `Fn::Sub` syntax (see examples below).
 * **query** (optional): If `type` is `json` a [JMESPath](http://jmespath.org/) query can be provided. The file to include is then queried using the value as a JMESPath expression.
 
 Only applicable if **type** is `api`:
@@ -208,14 +208,11 @@ Include a file in the same folder
 Include a file literally
 
 ```json
-{ "Fn::Include": {
-    "type": "literal",
-    "location": "https://example.com/userdata.txt",
-    "context": {
-      "stack": { "Ref": "AWS::StackId" }
-    }
-  }
-}
+{ "Fn::Sub": {
+  "Fn::Include": {
+    "type": "string",
+    "location": "https://example.com/userdata.txt"
+} } }
 ```
 
 Include an AWS API response, e.g. loop through all regions and return the image id of a specific AMI:
