@@ -1,0 +1,44 @@
+{
+  "string": [{
+    "name": "no context",
+    "template": {
+      "Fn::Include": {
+        "location": "includes/literal.txt",
+        "type": "string"
+      }
+    },
+    "output": "#!/bin/bash\n\ncfn-signal {{stack}} foobar"
+  }, {
+    "name": "empty context",
+    "template": {
+      "Fn::Include": {
+        "location": "includes/literal.txt",
+        "type": "string",
+        "context": {}
+      }
+    },
+    "output": "#!/bin/bash\n\ncfn-signal  foobar"
+  }, {
+    "name": "with context",
+    "template": {
+      "Fn::Include": {
+        "location": "includes/literal.txt",
+        "type": "string",
+        "context": {
+          "stack": "StackID"
+        }
+      }
+    },
+    "output": "#!/bin/bash\n\ncfn-signal StackID foobar"
+  }, {
+    "name": "single line with Fn::Sub",
+    "template": {
+      "Fn::Sub": {
+        "Fn::Include": "includes/literalsub.txt"
+      }
+    },
+    "output": {
+      "Fn::Sub": "cfn-signal ${AWS::StackId} foobar"
+    }
+  }]
+}

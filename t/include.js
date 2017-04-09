@@ -5,6 +5,7 @@ var include = require('../index'),
 var tests = [
   'location.json',
   'literal.json',
+  'string.json',
   'map.json',
   'flatten.json',
   'jmespath.json',
@@ -29,8 +30,8 @@ tests.forEach(function(file) {
             typeof(test.output) === 'function' ? assert.ok(test.output(json) === true) : assert.deepEqual(json, test.output);
             done();
           }).catch(test.catch ? function(err) {
-              assert.ok(test.catch(err) === true);
-              done();
+            assert.ok(test.catch(err) === true);
+            done();
           } : done);
         });
       });

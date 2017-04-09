@@ -20,5 +20,17 @@ module.exports = {
       "Fn::Include": "includes/broken/commawithcomment.json"
     },
     output: {"foo":"bar", "/* coment": "value */"}
+  }, {
+    name: "ref in string",
+    template: {
+      "Fn::Include": "includes/literal.txt",
+      context: {
+        "Ref": "AWS::StackId"
+      }
+    },
+    output: function() { return true; },
+    catch: function(err) {
+      return err instanceof Error && err.message === 'refs not allowed in strings';
+    }
   }]
 }
