@@ -60,6 +60,8 @@ function recurse(base, scope, object) {
     } else {
       return Promise.props(_.mapValues(object, _.bind(recurse, this, base, scope)))
     }
+  } else if(_.isUndefined(object)) {
+    return null;
   } else {
     return object;
   }
