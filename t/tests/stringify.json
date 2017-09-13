@@ -1,0 +1,33 @@
+{
+  "stringify": [{
+    "name": "basic json",
+    "template": {
+      "Fn::Stringify": {
+        "Fn::Map": [
+          [1, 2, 3], "_"
+        ]
+      }
+    },
+    "output": "[1,2,3]"
+  }, {
+    "name": "array",
+    "template": {
+      "Fn::Stringify": [1,2,3]
+    },
+    "output": "[1,2,3]"
+  }, {
+    "name": "nested includes json",
+    "template": {
+      "Fn::Stringify": {
+        "Fn::Include": "includes/foobar.json"
+      }
+    },
+    "output": "{\"foo\":\"bar\"}"
+  }, {
+    "name": "yaml",
+    "template": {
+      "Fn::Include": "includes/stringify.yml"
+    },
+    "output": { "TemplateBody": "{\"foo\":\"bar\"}" }
+  }]
+}

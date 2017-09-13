@@ -12,6 +12,7 @@ For example, [`Fn::Include`](#fninclude) provides a convenient way to include fi
 * [`Fn::Flatten`](#fnflatten)
 * [`Fn::Map`](#fnmap)
 * [`Fn::Merge`](#fnmerge)
+* [`Fn::Stringify`](#fnstringify)
 
 Tag-based syntax is available in YAML templates. For example,`Fn::Include` becomes `!Include`.
 
@@ -375,6 +376,29 @@ For example, this allows you to merge objects of your template that have been cr
     }
   }
 }
+```
+
+## Fn::Stringify
+
+`Fn::Stringify` will take the passed value and transform it to a JSON string. This is useful for parameters that require a JSON document as a string. Using this function, you can keep writing your configuration in YAML and let the function transform it into a JSON string.
+
+Another useful application is the use of this function in a config file passed as `--cli-input-json` parameter.
+
+```
+# myconfig.yml
+
+StackName: MyStack
+TemplateBody: !Stringify { Fn::Include: mytemplate.yml }
+Parameters:
+  - ParameterKey: Foo
+    ParameterValue: Bar
+```
+
+You can then simply run the following command to deploy a stack:
+
+```
+cfn-include myconfig.yml | jq 'del(.Metadata)' > myconfig.json
+aws cloudformation create-stack --cli-input-json file://myconfig.json
 ```
 
 ## More Examples

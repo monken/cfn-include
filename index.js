@@ -57,6 +57,10 @@ function recurse(base, scope, object) {
       return recurse(base, scope, object["Fn::Merge"]).then(function(json) {
         return _.merge.apply(_, json);
       });
+    } else if (object["Fn::Stringify"]) {
+      return recurse(base, scope, object["Fn::Stringify"]).then(function(json) {
+        return JSON.stringify(json);
+      });
     } else {
       return Promise.props(_.mapValues(object, _.bind(recurse, this, base, scope)))
     }

@@ -12,10 +12,11 @@ var tests = [
   'merge.json',
   'errors.js',
   'yaml.js',
+  'stringify.json',
 ];
 if(process.env['TEST_AWS']) tests.push('s3.json', 'api.js');
 
-//var tests = ['yaml.js'];
+// var tests = [];
 
 tests.forEach(function(file) {
   var tests = require('./tests/' + file);
