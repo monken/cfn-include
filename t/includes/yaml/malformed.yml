@@ -1,0 +1,3 @@
+!Sub
+  - "arn:aws:route53:::hostedzone/${ZoneId}/rrset"
+  - { ZoneId: !If [IsProd, "XYZ" "ZQW" ] }

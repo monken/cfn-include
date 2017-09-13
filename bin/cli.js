@@ -78,4 +78,7 @@ include({
     console.error('Validation failed:', err.message);
     process.exit(1);
   });
+}).catch(function(err) {
+  console.error(err);
+  process.exit(1);
 });

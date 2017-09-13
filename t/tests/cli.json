@@ -37,5 +37,10 @@
         }
       }
     }
+  }, {
+    "name": "malformed yaml",
+    "template": "t/includes/yaml/malformed.yml",
+    "exitCode": 1,
+    "errorMessage": "missed comma"
   }]
 }
