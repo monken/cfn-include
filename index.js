@@ -164,11 +164,7 @@ function include(base, scope, args) {
       if (args.query) {
         template = jmespath.search(template, args.query);
       }
-      return module.exports({
-        template: _.isUndefined(template) ? null : template,
-        url: absolute,
-        scope: scope,
-      }).return(template);
+      return recurse(parseLocation(absolute), scope, template);
     });
   } else if (args.type === 'api') {
     var handler = require('./lib/include/api');
