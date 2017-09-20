@@ -76,6 +76,13 @@
       "foo": "bar"
     }
   }, {
+    "template": {
+      "Fn::Include": "../t/includes/yaml/deep.yml"
+    },
+    "output": {
+      "foo": "bar"
+    }
+  }, {
     "name": "test some comments",
     "template": {
       "Fn::Include": "includes/comment.json"

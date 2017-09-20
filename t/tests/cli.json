@@ -6,6 +6,12 @@
       "foo": "bar"
     }
   }, {
+    "name": "simple load",
+    "template": "t/includes/yaml/deep.yml",
+    "output": {
+      "foo": "bar"
+    }
+  }, {
     "name": "flatten",
     "template": "t/includes/cliflatten.json",
     "output": [{
