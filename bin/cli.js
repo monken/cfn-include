@@ -77,7 +77,7 @@ promise.then(function (template) {
       stdio: [0, 'pipe', 'ignore']
     }).toString().trim();
   } catch (e) { }
-  _.defaultsDeep(template, {
+  if(stdout) _.defaultsDeep(template, {
     Metadata: {
       CfnInclude: {
         GitCommit: stdout,
