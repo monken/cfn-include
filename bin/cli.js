@@ -39,8 +39,7 @@ var _ = require('lodash'),
   }).parse(),
   path = require('path'),
   include = require('../index'),
-  pathParse = require('path-parse'),
-  Promise = require('bluebird');
+  pathParse = require('path-parse');
 
 let promise;
 if (opts.path) {
@@ -71,7 +70,6 @@ if (opts.path) {
 }
 
 promise.then(function (template) {
-  var promise = Promise.resolve();
   try {
     var stdout = exec('git log -n 1 --pretty=%H', {
       stdio: [0, 'pipe', 'ignore']
@@ -89,10 +87,11 @@ promise.then(function (template) {
     var cfn = new (require('aws-sdk-proxy').CloudFormation)({
       region: 'us-east-1'
     });
-    promise = Promise.promisify(cfn.validateTemplate).call(cfn, {
+    return cfn.validateTemplate({
       TemplateBody: JSON.stringify(template),
-    });
-  }
+    }).promise();
+  } else return template;
+}).then(template => {
   return promise.then(function (res) {
     console.log(opts.yaml ? yaml.dump(template) : JSON.stringify(template, null, opts.minimize ? null : 2));
   }, function (err) {
