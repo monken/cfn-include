@@ -42,7 +42,7 @@ var _ = require('lodash'),
   pathParse = require('path-parse'),
   Promise = require('bluebird');
 
-let promise;
+var promise;
 if (opts.path) {
   var location, protocol = opts.path.match(/^\w+:\/\//);
   if (protocol) location = opts.path;
@@ -54,7 +54,7 @@ if (opts.path) {
 } else {
   promise = new Promise((resolve, reject) => {
     process.stdin.setEncoding('utf8');
-    let rawData = [];
+    var rawData = [];
     process.stdin.on('data', chunk => rawData.push(chunk));
     process.stdin.on('error', err => reject(err));
     process.stdin.on('end', () => resolve(rawData.join('')));
