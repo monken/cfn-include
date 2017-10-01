@@ -1,5 +1,17 @@
 {
   "cli": [{
+    "name": "read from stdin",
+    "stdin": "foo: bar",
+    "output": {
+      "foo": "bar"
+    }
+  }, {
+    "name": "stdin with include",
+    "stdin": "foo: !Include t/includes/foobar.json",
+    "output": {
+      "foo": { "foo": "bar" }
+    }
+  }, {
     "name": "simple load",
     "template": "t/includes/deep.json",
     "output": {

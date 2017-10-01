@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
 var _ = require('lodash'),
-  yaml = require('js-yaml'),
+  yaml = require('../lib/yaml'),
   exec = require('child_process').execSync,
   package = require('../package.json'),
   opts = require('nomnom').script('cfn-include').options({
     path: {
       position: 0,
       help: 'location of template. Either path to a local file, URL or file on an S3 bucket (e.g. s3://bucket-name/example.template)',
-      required: true,
+      required: false,
     },
     minimize: {
       help: 'minimize JSON output',
@@ -31,7 +31,7 @@ var _ = require('lodash'),
     version: {
       flag: true,
       help: 'print version and exit',
-      callback: function() {
+      callback: function () {
         console.log(package.version);
         process.exit(0);
       }
@@ -42,20 +42,41 @@ var _ = require('lodash'),
   pathParse = require('path-parse'),
   Promise = require('bluebird');
 
-var location, protocol = opts.path.match(/^\w+:\/\//);
-if (protocol) location = opts.path;
-else if (pathParse(opts.path).root) location = 'file://' + opts.path;
-else location = 'file://' + path.join(process.cwd(), opts.path);
+let promise;
+if (opts.path) {
+  var location, protocol = opts.path.match(/^\w+:\/\//);
+  if (protocol) location = opts.path;
+  else if (pathParse(opts.path).root) location = 'file://' + opts.path;
+  else location = 'file://' + path.join(process.cwd(), opts.path);
+  promise = include({
+    url: location
+  });
+} else {
+  promise = new Promise((resolve, reject) => {
+    process.stdin.setEncoding('utf8');
+    let rawData = [];
+    process.stdin.on('data', chunk => rawData.push(chunk));
+    process.stdin.on('error', err => reject(err));
+    process.stdin.on('end', () => resolve(rawData.join('')));
+  }).then(template => {
+    if (template.length === 0) {
+      console.error('empty template received from stdin');
+      process.exit(1);
+    }
+    return include({
+      template: yaml.load(template),
+      url: 'file://' + path.join(process.cwd(), 'template.yml'),
+    }).catch(err => console.error(err));
+  });
+}
 
-include({
-  url: location
-}).then(function(template) {
+promise.then(function (template) {
   var promise = Promise.resolve();
   try {
     var stdout = exec('git log -n 1 --pretty=%H', {
       stdio: [0, 'pipe', 'ignore']
     }).toString().trim();
-  } catch (e) {}
+  } catch (e) { }
   _.defaultsDeep(template, {
     Metadata: {
       CfnInclude: {
@@ -65,20 +86,20 @@ include({
     }
   });
   if (opts.validate) {
-    var cfn = new(require('aws-sdk-proxy').CloudFormation)({
+    var cfn = new (require('aws-sdk-proxy').CloudFormation)({
       region: 'us-east-1'
     });
     promise = Promise.promisify(cfn.validateTemplate).call(cfn, {
       TemplateBody: JSON.stringify(template),
     });
   }
-  return promise.then(function(res) {
-    console.log(opts.yaml ? yaml.safeDump(template) : JSON.stringify(template, null, opts.minimize ? null : 2));
-  }, function(err) {
+  return promise.then(function (res) {
+    console.log(opts.yaml ? yaml.dump(template) : JSON.stringify(template, null, opts.minimize ? null : 2));
+  }, function (err) {
     console.error('Validation failed:', err.message);
     process.exit(1);
   });
-}).catch(function(err) {
+}).catch(function (err) {
   console.error(err);
   process.exit(1);
 });

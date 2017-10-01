@@ -8,9 +8,7 @@ var _ = require('lodash'),
   AWS = require('aws-sdk-proxy'),
   s3 = new AWS.S3(),
   jsonlint = require('jsonlint'),
-  jsmin = require('jsmin').jsmin,
-  yaml = require('js-yaml'),
-  yamlSchema = require('./lib/schema'),
+  yaml = require('./lib/yaml'),
   jmespath = require('jmespath');
   parseLocation = require('./lib/parselocation');
 
@@ -154,13 +152,7 @@ function include(base, scope, args) {
     }).get('body').call('toString');
   }
   if (args.type === 'json') {
-    return body.then(function(res) { return yaml.safeLoad(res, { schema: yamlSchema }) }).catch(function(yamlErr) {
-      return body.then(jsmin).then(JSON.parse).catch(function(jsonErr) {
-       var err = new Error([yamlErr, jsonErr]);
-       err.name = 'SyntaxError';
-       throw err;
-      });
-    }).then(function(template) {
+    return body.then(yaml.load).then(function(template) {
       if (args.query) {
         template = jmespath.search(template, args.query);
       }
