@@ -43,8 +43,7 @@
     "jsonlint": "^1.6.2",
     "lodash": "^4",
     "nomnom": "^1.8.1",
-    "path-parse": "^1.0.5",
-    "request": "^2.65.0"
+    "path-parse": "^1.0.5"
   },
   "devDependencies": {
     "mocha": "^2.3.3",

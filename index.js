@@ -6,11 +6,7 @@ var _ = require('lodash'),
     else resolve(data.toString());
   })),
   pathParse = require('path-parse'),
-  requestFn = require('request'),
-  request = opts => new Promise((resolve, reject) => requestFn(opts, (err, res) => {
-    if (err) reject(err);
-    else resolve(res['body'].toString());
-  })),
+  request = require('./lib/request'),
   p = require('./lib/promise'),
   AWS = require('aws-sdk-proxy'),
   s3 = new AWS.S3(),
@@ -151,12 +147,7 @@ function include(base, scope, args) {
   } else if (location.protocol && location.protocol.match(/^https?$/)) {
     var basepath = pathParse(base.path).dir + '/';
     absolute = location.relative ? url.resolve(location.protocol + '://' + base.host + basepath, location.raw) : location.raw;
-    body = request({
-      url: absolute,
-      followRedirect: false,
-      gzip: true,
-      strictSSL: true,
-    });
+    body = request(absolute);
   }
   if (args.type === 'json') {
     return body.then(yaml.load).then(function (template) {
