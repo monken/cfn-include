@@ -35,7 +35,7 @@
     "node": ">=0.10.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.2.17",
+    "aws-sdk": "^2.125.0",
     "aws-sdk-proxy": "^1.0.0",
     "jmespath": "0.14.1",
     "js-yaml": "^3.10.0",
