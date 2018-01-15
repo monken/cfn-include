@@ -16,6 +16,11 @@ var _ = require('lodash'),
       flag: true,
       abbr: 'm',
     },
+    metadata: {
+      help: 'add build metadata to output',
+      default: false,
+      flag: true,
+    },
     validate: {
       help: 'validate compiled template',
       default: false,
@@ -70,19 +75,21 @@ if (opts.path) {
 }
 
 promise.then(function (template) {
-  try {
-    var stdout = exec('git log -n 1 --pretty=%H', {
-      stdio: [0, 'pipe', 'ignore']
-    }).toString().trim();
-  } catch (e) { }
-  if(stdout) _.defaultsDeep(template, {
-    Metadata: {
-      CfnInclude: {
-        GitCommit: stdout,
-        BuildDate: new Date().toISOString()
+  if(opts.metadata) {
+    try {
+      var stdout = exec('git log -n 1 --pretty=%H', {
+        stdio: [0, 'pipe', 'ignore']
+      }).toString().trim();
+    } catch (e) { }
+   _.defaultsDeep(template, {
+      Metadata: {
+        CfnInclude: {
+          GitCommit: stdout,
+          BuildDate: new Date().toISOString(),
+        }
       }
-    }
-  });
+    });
+  }
   if (opts.validate) {
     var cfn = new (require('aws-sdk-proxy').CloudFormation)({
       region: 'us-east-1'
