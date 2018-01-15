@@ -4,6 +4,7 @@ var _ = require('lodash'),
   yaml = require('../lib/yaml'),
   exec = require('child_process').execSync,
   package = require('../package.json'),
+  env = process.env,
   opts = require('nomnom').script('cfn-include').options({
     path: {
       position: 0,
@@ -92,7 +93,7 @@ promise.then(function (template) {
   }
   if (opts.validate) {
     var cfn = new (require('aws-sdk-proxy').CloudFormation)({
-      region: 'us-east-1'
+      region: env.AWS_REGION || env.AWS_DEFAULT_REGION || 'us-east-1'
     });
     return cfn.validateTemplate({
       TemplateBody: JSON.stringify(template),
