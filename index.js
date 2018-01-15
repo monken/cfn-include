@@ -56,7 +56,9 @@ function recurse(base, scope, object) {
       });
     } else if (object["Fn::Merge"]) {
       return recurse(base, scope, object["Fn::Merge"]).then(function (json) {
-        return _.merge.apply(_, json);
+        delete object["Fn::Merge"];
+        _.defaults(object, _.merge.apply(_, json));
+        return object;
       });
     } else if (object["Fn::Stringify"]) {
       return recurse(base, scope, object["Fn::Stringify"]).then(function (json) {
