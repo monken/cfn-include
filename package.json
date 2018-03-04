@@ -35,18 +35,18 @@
     "node": ">=0.10.0"
   },
   "dependencies": {
-    "aws-sdk": "^2.125.0",
+    "aws-sdk": "^2.205.0",
     "aws-sdk-proxy": "^1.0.0",
     "jmespath": "0.14.1",
     "js-yaml": "^3.10.0",
     "jsmin": "1.0.1",
-    "jsonlint": "^1.6.2",
-    "lodash": "^4",
+    "jsonlint": "^1.6.3",
+    "lodash": "^4.17.5",
     "nomnom": "^1.8.1",
     "path-parse": "^1.0.5"
   },
   "devDependencies": {
-    "mocha": "^2.3.3",
-    "proxy-agent": "^2.0.0"
+    "mocha": "^5.0.1",
+    "proxy-agent": "^2.2.0"
   }
 }
