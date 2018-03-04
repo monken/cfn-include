@@ -43,53 +43,43 @@ curl https://api.netcubed.de/latest/template -XPOST -d @template.json
 Options:
 
 * `-m, --minimize`   minimize JSON output  [false]
+* `--metadata`       add build metadata to output  [false]
 * `-t, --validate`   validate compiled template  [false]
 * `-y, --yaml`       output yaml instead of json  [false]
 * `--version`        print version and exit
 
-### Web Service
+`cfn-include` also accepts a template passed from stdin
 
-    curl https://api.netcubed.de/latest/template?[options] -XPOST -d @<path>
-
-* `path`
-
-  the contents of `path` will be `POST`ed to the web service. See `man curl` for details.
-
-Options:
-
-Options are query parameters.
-
-* `validate=false` do not validate template [true]
+```
+cat mytemplate.yml | cfn-include
+```
 
 ### Example
 
 **YAML**
 
 ```yaml
----
-  AWSTemplateFormatVersion: "2010-09-09"
-  Mappings:
-    Region2AMI:
-      !Include https://api.netcubed.de/latest/ami/lookup?architecture=HVM64
-  Resources:
-    Instance:
-      Type: AWS::EC2::Instance
-      Properties:
-        ImageId: !FindInMap [ Region2AMI, !Ref AWS::Region, AMI ]
-        UserData:
-          Fn::Base64:
-            Fn::Sub:
-              !Include { type: string, location: userdata.sh }
+Mappings:
+  Region2AMI:
+    !Include https://api.netcubed.de/latest/ami/lookup?platform=amzn2
+Resources:
+  Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [ Region2AMI, !Ref AWS::Region, AMI ]
+      UserData:
+        Fn::Base64:
+          Fn::Sub:
+            !Include { type: string, location: userdata.sh }
 ```
 
 **JSON**
 
 ```javascript
 {
-  "AWSTemplateFormatVersion" : "2010-09-09",
   "Mappings": {
     "Region2AMI" : {
-      "Fn::Include": "https://api.netcubed.de/latest/ami/lookup?architecture=HVM64"
+      "Fn::Include": "https://api.netcubed.de/latest/ami/lookup?platform=amzn2"
     }
   },
   "Resources": {
@@ -118,12 +108,6 @@ This is what the `userdata.sh` looks like:
 cfn-include synopsis.json > output.template
 # you can also compile remote files
 cfn-include https://raw.githubusercontent.com/monken/cfn-include/master/examples/synopsis.json > output.template
-```
-
-Alternatively, you can compile the template using the web service
-
-```
-curl -Ssf -XPOST https://api.netcubed.de/latest/template -d '{"Fn::Include":"https://raw.githubusercontent.com/monken/cfn-include/master/examples/synopsis.json"}' > output.template
 ```
 
 
@@ -256,17 +240,13 @@ Include an AWS API response, e.g. loop through all regions and return the image 
 `Fn::Map` is the equivalent of the JavaScript `map()` function allowing for the transformation of an input array to an output array.
 By default the string `_` is used as the variable in the map function. A custom variable can be provided as a second parameter, see [`Fn::Flatten`](#fnflatten) for an example. If a custom variable is used, the variable will also be replaced if found in the object key, see [`Fn::Merge`](#fnmerge) for an example.
 
-```json
-{
-  "Fn::Map": [
-    [80, 443],
-    {
-      "CidrIp": "0.0.0.0/0",
-      "FromPort": "_",
-      "ToPort": "_"
-    }
-  ]
-}
+```yaml
+Fn::Map:
+  - [80, 443]
+  - CidrIp: 0.0.0.0/0
+    FromPort: _
+    ToPort: )
+    IpProtocol: tcp
 ```
 
 ```json
@@ -285,82 +265,92 @@ By default the string `_` is used as the variable in the map function. A custom 
 
 This function flattens an array a single level. This is useful for flattening out nested [`Fn::Map`](#fnmap) calls.
 
-```json
-{
-  "Fn::Flatten": {
-    "Fn::Map": [
-      [80, 443], "$", {
-        "Fn::Map": [
-          ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"], {
-            "CidrIp": "_",
-            "FromPort": "$",
-            "ToPort": "$"
-          }
-        ]
-      }
-    ]
-  }
-},
+```yaml
+SecurityGroupIngress:
+  Fn::Flatten:
+    Fn::Map:
+      - [80, 443]
+      - $
+      - Fn::Map:
+          - [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16]
+          - CidrIp: _
+            FromPort: $
+            ToPort: $
+            IpProtocol: tcp
 ```
 
 Results in:
 
 ```json
-[{
+{ "SecurityGroupIngress": [{
   "CidrIp": "10.0.0.0/8",
   "FromPort": "80",
-  "ToPort": "80"
+  "ToPort": "80",
+  "IpProtocol": "tcp"
 }, {
   "CidrIp": "172.16.0.0/12",
   "FromPort": "80",
-  "ToPort": "80"
+  "ToPort": "80",
+  "IpProtocol": "tcp"
 }, {
   "CidrIp": "192.168.0.0/16",
   "FromPort": "80",
-  "ToPort": "80"
+  "ToPort": "80",
+  "IpProtocol": "tcp"
 }, {
   "CidrIp": "10.0.0.0/8",
   "FromPort": "443",
-  "ToPort": "443"
+  "ToPort": "443",
+  "IpProtocol": "tcp"
 }, {
   "CidrIp": "172.16.0.0/12",
   "FromPort": "443",
-  "ToPort": "443"
+  "ToPort": "443",
+  "IpProtocol": "tcp"
 }, {
   "CidrIp": "192.168.0.0/16",
   "FromPort": "443",
-  "ToPort": "443"
-}]
+  "ToPort": "443",
+  "IpProtocol": "tcp"
+}]}
 ```
 
 ## Fn::Merge
 
-`Fn::Merge` will merge an array of objects into a single object. See [lodash / merge](https://devdocs.io/lodash~4/index#merge) for details on its behavior.
+`Fn::Merge` will merge an array of objects into a single object. See [lodash / merge](https://devdocs.io/lodash~4/index#merge) for details on its behavior. This function is useful if you want to add functionality to an existing template if you want to merge objects of your template that have been created with [`Fn::Map`](#fnmap).
 
-For example, this allows you to merge objects of your template that have been created with [`Fn::Map`](#fnmap). This snippet shows how multiple subnets can be created for each AZ and then merged with the rest of the template.
+`Fn::Merge` accepts a list of objects that will be merged together. You can use other `cfn-include` functions such as `Fn::Include` to pull in template from remote locations such as S3 buckets.
 
-```json
-{
-  "Resources": {
-    "Fn::Merge": {
-      "Fn::Flatten": [{
-        "Fn::Map": [
-          ["A", "B"], "AZ", {
-            "Subnet${AZ}": {
-              "Type": "AWS::EC2::Subnet"
-            }
-          }
-        ]
-      }, {
-        "SG": {
-          "Type": "AWS::EC2::SecurityGroup"
-        }
-      }]
-    }
-  }
-}
+```yaml
+Fn::Merge:
+  - !Include s3://my-templates/my-template.json
+
+  - !Include s3://my-templates/my-other-template.json
+
+  - Parameters:
+      MyCustomParameter:
+        Type: String
+
+    Resources:
+      MyBucket:
+        Type: AWS::S3::Bucket
 ```
 
+This snippet shows how multiple subnets can be created for each AZ and then merged with the rest of the template.
+
+```yaml
+Resources:
+  IAMUser:
+    Type: AWS::IAM::User
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+  Fn::Merge:
+    - Fn::Map:
+      - [A, B]
+      - AZ
+      - Subnet${AZ}:
+          Type: AWS::EC2::Subnet
+```
 
 ```json
 {
@@ -385,10 +375,13 @@ For example, this allows you to merge objects of your template that have been cr
 Another useful application is the use of this function in a config file passed as `--cli-input-json` parameter.
 
 ```
-# myconfig.yml
+# stack.config.yml
 
 StackName: MyStack
-TemplateBody: !Stringify { Fn::Include: mytemplate.yml }
+
+TemplateBody:
+  Fn::Stringify: !Include mytemplate.yml
+
 Parameters:
   - ParameterKey: Foo
     ParameterValue: Bar
@@ -397,8 +390,8 @@ Parameters:
 You can then simply run the following command to deploy a stack:
 
 ```
-cfn-include myconfig.yml | jq 'del(.Metadata)' > myconfig.json
-aws cloudformation create-stack --cli-input-json file://myconfig.json
+cfn-include stack.config.yml > stack.config.json
+aws cloudformation create-stack --cli-input-json file://stack.config.json
 ```
 
 ## More Examples
@@ -417,4 +410,24 @@ cfn-include example.template -t -m | aws s3 cp - s3://bucket-name/output.templat
 
 ## Compatibility
 
-Node.js versions 0.10 and up are supported both on Windows and Linux.
+Node.js versions 4 and up are supported both on Windows and Linux.
+
+## Web Service
+
+    curl https://api.netcubed.de/latest/template?[options] -XPOST -d @<path>
+
+* `path`
+
+  the contents of `path` will be `POST`ed to the web service. See `man curl` for details.
+
+Options:
+
+Options are query parameters.
+
+* `validate=false` do not validate template [true]
+
+To compile the synopsis run the following command.
+
+```
+curl -Ssf -XPOST https://api.netcubed.de/latest/template -d '{"Fn::Include":"https://raw.githubusercontent.com/monken/cfn-include/master/examples/synopsis.json"}' > output.template
+```
