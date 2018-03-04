@@ -245,7 +245,7 @@ Fn::Map:
   - [80, 443]
   - CidrIp: 0.0.0.0/0
     FromPort: _
-    ToPort: )
+    ToPort: _
     IpProtocol: tcp
 ```
 
