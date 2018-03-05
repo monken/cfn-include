@@ -97,7 +97,7 @@ promise.then(function (template) {
     });
     return cfn.validateTemplate({
       TemplateBody: JSON.stringify(template),
-    }).promise();
+    }).promise().then(() => template);
   } else return template;
 }).then(template => {
   return promise.then(function (res) {
