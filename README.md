@@ -345,7 +345,7 @@ Resources:
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
   Fn::Merge:
-    - Fn::Map:
+    Fn::Map:
       - [A, B]
       - AZ
       - Subnet${AZ}:
