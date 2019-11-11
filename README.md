@@ -46,6 +46,8 @@ Options:
 * `--metadata`       add build metadata to output  [false]
 * `-t, --validate`   validate compiled template  [false]
 * `-y, --yaml`       output yaml instead of json  [false]
+* `--bucket`         bucket name required for templates larger than 50k
+* `--prefix`         prefix for templates uploaded to the bucket ['cfn-include']
 * `--version`        print version and exit
 
 `cfn-include` also accepts a template passed from stdin
@@ -410,7 +412,7 @@ cfn-include example.template -t -m | aws s3 cp - s3://bucket-name/output.templat
 
 ## Compatibility
 
-Node.js versions 4 and up are supported both on Windows and Linux.
+Node.js versions 8 and up are supported both on Windows and Linux.
 
 ## Web Service
 

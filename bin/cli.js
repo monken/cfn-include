@@ -3,6 +3,7 @@
 var _ = require('lodash'),
   yaml = require('../lib/yaml'),
   exec = require('child_process').execSync,
+  Client = require('../lib/cfnclient'),
   package = require('../package.json'),
   env = process.env,
   opts = require('nomnom').script('cfn-include').options({
@@ -33,6 +34,13 @@ var _ = require('lodash'),
       default: false,
       flag: true,
       abbr: 'y',
+    },
+    bucket: {
+      help: 'bucket name required for templates larger than 50k',
+    },
+    prefix: {
+      help: 'prefix for templates uploaded to the bucket',
+      default: 'cfn-include',
     },
     version: {
       flag: true,
@@ -92,12 +100,12 @@ promise.then(function (template) {
     });
   }
   if (opts.validate) {
-    var cfn = new (require('aws-sdk-proxy').CloudFormation)({
-      region: env.AWS_REGION || env.AWS_DEFAULT_REGION || 'us-east-1'
+    const cfn = new Client({
+      region: env.AWS_REGION || env.AWS_DEFAULT_REGION || 'us-east-1',
+      bucket: opts.bucket,
+      prefix: opts.prefix,
     });
-    return cfn.validateTemplate({
-      TemplateBody: JSON.stringify(template),
-    }).promise().then(() => template);
+    return cfn.validateTemplate(JSON.stringify(template)).then(() => template);
   } else return template;
 }).then(template => {
   return promise.then(function (res) {
