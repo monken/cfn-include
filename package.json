@@ -41,7 +41,6 @@
     "jmespath": "^0.15.0",
     "js-yaml": "^3.10.0",
     "jsmin": "1.0.1",
-    "jsonlint": "^1.6.3",
     "lodash": "^4.17.5",
     "path-parse": "^1.0.5",
     "yargs": "^14.2.0"

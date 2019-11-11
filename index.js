@@ -10,7 +10,6 @@ var _ = require('lodash'),
   p = require('./lib/promise'),
   AWS = require('aws-sdk-proxy'),
   s3 = new AWS.S3(),
-  jsonlint = require('jsonlint'),
   yaml = require('./lib/yaml'),
   jmespath = require('jmespath');
 parseLocation = require('./lib/parselocation');
