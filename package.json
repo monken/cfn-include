@@ -1,7 +1,7 @@
 {
   "name": "cfn-include",
   "version": "0.11.3",
-  "description": "Include statement for CloudFormation templates",
+  "description": "Preprocessor for CloudFormation templates with support for loops and flexible include statements",
   "main": "index.js",
   "scripts": {
     "test": "mocha --timeout 20000 --bail t/include.js t/cli.js"
