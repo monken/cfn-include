@@ -34,8 +34,10 @@
   "engines": {
     "node": ">=8"
   },
+  "peerDependencies": {
+    "aws-sdk": "^2.205.0"
+  },
   "dependencies": {
-    "aws-sdk": "^2.205.0",
     "aws-sdk-proxy": "^1.0.0",
     "jmespath": "0.14.1",
     "js-yaml": "^3.10.0",
