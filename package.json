@@ -43,8 +43,8 @@
     "jsmin": "1.0.1",
     "jsonlint": "^1.6.3",
     "lodash": "^4.17.5",
-    "nomnom": "^1.8.1",
-    "path-parse": "^1.0.5"
+    "path-parse": "^1.0.5",
+    "yargs": "^14.2.0"
   },
   "devDependencies": {
     "mocha": "^6.2.2",

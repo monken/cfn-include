@@ -6,51 +6,54 @@ var _ = require('lodash'),
   Client = require('../lib/cfnclient'),
   package = require('../package.json'),
   env = process.env,
-  opts = require('nomnom').script('cfn-include').options({
-    path: {
-      position: 0,
-      help: 'location of template. Either path to a local file, URL or file on an S3 bucket (e.g. s3://bucket-name/example.template)',
+  opts = require('yargs').command(
+    '$0 [path] [options]',
+    package.description,
+    (y) => y.positional('path', {
+      positional: true,
+      desc: 'location of template. Either path to a local file, URL or file on an S3 bucket (e.g. s3://bucket-name/example.template)',
       required: false,
-    },
-    minimize: {
-      help: 'minimize JSON output',
-      default: false,
-      flag: true,
-      abbr: 'm',
-    },
-    metadata: {
-      help: 'add build metadata to output',
-      default: false,
-      flag: true,
-    },
-    validate: {
-      help: 'validate compiled template',
-      default: false,
-      flag: true,
-      abbr: 't',
-    },
-    yaml: {
-      help: 'output yaml instead of json',
-      default: false,
-      flag: true,
-      abbr: 'y',
-    },
-    bucket: {
-      help: 'bucket name required for templates larger than 50k',
-    },
-    prefix: {
-      help: 'prefix for templates uploaded to the bucket',
-      default: 'cfn-include',
-    },
-    version: {
-      flag: true,
-      help: 'print version and exit',
-      callback: function () {
-        console.log(package.version);
-        process.exit(0);
-      }
-    },
-  }).parse(),
+    }))
+    .options({
+      minimize: {
+        desc: 'minimize JSON output',
+        default: false,
+        boolean: true,
+        alias: 'm',
+      },
+      metadata: {
+        desc: 'add build metadata to output',
+        default: false,
+        boolean: true,
+      },
+      validate: {
+        desc: 'validate compiled template',
+        default: false,
+        boolean: true,
+        alias: 't',
+      },
+      yaml: {
+        desc: 'output yaml instead of json',
+        default: false,
+        boolean: true,
+        alias: 'y',
+      },
+      bucket: {
+        desc: 'bucket name required for templates larger than 50k',
+      },
+      prefix: {
+        desc: 'prefix for templates uploaded to the bucket',
+        default: 'cfn-include',
+      },
+      version: {
+        boolean: true,
+        desc: 'print version and exit',
+        callback: function () {
+          console.log(package.version);
+          process.exit(0);
+        }
+      },
+    }).parse(),
   path = require('path'),
   include = require('../index'),
   pathParse = require('path-parse');
