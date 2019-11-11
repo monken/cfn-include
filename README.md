@@ -58,8 +58,6 @@ cat mytemplate.yml | cfn-include
 
 ### Example
 
-**YAML**
-
 ```yaml
 Mappings:
   Region2AMI:
@@ -75,30 +73,6 @@ Resources:
             !Include { type: string, location: userdata.sh }
 ```
 
-**JSON**
-
-```javascript
-{
-  "Mappings": {
-    "Region2AMI" : {
-      "Fn::Include": "https://api.netcubed.de/latest/ami/lookup?platform=amzn2"
-    }
-  },
-  "Resources": {
-    "Instance": {
-      "Type": "AWS::EC2::Instance",
-      "Properties": {
-        "UserData": {
-          "ImageId": {
-            "FindInMap": [ "Region2AMI", { "Ref": "AWS::Region" }, "AMI" ]
-          },
-          "Fn::Base64": {
-            "Fn::Sub": {
-              "Fn::Include": {
-                "type": "string",
-                "location": "userdata.sh"
-} } } } } } } }
-```
 
 This is what the `userdata.sh` looks like:
 ```bash
@@ -168,66 +142,63 @@ You can also use a plain string if you want the default behavior, which is simpl
 
 Include a file from a URL
 
-```json
-{ "Fn::Include": "https://example.com/include.json" }
+```yaml
+!Include https://example.com/include.json
 
 // equivalent to
 
-{ "Fn::Include": {
-    "type": "json",
-    "location": "https://example.com/include.json"
-  }
-}
+Fn::Include:
+  type: json
+  location: https://example.com/include.json
 ```
 
 Include a file from an S3 bucket. Authentication is handled by `aws-sdk`. See [Setting AWS Credentials](https://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-configuring.html#Setting_AWS_Credentials) for details.
 
-```json
-{ "Fn::Include": "s3://bucket-name/include1.json" }
+```yaml
+!Include s3://bucket-name/include1.json
 ```
 
 Include a file in the same folder
 
-```json
-{ "Fn::Include": "include.json" }
+```yaml
+!Include include.json
 ```
 
-Include a file literally
+Include a file literally and make use of `Fn::Sub`:
 
-```json
-{ "Fn::Sub": {
-  "Fn::Include": {
-    "type": "string",
-    "location": "https://example.com/userdata.txt"
-} } }
+```yaml
+Fn::Sub:
+  Fn::Include:
+    type: string
+    location: https://example.com/userdata.txt
 ```
 
 Include an AWS API response, e.g. loop through all regions and return the image id of a specific AMI:
 
-```json
-{ "Fn::Merge": {
-    "Fn::Map": [{
-      "Fn::Include": {
-        "type": "api",
-        "service": "EC2",
-        "action": "describeRegions",
-        "query": "Regions[*].RegionName[]"
-    } }, {
-      "_": {
-        "AMI": {
-          "Fn::Include": {
-            "type": "api",
-            "service": "EC2",
-            "action": "describeImages",
-            "region": "_",
-            "query": "Images[*].ImageId | [0]",
-            "parameters": {
-              "Filters": [{
-                "Name": "manifest-location",
-                "Values": ["amazon/amzn-ami-hvm-2016.03.3.x86_64-gp2"],
-              }]
-} } } } } ] } }
+```yaml
+Fn::Merge:
+  Fn::Map:
+    - Fn::Include:
+        action: describeRegions
+        query: 'Regions[*].RegionName[]'
+        service: EC2
+        type: api
+    - _:
+        AMI:
+          Fn::Include:
+            action: describeImages
+            parameters:
+              Filters:
+                - Name: manifest-location
+                  Values:
+                    - amazon/amzn-ami-hvm-2016.03.3.x86_64-gp2
+            query: 'Images[*].ImageId | [0]'
+            region: _
+            service: EC2
+            type: api
 ```
+
+Output as JSON:
 
 ```json
 { "ap-south-1": { "AMI": "ami-ffbdd790" },
