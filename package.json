@@ -1,6 +1,6 @@
 {
   "name": "cfn-include",
-  "version": "0.11.3",
+  "version": "1.0.0",
   "description": "Preprocessor for CloudFormation templates with support for loops and flexible include statements",
   "main": "index.js",
   "scripts": {
