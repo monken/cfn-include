@@ -111,13 +111,9 @@ promise.then(function (template) {
     return cfn.validateTemplate(JSON.stringify(template)).then(() => template);
   } else return template;
 }).then(template => {
-  return promise.then(function (res) {
-    console.log(opts.yaml ? yaml.dump(template) : JSON.stringify(template, null, opts.minimize ? null : 2));
-  }, function (err) {
-    console.error('Validation failed:', err.message);
-    process.exit(1);
-  });
+  console.log(opts.yaml ? yaml.dump(template) : JSON.stringify(template, null, opts.minimize ? null : 2));
 }).catch(function (err) {
-  console.error(err);
+  if (typeof err.toString === 'function') console.error(err.toString());
+  else console.error(err);
   process.exit(1);
 });
