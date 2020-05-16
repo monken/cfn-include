@@ -63,6 +63,15 @@ function recurse(base, scope, object) {
       return recurse(base, scope, object["Fn::Stringify"]).then(function (json) {
         return JSON.stringify(json);
       });
+    } else if (object["Fn::GetEnv"]) {
+      const args = object["Fn::GetEnv"];
+      if (Array.isArray(args)) {
+        const val = process.env[args[0]];
+        return val === undefined ? args[1] : val;
+      }
+      const val = process.env[args];
+      if (val === undefined) throw new Error(`environmental variable ${args} is undefined`);
+      return val;
     } else {
       return p.props(_.mapValues(object, _.bind(recurse, this, base, scope)))
     }

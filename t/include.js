@@ -13,8 +13,11 @@ var tests = [
   'errors.js',
   'yaml.js',
   'stringify.json',
+  'env.js',
 ];
 if(process.env['TEST_AWS']) tests.push('s3.json', 'api.js');
+
+process.env.README = 'readme';
 
 // var tests = [];
 
