@@ -14,6 +14,7 @@ var tests = [
   'yaml.js',
   'stringify.json',
   'env.js',
+  'outputs.json',
 ];
 if(process.env['TEST_AWS']) tests.push('s3.json', 'api.js');
 

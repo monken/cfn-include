@@ -26,7 +26,7 @@ module.exports = function (options) {
   });
 }
 
-function recurse(base, scope, object) {
+async function recurse(base, scope, object) {
   scope = _.clone(scope);
   if (_.isArray(object)) return Promise.all(object.map(_.bind(recurse, this, base, scope)));
   else if (_.isPlainObject(object)) {
@@ -72,6 +72,26 @@ function recurse(base, scope, object) {
       const val = process.env[args];
       if (val === undefined) throw new Error(`environmental variable ${args} is undefined`);
       return val;
+    } else if (object["Fn::Outputs"]) {
+      const outputs = await recurse(base, scope, object["Fn::Outputs"]);
+      const result = {};
+      for(const output in outputs) {
+        const val = outputs[output];
+        const exp = { Export: { Name: { 'Fn::Sub': '${AWS::StackName}:' + output }} };
+        if (!Array.isArray(val) && typeof val === 'object') {
+          result[output] = {
+            Value: { 'Fn::Sub': val.Value },
+            Condition: val.Condition,
+            ...exp,
+          }
+        } else {
+          result[output] = {
+            Value: { 'Fn::Sub': val },
+            ...exp,
+          }
+        }
+      }
+      return result;
     } else {
       return p.props(_.mapValues(object, _.bind(recurse, this, base, scope)))
     }

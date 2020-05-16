@@ -10,8 +10,10 @@ For example, [`Fn::Include`](#fninclude) provides a convenient way to include fi
 **Functions**
 * [`Fn::Include`](#fninclude)
 * [`Fn::Flatten`](#fnflatten)
+* [`Fn::GetEnv`](#fngetenv)
 * [`Fn::Map`](#fnmap)
 * [`Fn::Merge`](#fnmerge)
+* [`Fn::Outputs`](#fnoutputs)
 * [`Fn::Stringify`](#fnstringify)
 
 Tag-based syntax is available in YAML templates. For example,`Fn::Include` becomes `!Include`.
@@ -288,6 +290,18 @@ Results in:
 }]}
 ```
 
+## Fn::GetEnv
+
+```yaml
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !GetEnv [BUCKET_NAME, !Ref AWS::NoValue]
+```
+
+The second argument is optional and provides the default value and will be used of the environmental variable is not defined. If the second argument is omitted `!GetEnv BUCKET_NAME` and the environmental variable is not defined then the compilation will fail.
+
 ## Fn::Merge
 
 `Fn::Merge` will merge an array of objects into a single object. See [lodash / merge](https://devdocs.io/lodash~4/index#merge) for details on its behavior. This function is useful if you want to add functionality to an existing template if you want to merge objects of your template that have been created with [`Fn::Map`](#fnmap).
@@ -365,6 +379,52 @@ You can then simply run the following command to deploy a stack:
 ```
 cfn-include stack.config.yml > stack.config.json
 aws cloudformation create-stack --cli-input-json file://stack.config.json
+```
+
+## Fn::Outputs
+
+This helper transformation simplifies the definition of output variables and exports.
+
+```yaml
+Outputs:
+  Fn::Outputs:
+    Version: !GetEnv [VERSION, '1.0.0']
+    BucketArn: ${Bucket.Arn}
+    BucketPolicy:
+      Condition: HasBucketPolicy
+      Value: ${BucketPolicy}
+    Subnets:
+      - ${SubnetA},${SubnetB},${Provided}
+      - Provided: ${SubnetC}
+```
+
+This will translate into:
+
+```yaml
+Outputs:
+  Version:
+    Value: !Sub '1.0.0'
+    Export:
+      Name: !Sub ${AWS::StackName}:Version
+
+  BucketArn:
+    Value: !Sub ${Bucket.Arn}
+    Export:
+      Name: !Sub ${AWS::StackName}:BucketArn
+
+  BucketPolicy:
+    Value: !Sub ${BucketPolicy}
+    Condition: HasBucketPolicy
+    Export:
+      Name: !Sub ${AWS::StackName}:BucketPolicy
+
+  Subnets:
+    Value:
+      Fn::Sub:
+        - ${SubnetA},${SubnetB},${Provided}
+        - Provided: ${SubnetC}
+    Export:
+      Name: !Sub ${AWS::StackName}:Subnets
 ```
 
 ## More Examples

@@ -1,0 +1,86 @@
+{
+  "outputs": [{
+    "name": "basics",
+    "template": {
+      "Fn::Outputs": {
+        "SubnetA": "${SubnetA}",
+        "SubnetB": {
+          "Value": "${SubnetA}",
+          "Condition": "HasSubnetB"
+        },
+        "Complex": ["${Imported}", { "Fn::ImportValue": "SomeExport" }],
+        "ComplexCondition": {
+          "Value": ["${Imported}", { "Fn::ImportValue": "SomeExport" }],
+          "Condition": "HasComplex"
+        },
+        "Version": {
+          "Fn::GetEnv": ["FOO", "1.0.0"]
+        }
+      }
+    },
+    "output": {
+      "Version": {
+        "Export": {
+          "Name": {
+            "Fn::Sub": "${AWS::StackName}:Version"
+          }
+        },
+        "Value": {
+          "Fn::Sub": "1.0.0"
+        }
+      },
+      "Complex": {
+        "Export": {
+          "Name": {
+            "Fn::Sub": "${AWS::StackName}:Complex"
+          }
+        },
+        "Value": {
+          "Fn::Sub": [
+            "${Imported}",
+            {
+              "Fn::ImportValue": "SomeExport"
+            }
+          ]
+        }
+      },
+      "ComplexCondition": {
+        "Condition": "HasComplex",
+        "Export": {
+          "Name": {
+            "Fn::Sub": "${AWS::StackName}:ComplexCondition"
+          }
+        },
+        "Value": {
+          "Fn::Sub": [
+            "${Imported}",
+            {
+              "Fn::ImportValue": "SomeExport"
+            }
+          ]
+        }
+      },
+      "SubnetA": {
+        "Export": {
+          "Name": {
+            "Fn::Sub": "${AWS::StackName}:SubnetA"
+          }
+        },
+        "Value": {
+          "Fn::Sub": "${SubnetA}"
+        }
+      },
+      "SubnetB": {
+        "Condition": "HasSubnetB",
+        "Export": {
+          "Name": {
+            "Fn::Sub": "${AWS::StackName}:SubnetB"
+          }
+        },
+        "Value": {
+          "Fn::Sub": "${SubnetA}"
+        }
+      }
+    }
+  }]
+}
