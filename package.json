@@ -24,7 +24,10 @@
     "cloudformation",
     "include"
   ],
-  "author": "Moritz Onken <onken@netcubed.de>",
+  "author": {
+    "name": "Moritz Onken",
+    "email": "onken@netcubed.de"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/monken/cfn-include/issues"
