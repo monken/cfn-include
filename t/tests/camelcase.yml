@@ -1,0 +1,24 @@
+camelcase:
+  - name: UpperCamelCase
+    template:
+      - !UpperCamelCase foo-bar
+      - !UpperCamelCase bar_foo
+      - !UpperCamelCase bar baz
+      - !UpperCamelCase __Can__Haz__
+      - !UpperCamelCase FOÈ-BAR
+      - !UpperCamelCase f
+    output:
+      - FooBar
+      - BarFoo
+      - BarBaz
+      - CanHaz
+      - FoèBar
+      - F
+
+  - name: LowerCamelCase
+    template:
+      FooBar: !LowerCamelCase foo-bar
+      BarFoo: !LowerCamelCase bar_foo
+    output:
+      FooBar: fooBar
+      BarFoo: barFoo

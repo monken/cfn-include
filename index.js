@@ -14,6 +14,8 @@ var _ = require('lodash'),
   jmespath = require('jmespath');
 parseLocation = require('./lib/parselocation');
 
+const { lowerCamelCase, upperCamelCase } = require('./lib/utils');
+
 
 module.exports = function (options) {
   var template = options.template,
@@ -63,6 +65,10 @@ async function recurse(base, scope, object) {
       return recurse(base, scope, object["Fn::Stringify"]).then(function (json) {
         return JSON.stringify(json);
       });
+    } else if (object["Fn::UpperCamelCase"]) {
+      return upperCamelCase(object["Fn::UpperCamelCase"]);
+    } else if (object["Fn::LowerCamelCase"]) {
+      return lowerCamelCase(object["Fn::LowerCamelCase"]);
     } else if (object["Fn::GetEnv"]) {
       const args = object["Fn::GetEnv"];
       if (Array.isArray(args)) {

@@ -15,6 +15,7 @@ For example, [`Fn::Include`](#fninclude) provides a convenient way to include fi
 * [`Fn::Merge`](#fnmerge)
 * [`Fn::Outputs`](#fnoutputs)
 * [`Fn::Stringify`](#fnstringify)
+* [`Fn::UpperCamelCase`](#fnuppercamelcase) and `Fn::LowerCamelCase`
 
 Tag-based syntax is available in YAML templates. For example,`Fn::Include` becomes `!Include`.
 
@@ -379,6 +380,12 @@ You can then simply run the following command to deploy a stack:
 ```
 cfn-include stack.config.yml > stack.config.json
 aws cloudformation create-stack --cli-input-json file://stack.config.json
+```
+
+## Fn::UpperCamelCase
+
+```yaml
+Name: !UpperCamelCase foo-bar # yields FooBar
 ```
 
 ## Fn::Outputs

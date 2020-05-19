@@ -2,6 +2,10 @@ var include = require('../index'),
   assert = require('assert'),
   fs = require('fs');
 
+const yaml = require('../lib/yaml');
+const { posix } = require('path');
+
+
 var tests = [
   'location.json',
   'literal.json',
@@ -15,18 +19,17 @@ var tests = [
   'stringify.json',
   'env.js',
   'outputs.json',
+  'camelcase.yml',
 ];
 if(process.env['TEST_AWS']) tests.push('s3.json', 'api.js');
 
 process.env.README = 'readme';
 
-// var tests = [];
-
 tests.forEach(function(file) {
-  var tests = require('./tests/' + file);
-  for (var category in tests) {
+  var testFile = posix.extname(file) === '.js' ? require('./tests/' + file) : yaml.load(fs.readFileSync('t/tests/' + file));
+  for (var category in testFile) {
     describe(category, function() {
-      tests[category].forEach(function(test) {
+      testFile[category].forEach(function(test) {
         it(test.name || 'include', function(done) {
           include({
             template: test.template,
