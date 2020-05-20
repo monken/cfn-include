@@ -160,7 +160,7 @@ function interpolate(lines, context) {
   });
 }
 
-function include(base, scope, args) {
+async function include(base, scope, args) {
   args = _.defaults(_.isPlainObject(args) ? args : {
     location: args,
   }, { type: 'json' });
@@ -186,12 +186,12 @@ function include(base, scope, args) {
     body = request(absolute);
   }
   if (args.type === 'json') {
-    return body.then(yaml.load).then(function (template) {
-      if (args.query) {
-        template = jmespath.search(template, args.query);
-      }
-      return recurse(parseLocation(absolute), scope, template);
-    });
+    let template = await body.then(yaml.load)
+    if (args.query) {
+      const query = typeof args.query === 'string' ? args.query : await recurse(parseLocation(absolute), scope, args.query);
+      template = jmespath.search(template, query);
+    }
+    return recurse(parseLocation(absolute), scope, template);
   } else if (args.type === 'api') {
     var handler = require('./lib/include/api');
     return handler(args);

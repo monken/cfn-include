@@ -20,6 +20,7 @@ var tests = [
   'env.js',
   'outputs.json',
   'camelcase.yml',
+  'jmespath.yml',
 ];
 if(process.env['TEST_AWS']) tests.push('s3.json', 'api.js');
 

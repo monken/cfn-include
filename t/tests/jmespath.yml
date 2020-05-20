@@ -1,0 +1,22 @@
+jmespath:
+  - name: recurse in query
+    template:
+      Fn::Map:
+        - [foo]
+        - var
+        - plain:
+            Fn::Include:
+              location: includes/complex.json
+              query: foo
+          useVar:
+            Fn::Include:
+              location: includes/complex.json
+              query: ${var}
+          useFn:
+            Fn::Include:
+              location: includes/complex.json
+              query: !LowerCamelCase ${var}
+    output:
+      - plain: bar
+        useVar: bar
+        useFn: bar
