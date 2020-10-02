@@ -1,0 +1,28 @@
+sequence:
+  - name: numerical
+    template:
+      Fn::Sequence: [1, 4]
+    output: [1, 2, 3, 4]
+
+  - name: numerical with step
+    template:
+      Fn::Sequence: [1, 4, 2]
+    output: [1, 3]
+
+  - name: alpha-numerical
+    template:
+      Fn::Sequence: [a, d]
+    output: [a, b, c, d]
+
+  - name: alpha-numerical with step
+    template:
+      Fn::Sequence: [a, d, 2]
+    output: [a, c]
+
+  - name: Fn::Map
+    template:
+      Fn::Map:
+        - !Sequence [1, 4]
+        - _
+    output:
+      [1, 2, 3, 4]

@@ -14,6 +14,7 @@ For example, [`Fn::Include`](#fninclude) provides a convenient way to include fi
 * [`Fn::Map`](#fnmap)
 * [`Fn::Merge`](#fnmerge)
 * [`Fn::Outputs`](#fnoutputs)
+* [`Fn::Sequence`](#fnsequence)
 * [`Fn::Stringify`](#fnstringify)
 * [`Fn::UpperCamelCase`](#fnuppercamelcase) and `Fn::LowerCamelCase`
 
@@ -356,13 +357,44 @@ Resources:
 }
 ```
 
+## Fn::Sequence
+
+`Fn::Sequence` generates a sequence of numbers of characters. You can specify the start, end and step.
+
+```yaml
+!Sequence [1, 4]
+
+# generates
+[1, 2, 3 4]
+
+!Sequence [1, 10, 2]
+
+# generates
+[1, 3, 5, 7, 9]
+
+!Sequence [a, d]
+
+# generates
+[a, b, c, d]
+```
+
+`Fn::Sequence` can be used in combination with `Fn::Map` to generate complex objects:
+
+```
+Fn::Map:
+  - !Sequence [a, c]
+  - AZ
+  - Subnet${AZ}:
+      Type: AWS::EC2::Subnet
+```
+
 ## Fn::Stringify
 
 `Fn::Stringify` will take the passed value and transform it to a JSON string. This is useful for parameters that require a JSON document as a string. Using this function, you can keep writing your configuration in YAML and let the function transform it into a JSON string.
 
 Another useful application is the use of this function in a config file passed as `--cli-input-json` parameter.
 
-```
+```yaml
 # stack.config.yml
 
 StackName: MyStack

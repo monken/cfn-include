@@ -98,6 +98,16 @@ async function recurse(base, scope, object) {
         }
       }
       return result;
+    } else if (object["Fn::Sequence"]) {
+      const outputs = await recurse(base, scope, object["Fn::Sequence"]);
+      let [start, stop, step = 1] = outputs;
+      const isString = typeof start === 'string';
+      if (isString) {
+        start = start.charCodeAt(0);
+        stop = stop.charCodeAt(0);
+      }
+      const seq = Array.from({ length: Math.floor((stop - start) / step) + 1 }, (_, i) => start + i * step);
+      return isString ? seq.map((i) => String.fromCharCode(i)) : seq;
     } else {
       return p.props(_.mapValues(object, _.bind(recurse, this, base, scope)))
     }
