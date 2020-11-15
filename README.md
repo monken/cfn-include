@@ -11,6 +11,7 @@ For example, [`Fn::Include`](#fninclude) provides a convenient way to include fi
 * [`Fn::Include`](#fninclude)
 * [`Fn::Flatten`](#fnflatten)
 * [`Fn::GetEnv`](#fngetenv)
+* [`Fn::Length`](#fnlength)
 * [`Fn::Map`](#fnmap)
 * [`Fn::Merge`](#fnmerge)
 * [`Fn::Outputs`](#fnoutputs)
@@ -238,6 +239,44 @@ Fn::Map:
 }]
 ```
 
+Custom variables can be specified as a single value, of as a list of up to three values. If a list is specified, the second variable is used as index and the third (if present) as size.
+
+```yaml
+Fn::Map:
+  - !Sequence [A, C]
+  - [NET, INDEX, N]
+  - Subnet${NET}:
+      Type: 'AWS::EC2::Subnet'
+      Properties:
+        CidrBlock: !Select [INDEX, !Cidr [MyCIDR, N, 8]]
+```
+
+```json
+[{
+  "SubnetA": {
+    "Type": "AWS::EC2::Subnet",
+    "Properties": {
+      "CidrBlock": { "Fn::Select": [ 0, { "Fn::Cidr": [ "MyCIDR", 3, 8 ] } ] }
+    }
+  }
+}, {
+  "SubnetB": {
+    "Type": "AWS::EC2::Subnet",
+    "Properties": {
+      "CidrBlock": { "Fn::Select": [ 1, { "Fn::Cidr": [ "MyCIDR", 3, 8 ] } ] }
+    }
+  }
+}, {
+  "SubnetC": {
+    "Type": "AWS::EC2::Subnet",
+    "Properties": {
+      "CidrBlock": { "Fn::Select": [ 2, { "Fn::Cidr": [ "MyCIDR", 3, 8 ] } ] }
+    }
+  }
+}]
+```
+
+
 ## Fn::Flatten
 
 This function flattens an array a single level. This is useful for flattening out nested [`Fn::Map`](#fnmap) calls.
@@ -303,6 +342,11 @@ Resources:
 ```
 
 The second argument is optional and provides the default value and will be used of the environmental variable is not defined. If the second argument is omitted `!GetEnv BUCKET_NAME` and the environmental variable is not defined then the compilation will fail.
+
+## Fn::Length
+
+`Fn::Length` returns the length of a list or expanded section.
+
 
 ## Fn::Merge
 
