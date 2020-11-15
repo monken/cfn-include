@@ -1,0 +1,202 @@
+{
+  "Extended Maps and Length": [
+    {
+      "name": "Fn::Length",
+      "template": {
+        "Fn::Length": [ "A", "B", "C", "D", "E" ]
+      },
+      "output": 5
+    },
+    {
+      "name": "length of nested template",
+      "template": {
+        "Fn::Length": {
+          "Fn::Flatten": [
+            {
+              "Fn::Flatten": [
+                {
+                  "Fn::Map": [
+                    [ "A", "B", "C" ],
+                    [ "PLACEHOLDER", "Index" ],
+                    { "Fn::Sub": "${PLACEHOLDER} some text ${Index}" }
+                  ]
+                },
+                {
+                  "Fn::Map": [
+                    [ "A", "B", "C", "D", "E" ],
+                    [ "PLACEHOLDER", "Index" ],
+                    { "Fn::Select": [ "Index", { "Fn::Cidr": [ { "Ref": "MyCIDR" }, { "Fn::Length": [ "A", "B", "C", "D", "E" ] }, 10 ] } ] }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": 8
+    },
+    {
+      "name": "map with index",
+      "template": {
+        "Fn::Flatten": [
+          {
+            "Fn::Flatten": [
+              {
+                "Fn::Map": [
+                  [ "A", "B", "C" ],
+                  [ "PLACEHOLDER", "Index" ],
+                  { "Fn::Sub": "Awkward: ${PLACEHOLDER} some text ${Index}" }
+                ]
+              },
+              {
+                "Fn::Map": [
+                  [ "A", "B", "C", "D", "E" ],
+                  [ "PLACEHOLDER", "Index" ],
+                  { "Fn::Select": [ "Index", { "Fn::Cidr": [ { "Ref": "MyCIDR" }, { "Fn::Length": [ "A", "B", "C", "D", "E" ] }, 9 ] } ] }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "output": [
+        { "Fn::Sub": "Awkward: A some text 0" },
+        { "Fn::Sub": "Awkward: B some text 1" },
+        { "Fn::Sub": "Awkward: C some text 2" },
+        { "Fn::Select": [ 0, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 9 ] } ] },
+        { "Fn::Select": [ 1, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 9 ] } ] },
+        { "Fn::Select": [ 2, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 9 ] } ] },
+        { "Fn::Select": [ 3, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 9 ] } ] },
+        { "Fn::Select": [ 4, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 9 ] } ] }
+      ]
+    },
+    {
+      "name": "map with index and scoped size",
+      "template": {
+        "Fn::Flatten": [
+          {
+            "Fn::Flatten": [
+              {
+                "Fn::Map": [
+                  [ "A", "B", "C", "D", "E" ],
+                  [ "PLACEHOLDER", "Index", "N" ],
+                  { "Fn::Select": [ "Index", { "Fn::Cidr": [ { "Ref": "MyCIDR" }, "N", 10 ] } ] }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "output": [
+        { "Fn::Select": [ 0, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 10 ] } ] },
+        { "Fn::Select": [ 1, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 10 ] } ] },
+        { "Fn::Select": [ 2, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 10 ] } ] },
+        { "Fn::Select": [ 3, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 10 ] } ] },
+        { "Fn::Select": [ 4, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 10 ] } ] }
+      ]
+    },
+    {
+      "name": "map with index and scoped size, using Fn::Sequence",
+      "template": {
+        "Fn::Flatten": [
+          {
+            "Fn::Flatten": [
+              {
+                "Fn::Map": [
+                  { "Fn::Sequence": ["A", "E"] },
+                  [ "PLACEHOLDER", "Index", "N" ],
+                  { "Fn::Select": [ "Index", { "Fn::Cidr": [ { "Ref": "MyCIDR" }, "N", 10 ] } ] }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "output": [
+        { "Fn::Select": [ 0, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 10 ] } ] },
+        { "Fn::Select": [ 1, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 10 ] } ] },
+        { "Fn::Select": [ 2, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 10 ] } ] },
+        { "Fn::Select": [ 3, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 10 ] } ] },
+        { "Fn::Select": [ 4, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 5, 10 ] } ] }
+      ]
+    },
+    {
+      "name": "combining maps with index and/or scoped size",
+      "template": {
+        "Fn::Flatten": [
+          {
+            "Fn::Flatten": [
+              { "Fn::Map": [
+                  [ "A", "B", "C" ],
+                  [ "PLACEHOLDER", "Index", "N" ],
+                  { "Fn::Sub": "MoreTesting: ${PLACEHOLDER} some text ${Index} out of ${N}" }
+                ]
+              },
+              {
+                "Fn::Map": [
+                  [ "A", "B", "C", "D", "E" ],
+                  [ "PLACEHOLDER", "Index" ],
+                  { "Fn::Select": [ "Index", { "Fn::Cidr": [ { "Ref": "MyCIDR" }, { "Fn::Length": [ "A", "B", "C" ] }, 10 ] } ] }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "output": [
+        { "Fn::Sub": "MoreTesting: A some text 0 out of 3" },
+        { "Fn::Sub": "MoreTesting: B some text 1 out of 3" },
+        { "Fn::Sub": "MoreTesting: C some text 2 out of 3" },
+        { "Fn::Select": [ 0, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 3, 10 ] } ] },
+        { "Fn::Select": [ 1, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 3, 10 ] } ] },
+        { "Fn::Select": [ 2, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 3, 10 ] } ] },
+        { "Fn::Select": [ 3, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 3, 10 ] } ] },
+        { "Fn::Select": [ 4, { "Fn::Cidr": [ { "Ref": "MyCIDR" }, 3, 10 ] } ] }
+      ]
+    },
+    {
+      "name": "nested maps with indices and scoped sizes",
+      "template": {
+        "Fn::Flatten": {
+          "Fn::Flatten": [
+            {
+              "Fn::Flatten": [
+                {
+                  "Fn::Map": [
+                    [ "A", "B", "C" ],
+                    [ "PLACEHOLDER1", "Index1", "N1" ],
+                    {
+                      "Fn::Flatten": [
+                        {
+                          "Fn::Map": [
+                            [ "Q", "R", "S", "T" ],
+                            [ "PLACEHOLDER2", "Index2", "N2" ],
+                            { "Fn::Sub": "NestedTest: ${Index1} (${N1}): ${PLACEHOLDER1};  ${Index2} (${N2}): ${PLACEHOLDER2}" }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "output": [
+        { "Fn::Sub": "NestedTest: 0 (3): A;  0 (4): Q" },
+        { "Fn::Sub": "NestedTest: 0 (3): A;  1 (4): R" },
+        { "Fn::Sub": "NestedTest: 0 (3): A;  2 (4): S" },
+        { "Fn::Sub": "NestedTest: 0 (3): A;  3 (4): T" },
+        { "Fn::Sub": "NestedTest: 1 (3): B;  0 (4): Q" },
+        { "Fn::Sub": "NestedTest: 1 (3): B;  1 (4): R" },
+        { "Fn::Sub": "NestedTest: 1 (3): B;  2 (4): S" },
+        { "Fn::Sub": "NestedTest: 1 (3): B;  3 (4): T" },
+        { "Fn::Sub": "NestedTest: 2 (3): C;  0 (4): Q" },
+        { "Fn::Sub": "NestedTest: 2 (3): C;  1 (4): R" },
+        { "Fn::Sub": "NestedTest: 2 (3): C;  2 (4): S" },
+        { "Fn::Sub": "NestedTest: 2 (3): C;  3 (4): T" }
+      ]
+    }
+  ]
+}
