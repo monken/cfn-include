@@ -1,0 +1,47 @@
+deepmerge:
+  - name: deepMerge
+    template:
+      Fn::DeepMerge:
+        - us-east-1:
+            object:
+              one:
+                - "a"
+                - "b"
+                - "c"
+              two: two
+            account1:
+              - "1"
+              - "2"
+              - "3"
+        - us-east-1:
+            object:
+              one:
+                - "d"
+                - "e"
+                - "f"
+              three: three
+              four: four
+            account1:
+              - "4"
+              - "5"
+              - "6"
+    output:
+      us-east-1:
+        object:
+          one:
+            - "a"
+            - "b"
+            - "c"
+            - "d"
+            - "e"
+            - "f"
+          two: two
+          three: three
+          four: four
+        account1:
+          - "1"
+          - "2"
+          - "3"
+          - "4"
+          - "5"
+          - "6"

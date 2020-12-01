@@ -22,6 +22,7 @@ var tests = [
   'camelcase.yml',
   'jmespath.yml',
   'sequence.yml',
+  'deepmerge.yml',
 ];
 if(process.env['TEST_AWS']) tests.push('s3.json', 'api.js');
 

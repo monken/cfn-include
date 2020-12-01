@@ -11,8 +11,9 @@ var _ = require('lodash'),
   AWS = require('aws-sdk-proxy'),
   s3 = new AWS.S3(),
   yaml = require('./lib/yaml'),
-  jmespath = require('jmespath');
-parseLocation = require('./lib/parselocation');
+  jmespath = require('jmespath'),
+  deepMerge = require('deepmerge'),
+  parseLocation = require('./lib/parselocation');
 
 const { lowerCamelCase, upperCamelCase } = require('./lib/utils');
 
@@ -59,6 +60,18 @@ async function recurse(base, scope, object) {
       return recurse(base, scope, object["Fn::Merge"]).then(function (json) {
         delete object["Fn::Merge"];
         _.defaults(object, _.merge.apply(_, json));
+        return object;
+      });
+    } else if (object["Fn::DeepMerge"]) {
+      return recurse(base, scope, object["Fn::DeepMerge"]).then(function (json) {
+        delete object["Fn::DeepMerge"];
+        let mergedObj = {};
+        if (json && json.length) {
+          json.forEach((j) => {
+            mergedObj = deepMerge(mergedObj, j)
+          })
+        }
+        _.defaults(object, mergedObj);
         return object;
       });
     } else if (object["Fn::Stringify"]) {

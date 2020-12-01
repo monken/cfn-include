@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "aws-sdk-proxy": "^1.0.0",
+    "deepmerge": "^4.2.2",
     "jmespath": "^0.15.0",
     "js-yaml": "^3.14.0",
     "jsmin": "1.0.1",
