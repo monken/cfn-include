@@ -14,6 +14,7 @@ For example, [`Fn::Include`](#fninclude) provides a convenient way to include fi
 * [`Fn::Length`](#fnlength)
 * [`Fn::Map`](#fnmap)
 * [`Fn::Merge`](#fnmerge)
+* [`Fn::DeepMerge`](#fnmerge)
 * [`Fn::Outputs`](#fnoutputs)
 * [`Fn::Sequence`](#fnsequence)
 * [`Fn::Stringify`](#fnstringify)
@@ -356,6 +357,31 @@ The second argument is optional and provides the default value and will be used 
 
 ```yaml
 Fn::Merge:
+  - !Include s3://my-templates/my-template.json
+
+  - !Include s3://my-templates/my-other-template.json
+
+  - Parameters:
+      MyCustomParameter:
+        Type: String
+
+    Resources:
+      MyBucket:
+        Type: AWS::S3::Bucket
+```
+
+## Fn::DeepMerge
+
+`Fn::DeepMerge` will deeply merge an array of objects and arrays into a single object. See [deepmerge](https://www.npmjs.com/package/deepmerge) for details on its behavior. This function is useful if you want to add functionality to an existing template if you want to merge objects of your template that have been created with [`Fn::Map`](#fnmap).
+
+`Fn::DeepMerge` accepts a list of objects that will be merged together. You can use other `cfn-include` functions such as `Fn::Include` to pull in template from remote locations such as S3 buckets.
+
+To understand it better besides the below example refer to this [test](t/tests/deepmerge.yml). Note that all arrays are concatenated.
+
+Why does `Fn::Merge` still exist? Answer: Backwards compatibility for expected behavior.
+
+```yaml
+Fn::DeepMerge:
   - !Include s3://my-templates/my-template.json
 
   - !Include s3://my-templates/my-other-template.json
