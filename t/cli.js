@@ -1,4 +1,5 @@
 var include = require('../index'),
+  _ = require('lodash'),
   assert = require('assert'),
   fs = require('fs'),
   exec = require('child_process').execFile;
@@ -9,8 +10,15 @@ var include = require('../index'),
     describe(category, function () {
       tests[category].forEach(function (test) {
         it(test.name || 'include', function (done) {
-          var proc = exec('node',
-            test.template ? ['bin/cli.js', test.template] : ['bin/cli.js'],
+          let cliArgs = test.template ? ['bin/cli.js', test.template] : ['bin/cli.js'];
+          if (test.args) {
+            cliArgs = cliArgs.concat(test.args);
+          }
+          if (test.env) {
+            Object.assign(process.env, test.env);
+          }
+          // console.log({cliArgs})
+          var proc = exec('node', cliArgs,
             function (err, out, stderr) {
               if (test.exitCode) {
                 assert.ok(stderr.match(new RegExp(test.errorMessage)));
@@ -20,6 +28,9 @@ var include = require('../index'),
               var json = JSON.parse(out.toString());
               delete json.Metadata;
               assert.deepEqual(json, test.output);
+              if (test.env) {
+                _.omit(process.env, Object.keys(test.env));
+              }
               done();
             });
           if (test.stdin) {
