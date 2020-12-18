@@ -55,6 +55,7 @@ Options:
 * `--bucket`         bucket name required for templates larger than 50k
 * `--prefix`         prefix for templates uploaded to the bucket ['cfn-include']
 * `--version`        print version and exit
+* `--doEnv`          pre-process env vars and inject into templates as they are processed looks for $KEY or ${KEY} matches
 
 `cfn-include` also accepts a template passed from stdin
 
