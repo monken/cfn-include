@@ -13,7 +13,8 @@ var _ = require('lodash'),
   yaml = require('./lib/yaml'),
   jmespath = require('jmespath'),
   deepMerge = require('deepmerge'),
-  parseLocation = require('./lib/parselocation');
+  parseLocation = require('./lib/parselocation'),
+  replaceEnv = require('./lib/replaceEnv');
 
 const { lowerCamelCase, upperCamelCase } = require('./lib/utils');
 
@@ -22,16 +23,16 @@ module.exports = function (options) {
     base = parseLocation(options.url),
     scope = options.scope || {};
   if (base.relative) throw "url cannot be relative";
-  template = _.isUndefined(template) ? include(base, scope, options.url) : template;
+  template = _.isUndefined(template) ? include(base, scope, options.url, options.doEnv) : template;
   return Promise.resolve(template).then(function (template) {
-    return recurse(base, scope, template);
+    return recurse(base, scope, template, options.doEnv);
   });
 }
 
-async function recurse(base, scope, object) {
+async function recurse(base, scope, object, doEnv) {
   scope = _.clone(scope);
   if (_.isArray(object)) {
-    return Promise.all(object.map(_.bind(recurse, this, base, scope)))
+    return Promise.all(object.map((o) => recurse(base, scope, o, doEnv)))
   } else if (_.isPlainObject(object)) {
     if (object["Fn::Map"]) {
       var args = object["Fn::Map"],
@@ -53,32 +54,32 @@ async function recurse(base, scope, object) {
       if (args.length === 2) {
         placeholder = '_';
       }
-      return p.map(recurse(base, scope, list), function(replace) {
+      return p.map(recurse(base, scope, list, doEnv), function(replace) {
         scope = _.clone(scope);
         scope[placeholder] = replace;
         if (hasindex) {
           scope[idx] = i++;
         }
         var replaced = findAndReplace(scope, _.cloneDeep(body));
-        return recurse(base, scope, replaced);
+        return recurse(base, scope, replaced, doEnv);
       }).then(function(obj) {
         if (hassize) {
             obj = findAndReplace({[sz] :obj.length}, obj);
         }
-        return recurse(base, scope, obj);
+        return recurse(base, scope, obj, doEnv);
       });
     } else if (object["Fn::Length"]) {
       if (Array.isArray(object["Fn::Length"])) {
         return object["Fn::Length"].length;
       }
-      return recurse(base, scope, object["Fn::Length"]).then((x) => {
+      return recurse(base, scope, object["Fn::Length"], doEnv).then((x) => {
         if (Array.isArray(x)) {
           return x.length;
         }
         return 0;
       });
     } else if (object["Fn::Include"]) {
-      return include(base, scope, object["Fn::Include"])
+      return include(base, scope, object["Fn::Include"], doEnv)
           .then(function(json) {
             if (!_.isPlainObject(json))
               return json;
@@ -87,18 +88,18 @@ async function recurse(base, scope, object) {
             return object;
           })
           .then(_.bind(findAndReplace, this, scope))
-          .then(_.bind(recurse, this, base, scope));
+          .then((t) => recurse(base, scope, t, doEnv));
     } else if (object["Fn::Flatten"]) {
-      return recurse(base, scope, object["Fn::Flatten"])
+      return recurse(base, scope, object["Fn::Flatten"], doEnv)
           .then(function(json) { return _.flatten(json); });
     } else if (object["Fn::Merge"]) {
-      return recurse(base, scope, object["Fn::Merge"]).then(function(json) {
+      return recurse(base, scope, object["Fn::Merge"], doEnv).then(function(json) {
         delete object["Fn::Merge"];
         _.defaults(object, _.merge.apply(_, json));
         return object;
       });
     } else if (object["Fn::DeepMerge"]) {
-      return recurse(base, scope, object["Fn::DeepMerge"]).then(function (json) {
+      return recurse(base, scope, object["Fn::DeepMerge"], doEnv).then(function (json) {
         delete object["Fn::DeepMerge"];
         let mergedObj = {};
         if (json && json.length) {
@@ -110,7 +111,7 @@ async function recurse(base, scope, object) {
         return object;
       });
     } else if (object["Fn::Stringify"]) {
-      return recurse(base, scope, object["Fn::Stringify"])
+      return recurse(base, scope, object["Fn::Stringify"], doEnv)
           .then(function(json) { return JSON.stringify(json); });
     } else if (object["Fn::UpperCamelCase"]) {
       return upperCamelCase(object["Fn::UpperCamelCase"]);
@@ -128,7 +129,7 @@ async function recurse(base, scope, object) {
       }
       return val;
     } else if (object["Fn::Outputs"]) {
-      const outputs = await recurse(base, scope, object["Fn::Outputs"]);
+      const outputs = await recurse(base, scope, object["Fn::Outputs"], doEnv);
       const result = {};
       for (const output in outputs) {
         const val = outputs[output];
@@ -150,7 +151,7 @@ async function recurse(base, scope, object) {
       }
       return result;
     } else if (object["Fn::Sequence"]) {
-      const outputs = await recurse(base, scope, object["Fn::Sequence"]);
+      const outputs = await recurse(base, scope, object["Fn::Sequence"], doEnv);
       let [start, stop, step = 1] = outputs;
       const isString = typeof start === 'string';
       if (isString) {
@@ -161,7 +162,7 @@ async function recurse(base, scope, object) {
                              (_, i) => start + i * step);
       return isString ? seq.map((i) => String.fromCharCode(i)) : seq;
     } else {
-      return p.props(_.mapValues(object, _.bind(recurse, this, base, scope)))
+      return p.props(_.mapValues(object, (template) => recurse(base, scope, template, doEnv)))
     }
   } else if (_.isUndefined(object)) {
     return null;
@@ -228,9 +229,10 @@ function interpolate(lines, context) {
   });
 }
 
-async function include(base, scope, args) {
+async function include(base, scope, args, doEnv) {
   args = _.defaults(_.isPlainObject(args) ? args : {
     location: args,
+    doEnv,
   }, { type: 'json' });
   var body, absolute, location = parseLocation(args.location);
   if (!_.isEmpty(location) && !location.protocol) location.protocol = base.protocol;
@@ -253,28 +255,45 @@ async function include(base, scope, args) {
     absolute = location.relative ? url.resolve(location.protocol + '://' + base.host + basepath, location.raw) : location.raw;
     body = request(absolute);
   }
-  if (args.type === 'json') {
-    let template = await body.then(yaml.load)
-    if (args.query) {
-      const query = typeof args.query === 'string' ? args.query : await recurse(parseLocation(absolute), scope, args.query);
-      template = jmespath.search(template, query);
-    }
-    return recurse(parseLocation(absolute), scope, template);
-  } else if (args.type === 'api') {
-    var handler = require('./lib/include/api');
-    return handler(args);
-  } else if (args.type === 'string') {
-    return body;
-  } else if (args.type === 'literal') {
-    return body.then(function (template) {
-      var lines = JSONifyString(template);
-      if (_.isPlainObject(args.context)) {
-        lines = interpolate(lines, args.context);
+  return handleIncludeBody({scope, args, body, absolute });
+}
+
+function passThrough(template) { return template; } 
+
+async function handleIncludeBody({ scope, args, body, absolute }) {
+  const procTemplate = args.doEnv? replaceEnv : passThrough;
+  switch (args.type) {
+    case 'json': {
+      let b = await body;
+      b = procTemplate(b);
+      let template = yaml.load(b)
+      if (args.query) {
+        const query = typeof args.query === 'string' ? args.query : await recurse(parseLocation(absolute), scope, args.query, args.doEnv);
+        template = jmespath.search(template, query);
       }
-      return {
-        'Fn::Join': ['', _.flatten(lines)]
-      };
-    });
+      return recurse(parseLocation(absolute), scope, template, args.doEnv);
+    }
+    case 'api': {
+      var handler = require('./lib/include/api');
+      let template = await handler(args);
+      return procTemplate(template);
+    } 
+    case 'string': {
+      let template = await body;
+      return procTemplate(template)
+    }  
+    case 'literal': {
+      return body.then(function (template) {
+        template = procTemplate(template);
+        var lines = JSONifyString(template);
+        if (_.isPlainObject(args.context)) {
+          lines = interpolate(lines, args.context);
+        }
+        return {
+          'Fn::Join': ['', _.flatten(lines)]
+        };
+      });
+    }
   }
 }
 

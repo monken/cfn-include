@@ -4,7 +4,7 @@
   "description": "Preprocessor for CloudFormation templates with support for loops and flexible include statements",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --timeout 20000 --bail t/include.js t/cli.js"
+    "test": "mocha --timeout 20000 --bail t/include.js t/cli.js t/replaceEnv.js"
   },
   "bin": {
     "cfn-include": "bin/cli.js"

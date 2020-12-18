@@ -18,10 +18,24 @@
       "foo": "bar"
     }
   }, {
-    "name": "simple load",
+    "name": "simple load yaml",
     "template": "t/includes/yaml/deep.yml",
     "output": {
       "foo": "bar"
+    }
+  }, {
+    "name": "doEnv yaml",
+    "template": "t/includes/yaml/doEnv.yaml",
+    "args": ["--doEnv"],
+    "env": {
+      "AWS_REGION": "us-east-1",
+      "SOMETHING": "yah"
+    },
+    "output": {
+      "from": {
+        "hi": "hi from east",
+        "replaceMe": "yah"
+      }
     }
   }, {
     "name": "flatten",
