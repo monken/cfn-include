@@ -41,6 +41,11 @@ var _ = require('lodash'),
       bucket: {
         desc: 'bucket name required for templates larger than 50k',
       },
+      context: {
+        desc: 'template full path. only utilized for stdin when the template is piped to this script',
+        required: false,
+        string: true,
+      },
       prefix: {
         desc: 'prefix for templates uploaded to the bucket',
         default: 'cfn-include',
@@ -79,9 +84,13 @@ if (opts.path) {
       console.error('empty template received from stdin');
       process.exit(1);
     }
+
+    const location = opts.context ? path.resolve(opts.context) : 
+      path.join(process.cwd(), 'template.yml');
+
     return include({
       template: yaml.load(template),
-      url: 'file://' + path.join(process.cwd(), 'template.yml'),
+      url: 'file://' + location,
     }).catch(err => console.error(err));
   });
 }

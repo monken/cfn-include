@@ -55,6 +55,8 @@ Options:
 * `--bucket`         bucket name required for templates larger than 50k
 * `--prefix`         prefix for templates uploaded to the bucket ['cfn-include']
 * `--version`        print version and exit
+* `--context`        template full path. only utilized for stdin when the template is piped to this script
+  example:          `cat examples/base.template | ./bin/cli.js --context examples/base.template`
 
 `cfn-include` also accepts a template passed from stdin
 
