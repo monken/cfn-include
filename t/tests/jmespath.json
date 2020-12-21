@@ -19,6 +19,9 @@
           },
           {
             "c": "d"
+          },
+          {
+            "$SOME_KEY": "$SOME_VAL"
           }
         ]
       }
@@ -43,6 +46,9 @@
           },
           {
             "c": "d"
+          },
+          {
+            "$SOME_KEY": "$SOME_VAL"
           }
         ]
       }
@@ -99,6 +105,27 @@
       },
       "output": {
         "foo": "foobar"
+      }
+    },
+    {
+      "name": "doEnv: complex include literal value with query",
+      "template": {
+        "foo": {
+          "Fn::Include": {
+            "location": "includes/complex.json",
+            "type": "json",
+            "query": "blub[2]"
+          }
+        }
+      },
+     "doEnv": {
+       "SOME_KEY": "testKey",
+       "SOME_VAL": "testVal"
+     },
+      "output": {
+        "foo": {
+          "testKey": "testVal"
+        }
       }
     }
   ]

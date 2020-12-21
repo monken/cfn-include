@@ -24,9 +24,9 @@
       "foo": "bar"
     }
   }, {
-    "name": "doEnv yaml",
+    "name": "enable env yaml",
     "template": "t/includes/yaml/doEnv.yaml",
-    "args": ["--doEnv"],
+    "args": ["--enable", "env"],
     "env": {
       "AWS_REGION": "us-east-1",
       "SOMETHING": "yah"

@@ -230,7 +230,7 @@ function interpolate(lines, context) {
 }
 
 async function include(base, scope, args, doEnv) {
-  args = _.defaults(_.isPlainObject(args) ? args : {
+  args = _.defaults(_.isPlainObject(args) ? { ...args, doEnv } : {
     location: args,
     doEnv,
   }, { type: 'json' });
@@ -268,7 +268,7 @@ async function handleIncludeBody({ scope, args, body, absolute }) {
       b = procTemplate(b);
       let template = yaml.load(b)
       if (args.query) {
-        const query = typeof args.query === 'string' ? args.query : await recurse(parseLocation(absolute), scope, args.query, args.doEnv);
+        const query = _.isString(args.query) ? args.query : await recurse(parseLocation(absolute), scope, args.query, args.doEnv);
         template = jmespath.search(template, query);
       }
       return recurse(parseLocation(absolute), scope, template, args.doEnv);
