@@ -1,0 +1,5 @@
+SomeSecurityGroups:
+  val:
+    Fn::Include:
+      location: ../regions/sg-combined.yml
+      query: '"$AWS_ACCOUNT_NUM"."$AWS_REGION"'
