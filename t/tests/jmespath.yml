@@ -22,7 +22,7 @@ jmespath:
         useFn: bar
 
   - name: "doEnv: complex include literal value with query"
-    only: true
+    # only: true
     template:
       foo:
         Fn::Include:

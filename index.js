@@ -11,7 +11,7 @@ var _ = require('lodash'),
   AWS = require('aws-sdk-proxy'),
   s3 = new AWS.S3(),
   yaml = require('./lib/yaml'),
-  jmespath = require('jmespath'),
+  { getParser } = require('./lib/include/query'),
   deepMerge = require('deepmerge'),
   parseLocation = require('./lib/parselocation'),
   replaceEnv = require('./lib/replaceEnv');
@@ -230,6 +230,7 @@ function interpolate(lines, context) {
 }
 
 async function include(base, scope, args, doEnv) {
+  const procTemplate = args.doEnv? replaceEnv : passThrough;
   args = _.defaults(_.isPlainObject(args) ? { ...args, doEnv } : {
     location: args,
     doEnv,
@@ -238,7 +239,7 @@ async function include(base, scope, args, doEnv) {
   if (!_.isEmpty(location) && !location.protocol) location.protocol = base.protocol;
   if (location.protocol === 'file') {
     absolute = location.relative ? path.join(path.dirname(base.path), location.host, location.path || '') : [location.host, location.path].join('');
-    body = readFile(absolute);
+    body = readFile(absolute).then(procTemplate);
     absolute = location.protocol + '://' + absolute;
   } else if (location.protocol === 's3') {
     var basedir = pathParse(base.path).dir;
@@ -249,16 +250,16 @@ async function include(base, scope, args, doEnv) {
     body = s3.getObject({
       Bucket: bucket,
       Key: key,
-    }).promise().then(res => res['Body'].toString());
+    }).promise().then(res => res['Body'].toString()).then(procTemplate);
   } else if (location.protocol && location.protocol.match(/^https?$/)) {
     var basepath = pathParse(base.path).dir + '/';
     absolute = location.relative ? url.resolve(location.protocol + '://' + base.host + basepath, location.raw) : location.raw;
-    body = request(absolute);
+    body = request(absolute).then(procTemplate);
   }
   return handleIncludeBody({scope, args, body, absolute });
 }
 
-function passThrough(template) { return template; } 
+function passThrough(template) { return template; }
 
 async function handleIncludeBody({ scope, args, body, absolute }) {
   const procTemplate = args.doEnv? replaceEnv : passThrough;
@@ -269,7 +270,7 @@ async function handleIncludeBody({ scope, args, body, absolute }) {
       let template = yaml.load(b)
       if (args.query) {
         const query = _.isString(args.query) ? args.query : await recurse(parseLocation(absolute), scope, args.query, args.doEnv);
-        template = jmespath.search(template, query);
+        template = getParser(args.parser)(template, query);
       }
       return recurse(parseLocation(absolute), scope, template, args.doEnv);
     }

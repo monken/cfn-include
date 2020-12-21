@@ -38,6 +38,36 @@
       }
     }
   }, {
+    "name": "enable env yaml",
+    "only": true,
+    "template": "t/includes/yaml/doEnvSg-12345678912-use-east-1.yaml",
+    "args": ["--enable", "env"],
+    "env": {
+      "AWS_REGION": "us-east-1",
+      "AWS_ACCOUNT_NUM": "12345678912"
+    },
+    "output": {
+      "SomeSecurityGroups": {
+        "val": ["sg-123456"]
+      }
+    }
+  },
+  {
+    "name": "enable env yaml",
+    "only": true,
+    "template": "t/includes/yaml/doEnvSg-lodash-12345678912-use-east-1.yaml",
+    "args": ["--enable", "env"],
+    "env": {
+      "AWS_REGION": "us-east-1",
+      "AWS_ACCOUNT_NUM": "12345678912"
+    },
+    "output": {
+      "SomeSecurityGroups": {
+        "val": ["sg-123456"]
+      }
+    }
+  },
+   {
     "name": "flatten",
     "template": "t/includes/cliflatten.json",
     "output": [{

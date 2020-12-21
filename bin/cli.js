@@ -86,7 +86,12 @@ if (opts.path) {
       console.error('empty template received from stdin');
       process.exit(1);
     }
-    template = opts.doEnv ? replaceEnv(template) : template;
+
+    const location = opts.context ? path.resolve(opts.context) : 
+      path.join(process.cwd(), 'template.yml');
+
+    template = opts.enable === 'env' ? replaceEnv(template) : template;
+    
     return include({
       template: yaml.load(template),
       url: 'file://' + path.join(process.cwd(), 'template.yml'),
