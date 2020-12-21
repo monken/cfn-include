@@ -39,7 +39,6 @@
     }
   }, {
     "name": "enable env yaml",
-    "only": true,
     "template": "t/includes/yaml/doEnvSg-12345678912-use-east-1.yaml",
     "args": ["--enable", "env"],
     "env": {
@@ -54,7 +53,6 @@
   },
   {
     "name": "enable env yaml",
-    "only": true,
     "template": "t/includes/yaml/doEnvSg-lodash-12345678912-use-east-1.yaml",
     "args": ["--enable", "env"],
     "env": {
