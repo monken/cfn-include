@@ -20,3 +20,17 @@ jmespath:
       - plain: bar
         useVar: bar
         useFn: bar
+
+  - name: "doEnv: complex include literal value with query"
+    only: true
+    template:
+      foo:
+        Fn::Include:
+          location: includes/complex.json
+          query: "blub[2]"
+    doEnv:
+      SOME_KEY: testKey
+      SOME_VAL: testVal
+    output:
+      foo:
+        testKey: testVal
