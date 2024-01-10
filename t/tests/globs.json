@@ -1,0 +1,58 @@
+{
+  "file": [
+    {
+      "name": "glob yaml flattened",
+      "template": {
+        "Fn::Flatten": {
+          "Fn::Include": "includes/globs/flattened/yaml/*.yml"
+        }
+      },
+      "output": [
+        { "name": "Jake" },
+        { "name": "Fluffy" },
+        { "name": "Tiger" },
+        { "name": "Rufus" },
+        { "name": "Izzy" }
+      ]
+    },
+    {
+      "name": "glob json flattened",
+      "template": {
+        "Fn::Flatten": {
+          "Fn::Include": "includes/globs/flattened/json/*.json"
+        }
+      },
+      "output": [
+        { "name": "Jake" },
+        { "name": "Fluffy" },
+        { "name": "Tiger" },
+        { "name": "Rufus" },
+        { "name": "Izzy" }
+      ]
+    },
+    {
+      "name": "glob yaml merged",
+      "template": {
+        "Fn::DeepMerge": {
+          "Fn::Include": "includes/globs/merged/yaml/*.yml"
+        }
+      },
+      "output": {
+        "cats": [{ "name": "Jake" }, { "name": "Fluffy" }, { "name": "Tiger" }],
+        "dogs": [{ "name": "Rufus" }, { "name": "Izzy" }]
+      }
+    },
+    {
+      "name": "glob json merged",
+      "template": {
+        "Fn::DeepMerge": {
+          "Fn::Include": "includes/globs/merged/json/*.json"
+        }
+      },
+      "output": {
+        "cats": [{ "name": "Jake" }, { "name": "Fluffy" }, { "name": "Tiger" }],
+        "dogs": [{ "name": "Rufus" }, { "name": "Izzy" }]
+      }
+    }
+  ]
+}

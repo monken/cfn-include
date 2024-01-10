@@ -9,6 +9,7 @@
       "More": { "foo": "bar"}
     }
   }, {
+    "name": "includes/foobar.json",
     "template": {
       "Fn::Include": "includes/foobar.json"
     },
@@ -25,6 +26,7 @@
       "foo": "baz"
     }
   }, {
+    "name": "includes/foobar.json multiple",
     "template": {
       "Version": "2009-09-09",
       "Mappings": {
@@ -48,6 +50,7 @@
       }
     }
   }, {
+    "name": "includes/foobar.json in IPRanges Array",
     "template": {
       "Version": "2009-09-09",
       "Mappings": {
@@ -69,6 +72,7 @@
       }
     }
   }, {
+    "name": "includes/deep.json",
     "template": {
       "Fn::Include": "includes/deep.json"
     },
@@ -76,6 +80,7 @@
       "foo": "bar"
     }
   }, {
+    "name": "../t/includes/yaml/deep.yml",
     "template": {
       "Fn::Include": "../t/includes/yaml/deep.yml"
     },
@@ -91,6 +96,7 @@
       "foo": "bar"
     }
   }, {
+    "name": "includes/verydeep.json",
     "template": {
       "Fn::Include": "includes/verydeep.json"
     },
@@ -98,6 +104,7 @@
       "foo": "bar"
     }
   }, {
+    "name": "includes/subfolder.json",
     "template": {
       "Fn::Include": "includes/subfolder.json"
     },
@@ -121,31 +128,93 @@
     "output": {
       "Mappings": null
     }
+  },
+  {
+    "name": "deep nested w/ query dev",
+    "doEnv": true,
+    "template": {
+      "Fn::Include": {
+        "location": "includes/deepMergeMap.yaml",
+        "parser": "lodash",
+        "query": "dev"
+      }
+    },
+    "output": [
+      {
+        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/BANP/client"
+      },
+      {
+        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/BANP/jenkies-client"
+      }
+    ]
+  },{
+    "name": "deep nested w/ query prod",
+    "doEnv": true,
+    "template": {
+      "Fn::Include": {
+        "location": "includes/deepMergeMap.yaml",
+        "parser": "lodash",
+        "query": "prod"
+      }
+    },
+    "output": [
+      {
+        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/BAPROD/prod-client"
+      },
+      {
+        "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/BAPROD/prod-jenkies-client"
+      }
+    ]
   }],
   "http": [{
+    "name": "http://localhost:9999/foobar.json",
     "template": {
-      "Fn::Include": "https://s3.amazonaws.com/cfn-include-test/v0.0.1/includes/foobar.json"
+      "Fn::Include": "http://localhost:9999/foobar.json"
     },
     "output": {
       "foo": "bar"
     }
   }, {
+    "name": "http://localhost:9999/deep.json",
     "template": {
-      "Fn::Include": "https://s3.amazonaws.com/cfn-include-test/v0.0.1/includes/deep.json"
+      "Fn::Include": "http://localhost:9999/deep.json"
     },
     "output": {
       "foo": "bar"
     }
   }, {
+    "name": "http://localhost:9999/verydeep.json",
     "template": {
-      "Fn::Include": "https://s3.amazonaws.com/cfn-include-test/v0.0.1/includes/verydeep.json"
+      "Fn::Include": "http://localhost:9999/verydeep.json"
     },
     "output": {
       "foo": "bar"
     }
-  }, {
+  },
+  {
+    "name": "http://localhost:9999/subfolder.json",
     "template": {
-      "Fn::Include": "https://s3.amazonaws.com/cfn-include-test/v0.0.1/includes/subfolder.json"
+      "Fn::Include": {
+        "location": "$VAR",
+        "ignoreMissingVar": true
+      }
+    },
+    "output": ""
+  },
+  {
+    "name": "http://localhost:9999/subfolder.json",
+    "template": {
+      "Fn::Include": {
+        "location": "$VAR",
+        "ignoreMissingFile": true
+      }
+    },
+    "output": ""
+  },
+  {
+    "name": "http://localhost:9999/subfolder.json",
+    "template": {
+      "Fn::Include": "http://localhost:9999/subfolder.json"
     },
     "output": {
       "Mappings": {

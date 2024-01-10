@@ -1,0 +1,73 @@
+lodash:
+  - name: recurse in query
+    template:
+      Fn::Map:
+        - [foo]
+        - var
+        - plain:
+            Fn::Include:
+              location: includes/complex.json
+              query: foo
+              parser: lodash
+          useVar:
+            Fn::Include:
+              location: includes/complex.json
+              query: ${var}
+              parser: lodash
+    output:
+      - plain: bar
+        useVar: bar
+
+  - name: recurse in query (one line)
+    template:
+      Fn::Map:
+        - [foo]
+        - var
+        - plain:
+            Fn::Include: includes/complex.json|foo
+          useVar:
+            Fn::Include: includes/complex.json|${var}
+    output:
+      - plain: bar
+        useVar: bar
+  - name: recurse in query (array one line)
+    template:
+      Fn::Map:
+        - [foo]
+        - var
+        - plain:
+            Fn::Include: [includes/complex.json, foo]
+          useVar:
+            Fn::Include: [includes/complex.json, "${var}"]
+    output:
+      - plain: bar
+        useVar: bar
+  - name: recurse in query (multi line)
+    template:
+      Fn::Map:
+        - [foo]
+        - plain:
+            Fn::Include:
+              - includes/complex.json
+              - foo
+          useVar:
+            Fn::Include:
+              - includes/complex.json
+              - _
+    output:
+      - plain: bar
+        useVar: bar
+  - name: "doEnv: complex include literal value with query"
+    # only: true
+    template:
+      foo:
+        Fn::Include:
+          location: includes/complex.json
+          query: "blub.2"
+          parser: lodash
+    doEnv:
+      SOME_KEY: testKey
+      SOME_VAL: testVal
+    output:
+      foo:
+        testKey: testVal

@@ -1,0 +1,10 @@
+joinNow:
+  - name: Fn::JoinNow joins strings immediately
+    template:
+      Fn::JoinNow:
+        - ""
+        - - "arn:aws:s3:::c1-acme-iam-cache-engine-"
+          - ${AWS::AccountId}
+          - "-us-east-1$CFT_STACK_SUFFIX"
+    output:
+      arn:aws:s3:::c1-acme-iam-cache-engine-${AWS::AccountId}-us-east-1$CFT_STACK_SUFFIX

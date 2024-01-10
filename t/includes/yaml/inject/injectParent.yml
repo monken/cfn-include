@@ -1,0 +1,10 @@
+Fn::Flatten:
+  Fn::Map:
+    - Fn::Filenames:
+        location: "../*.yml"
+        omitExtension: true
+    - [ _FILENAMES ]
+    - Fn::Include:
+        location: "./injectChild.yml"
+        inject:
+          FILENAMES: ${_FILENAMES}

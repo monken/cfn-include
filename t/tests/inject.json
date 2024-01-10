@@ -1,0 +1,41 @@
+{
+  "file": [
+    {
+      "name": "inject basic",
+      "inject": {
+        "NAME": "John Doe",
+        "ADDRESS": "Cali"
+      },
+      "template": {
+        "Name": "${NAME}",
+        "Address": "${ADDRESS}"
+      },
+      "output": { "Name": "John Doe", "Address": "Cali" }
+    },
+    {
+      "name": "inject take priority over env",
+      "doEnv": {
+        "NAME": "Billy Bob",
+        "ADDRESS": "MD",
+        "MSG": "Hi!"
+      },
+      "inject": {
+        "NAME": "John Doe",
+        "ADDRESS": "Cali"
+      },
+      "template": {
+        "Name": "${NAME}",
+        "Address": "${ADDRESS}",
+        "Message": "${MSG}"
+      },
+      "output": { "Name": "John Doe", "Address": "Cali", "Message": "Hi!" }
+    },
+    {
+      "name": "inject complex with child includes and child Fn::(s)",
+      "template": {
+        "Fn::Include": "includes/yaml/inject/injectParent.yml"
+      },
+      "output": ["deep", "fnsub", "include", "malformed", "tags"]
+    }
+  ]
+}

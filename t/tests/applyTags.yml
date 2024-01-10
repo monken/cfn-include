@@ -1,0 +1,177 @@
+applyTags:
+  - name: take some resources and apply common tags to taggable only
+    template:
+      Fn::ApplyTags:
+        tags:
+          - Key: foo
+            Value: bar
+          - Key: pb
+            Value: j
+        resources:
+          PolicyOne:
+            Type: AWS::IAM::ManagedPolicy
+            Properties:
+              PolicyDocument:
+                Version: 2012-10-17
+                Statement:
+                  - Effect: Allow
+                    Action:
+                      - s3:*
+                    Resource: "*"
+          RoleOne:
+            Type: AWS::IAM::Role
+            Properties:
+              AssumeRolePolicyDocument:
+                Version: 2012-10-17
+                Statement:
+                  - Effect: Allow
+                    Principal:
+                      Service:
+                        - ec2.amazonaws.com
+                    Action:
+                      - sts:AssumeRole
+              ManagedPolicyArns:
+                - !Ref PolicyOne
+          OICProvider:
+            Type: AWS::IAM::OIDCProvider
+            Properties:
+              Url: https://example.com
+              ClientIdList:
+                - !Ref RoleOne
+    # NOTE: This test could fail in future updates to @cfn-include/utils and aws-cdk-lib
+    # Where resources become taggable upon aws-cdk-lib updates. If it becomes taggable and it wasn't
+    # thats a good thing.
+    output:
+      OICProvider:
+        Properties:
+          ClientIdList:
+            - !Ref RoleOne
+          Tags:
+            - Key: foo
+              Value: bar
+            - Key: pb
+              Value: j
+          Url: https://example.com
+        Type: AWS::IAM::OIDCProvider
+      PolicyOne:
+        Properties:
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:*
+                Resource: "*"
+        Type: AWS::IAM::ManagedPolicy
+      RoleOne:
+        Properties:
+          AssumeRolePolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Principal:
+                  Service:
+                    - ec2.amazonaws.com
+                Action:
+                  - sts:AssumeRole
+          ManagedPolicyArns:
+            - !Ref PolicyOne
+          Tags:
+            - Key: foo
+              Value: bar
+            - Key: pb
+              Value: j
+        Type: AWS::IAM::Role
+  - name: existing tags get merged / take precedence
+    template:
+      Fn::ApplyTags:
+        tags:
+          - Key: foo
+            Value: bar
+          - Key: pb
+            Value: j
+        resources:
+          PolicyOne:
+            Type: AWS::IAM::ManagedPolicy
+            Properties:
+              PolicyDocument:
+                Version: 2012-10-17
+                Statement:
+                  - Effect: Allow
+                    Action:
+                      - s3:*
+                    Resource: "*"
+          RoleOne:
+            Type: AWS::IAM::Role
+            Properties:
+              Tags:
+                - Key: FirstTag
+                  Value: One
+              AssumeRolePolicyDocument:
+                Version: 2012-10-17
+                Statement:
+                  - Effect: Allow
+                    Principal:
+                      Service:
+                        - ec2.amazonaws.com
+                    Action:
+                      - sts:AssumeRole
+              ManagedPolicyArns:
+                - !Ref PolicyOne
+          OICProvider:
+            Type: AWS::IAM::OIDCProvider
+            Properties:
+              Tags:
+                - Key: FirstTag
+                  Value: One
+              Url: https://example.com
+              ClientIdList:
+                - !Ref RoleOne
+    # NOTE: This test could fail in future updates to @cfn-include/utils and aws-cdk-lib
+    # Where resources become taggable upon aws-cdk-lib updates. If it becomes taggable and it wasn't
+    # thats a good thing.
+    output:
+      OICProvider:
+        Properties:
+          ClientIdList:
+            - !Ref RoleOne
+          Tags:
+            - Key: foo
+              Value: bar
+            - Key: pb
+              Value: j
+            - Key: FirstTag
+              Value: One
+          Url: https://example.com
+        Type: AWS::IAM::OIDCProvider
+      PolicyOne:
+        Properties:
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:*
+                Resource: "*"
+        Type: AWS::IAM::ManagedPolicy
+      RoleOne:
+        Properties:
+          AssumeRolePolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Principal:
+                  Service:
+                    - ec2.amazonaws.com
+                Action:
+                  - sts:AssumeRole
+          ManagedPolicyArns:
+            - !Ref PolicyOne
+          Tags:
+            - Key: foo
+              Value: bar
+            - Key: pb
+              Value: j
+            - Key: FirstTag
+              Value: One
+        Type: AWS::IAM::Role

@@ -1,0 +1,14 @@
+amznIntrinsic:
+  - name: Fn::Join can be imported / included
+    template:
+      Fn::Join:
+        - ""
+        - - "arn:aws:s3:::c1-acme-iam-cache-engine-"
+          - !Ref AWS::AccountId
+          - "-us-east-1$CFT_STACK_SUFFIX"
+    output:
+      Fn::Join:
+        - ""
+        - - "arn:aws:s3:::c1-acme-iam-cache-engine-"
+          - !Ref AWS::AccountId
+          - "-us-east-1$CFT_STACK_SUFFIX"

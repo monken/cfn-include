@@ -1,0 +1,58 @@
+{
+  "Metadata": {
+    "Name": "amzn-ami-hvm-2018.03.0.20210224.0-x86_64-gp2",
+    "Owner": "amazon",
+    "CreationDate": "2021-02-24T11:18:14.000Z"
+  },
+  "ca-central-1": {
+    "AMI": "ami-0cbf426e8553ea475"
+  },
+  "us-east-2": {
+    "AMI": "ami-05abc59cb5c333f95"
+  },
+  "eu-west-3": {
+    "AMI": "ami-084901c131bb81554"
+  },
+  "eu-west-2": {
+    "AMI": "ami-0526a2ea416570f68"
+  },
+  "ap-northeast-3": {
+    "AMI": "ami-02cf1b9547200c090"
+  },
+  "eu-north-1": {
+    "AMI": "ami-04059857e65e8706a"
+  },
+  "us-west-1": {
+    "AMI": "ami-00a6eb705abfa5235"
+  },
+  "eu-central-1": {
+    "AMI": "ami-067bf87afbb871599"
+  },
+  "us-west-2": {
+    "AMI": "ami-074d18b2165005fd6"
+  },
+  "us-east-1": {
+    "AMI": "ami-0984a48dcb8fa390a"
+  },
+  "eu-west-1": {
+    "AMI": "ami-06965d227fdac9555"
+  },
+  "sa-east-1": {
+    "AMI": "ami-0d8878c559055f7e5"
+  },
+  "ap-south-1": {
+    "AMI": "ami-0a1ef5c78c35eb30f"
+  },
+  "ap-northeast-2": {
+    "AMI": "ami-041b2fbe37cff5e6e"
+  },
+  "ap-northeast-1": {
+    "AMI": "ami-08c8679dc2213bf15"
+  },
+  "ap-southeast-2": {
+    "AMI": "ami-03793e0cc77ae1dca"
+  },
+  "ap-southeast-1": {
+    "AMI": "ami-0cee4365258700120"
+  }
+}

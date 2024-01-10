@@ -1,0 +1,10 @@
+{
+  "Mappings": {
+    "Mapping1": {
+      "Fn::Include": "include2.json"
+    },
+    "Mapping2": {
+      "Fn::Include": "../foobar.json"
+    }
+  }
+}
