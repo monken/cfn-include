@@ -2,7 +2,7 @@
   AWSTemplateFormatVersion: "2010-09-09"
   Mappings:
     Region2AMI:
-      !Include https://api.netcubed.de/latest/ami/lookup?architecture=HVM64
+      !Include http://localhost:9999/synopsis.json
   Resources:
     Instance:
       Type: AWS::EC2::Instance

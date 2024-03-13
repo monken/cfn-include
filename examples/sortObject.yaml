@@ -1,0 +1,7 @@
+Fn::SortObject:
+  z: 1
+  h: 20
+  c: z
+  i: true
+  a: hi
+

@@ -1,0 +1,18 @@
+{
+  "file": [
+    {
+      "name": "omit object",
+      "template": {
+        "Fn::Include": "includes/omit_object.json"
+      },
+      "output": { "b": "b" }
+    },
+    {
+      "name": "omit array",
+      "template": {
+        "Fn::Include": "includes/omit_array.json"
+      },
+      "output": { "b": "b" }
+    }
+  ]
+}

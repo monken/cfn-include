@@ -1,0 +1,44 @@
+{
+  "file": [
+    {
+      "name": "omit empty strings",
+      "template": {
+        "Fn::OmitEmpty": {
+          "a": "",
+          "b": "b"
+        }
+      },
+      "output": { "b": "b" }
+    },
+    {
+      "name": "omit false is passed through",
+      "template": {
+        "Fn::OmitEmpty": {
+          "a": false,
+          "b": "b"
+        }
+      },
+      "output": { "a": false, "b": "b" }
+    },
+    {
+      "name": "omit empty null",
+      "template": {
+        "Fn::OmitEmpty": {
+          "a": null,
+          "b": "b"
+        }
+      },
+      "output": { "b": "b" }
+    },
+    {
+      "name": "omit 0 is passed through",
+      "template": {
+        "Fn::OmitEmpty": {
+          "a": 0,
+          "b": "b"
+        }
+      },
+      "output": { "a": 0, "b": "b" }
+    }
+  ]
+}

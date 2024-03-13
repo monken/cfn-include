@@ -1,0 +1,11 @@
+Fn::DeepMerge:
+  - prod:
+    - !Sub 'arn:aws:iam::${AWS::AccountId}:role/BAPROD/prod-client'
+    - !Sub 'arn:aws:iam::${AWS::AccountId}:role/BAPROD/prod-jenkies-client'
+  - Fn::DeepMerge:
+      Fn::Map:
+        - [dev, qa]
+        - [ENV_KEY]
+        - ${ENV_KEY}:
+            - !Sub 'arn:aws:iam::${AWS::AccountId}:role/BANP/client'
+            - !Sub 'arn:aws:iam::${AWS::AccountId}:role/BANP/jenkies-client'

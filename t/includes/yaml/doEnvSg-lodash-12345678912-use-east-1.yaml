@@ -1,0 +1,6 @@
+SomeSecurityGroups:
+  val:
+    Fn::Include:
+      location: ../regions/sg-combined.yml
+      parser: lodash
+      query: $AWS_ACCOUNT_NUM.$AWS_REGION

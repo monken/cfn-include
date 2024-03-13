@@ -1,5 +1,3 @@
-[![npm](http://img.shields.io/npm/v/cfn-include.svg?style=flat-square)](https://npmjs.org/package/cfn-include) [![npm](http://img.shields.io/npm/dm/cfn-include.svg?style=flat-square)](https://npmjs.org/package/cfn-include) [![Build Status](https://img.shields.io/travis/monken/cfn-include/master.svg?style=flat-square)](https://travis-ci.org/monken/cfn-include) ![license](https://img.shields.io/badge/license-mit-blue.svg?style=flat-square)
-
 # cfn-include
 
 `cfn-include` is a preprocessor for CloudFormation templates which extends CloudFormation's [intrinsic functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html).
@@ -8,17 +6,50 @@ For example, [`Fn::Include`](#fninclude) provides a convenient way to include fi
 `cfn-include` tries to be minimally invasive, meaning that the template will still look and feel like an ordinary CloudFormation template. This is what sets `cfn-include` apart from other CloudFormation preprocessors such as [CFNDSL](https://github.com/stevenjack/cfndsl), [StackFormation](https://github.com/AOEpeople/StackFormation) and [AWSBoxen](https://github.com/mozilla/awsboxen). There is no need to use a scripting language or adjust to new syntax. Check them out though, they might be a better fit for you.
 
 **Functions**
-* [`Fn::Include`](#fninclude)
-* [`Fn::Flatten`](#fnflatten)
-* [`Fn::GetEnv`](#fngetenv)
-* [`Fn::Length`](#fnlength)
-* [`Fn::Map`](#fnmap)
-* [`Fn::Merge`](#fnmerge)
-* [`Fn::DeepMerge`](#fnmerge)
-* [`Fn::Outputs`](#fnoutputs)
-* [`Fn::Sequence`](#fnsequence)
-* [`Fn::Stringify`](#fnstringify)
-* [`Fn::UpperCamelCase`](#fnuppercamelcase) and `Fn::LowerCamelCase`
+- [cfn-include](#cfn-include)
+  - [Installation](#installation)
+  - [Synopsis](#synopsis)
+    - [CLI](#cli)
+    - [Example](#example)
+  - [Fn::Include](#fninclude)
+    - [Examples](#examples)
+      - [Include a file from a URL](#include-a-file-from-a-url)
+      - [Include a file in the same folder](#include-a-file-in-the-same-folder)
+      - [Include an AWS API response](#include-an-aws-api-response)
+      - [Include Globs](#include-globs)
+      - [Include Inject State](#include-inject-state)
+  - [Fn::Map](#fnmap)
+  - [Fn::Flatten](#fnflatten)
+  - [Fn::FlattenDeep](#fnflattendeep)
+  - [Fn::GetEnv](#fngetenv)
+  - [Fn::Length](#fnlength)
+  - [Fn::Merge](#fnmerge)
+  - [Fn::DeepMerge](#fndeepmerge)
+  - [Fn::Sequence](#fnsequence)
+  - [Fn::Stringify](#fnstringify)
+  - [Fn::Uniq](#fnuniq)
+  - [Fn::Compact](#fncompact)
+  - [Fn::Concat](#fnconcat)
+  - [Fn::Sort](#fnsort)
+  - [Fn::SortedUniq](#fnsorteduniq)
+  - [Fn::SortBy](#fnsortby)
+  - [Fn::SortObject](#fnsortobject)
+  - [Fn::ObjectKeys](#fnobjectkeys)
+  - [Fn::ObjectValues](#fnobjectvalues)
+  - [Fn::Filenames](#fnfilenames)
+  - [Fn::StringSplit](#fnstringsplit)
+  - [Fn::Without](#fnwithout)
+  - [Fn::Omit](#fnomit)
+  - [Fn::OmitEmpty](#fnomitempty)
+  - [Fn::Eval](#fneval)
+  - [Fn::IfEval](#fnifeval)
+  - [Fn::JoinNow](#fnjoinnow)
+  - [Fn::ApplyTags](#fnapplytags)
+  - [Fn::Outputs](#fnoutputs)
+  - [More Examples](#more-examples)
+  - [Proxy Support](#proxy-support)
+  - [Compatibility](#compatibility)
+  - [Web Service](#web-service)
 
 Tag-based syntax is available in YAML templates. For example,`Fn::Include` becomes `!Include`.
 
@@ -42,7 +73,7 @@ curl https://api.netcubed.de/latest/template -XPOST -d @template.json
 
     cfn-include <path> [options]
 
-* `path`
+- `path`
 
   location of template. Either path to a local file, URL or file on an S3 bucket (e.g. `s3://bucket-name/example.template`)
 
@@ -57,7 +88,10 @@ Options:
 * `--version`        print version and exit
 * `--context`        template full path. only utilized for stdin when the template is piped to this script
   example:          `cat examples/base.template | ./bin/cli.js --context examples/base.template`
-
+* `--enable`         different options / toggles: ['env']    [string] [choices: "env"]
+  * `env` pre-process env vars and inject into templates as they are processed looks for $KEY or ${KEY} matches
+* `-i, --inject`     JSON string payload to use for template injection. (Takes precedence over process.env (if enabled) injection and will be merged on top of process.env)
+* `--doLog`          console log out include options in recurse step.
 `cfn-include` also accepts a template passed from stdin
 
 ```
@@ -68,21 +102,19 @@ cat mytemplate.yml | cfn-include
 
 ```yaml
 Mappings:
-  Region2AMI:
-    !Include https://api.netcubed.de/latest/ami/lookup?platform=amzn2
+  Region2AMI: !Include https://api.netcubed.de/latest/ami/lookup?platform=amzn2
 Resources:
   Instance:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: !FindInMap [ Region2AMI, !Ref AWS::Region, AMI ]
+      ImageId: !FindInMap [Region2AMI, !Ref AWS::Region, AMI]
       UserData:
         Fn::Base64:
-          Fn::Sub:
-            !Include { type: string, location: userdata.sh }
+          Fn::Sub: !Include { type: string, location: userdata.sh }
 ```
 
-
 This is what the `userdata.sh` looks like:
+
 ```bash
 #!/bin/bash
 /opt/aws/bin/cfn-init -s ${AWS::StackId} -r MyInstance --region ${AWS::Region}
@@ -94,8 +126,8 @@ cfn-include synopsis.json > output.template
 cfn-include https://raw.githubusercontent.com/monken/cfn-include/master/examples/synopsis.json > output.template
 ```
 
-
 The output will be something like this:
+
 ```javascript
 {
   "AWSTemplateFormatVersion": "2010-09-09",
@@ -128,27 +160,62 @@ The output will be something like this:
 ] ] } } } } } } }
 ```
 
-##  Fn::Include
+## Fn::Include
 
 Place `Fn::Include` anywhere in the template and it will be replaced by the contents it is referring to. The function accepts an object. Parameters are:
 
-* **location**: The location to the file can be relative or absolute. A relative location is interpreted relative to the template. Included files can in turn include more files, i.e. recursion is supported.
-* **type** (optional): either `json`, `string` or `api`. Defaults to `json`. `string` will include the file literally which is useful in combination with `Fn::Sub`. `api` will call any AWS API and return the response which can be included in the template. Choose `json` for both JSON and YAML files. The `literal` type is deprecated and uses the infamous `Fn::Join` syntax.
-* **context** (optional, deprecated): If `type` is `literal` a context object with variables can be provided. The object can contain plain values or references to parameters or resources in the CloudFormation template (e.g. `{ "Ref": "StackId" }`). Use Mustache like syntax in the file. This option is deprecated in favor of the `Fn::Sub` syntax (see examples below).
-* **query** (optional): If `type` is `json` a [JMESPath](http://jmespath.org/) query can be provided. The file to include is then queried using the value as a JMESPath expression.
+- **location**: The location to the file can be relative or absolute. A relative location is interpreted relative to the template. Included files can in turn include more files, i.e. recursion is supported.
+- **ignoreMissingVar**: If set to `true` the function will not throw an error if a variable is not found (unset). Instead, the variable will be replaced by an empty string. Defaults to `false`.
+- **ignoreMissingFile**: If set to `true` the function will not throw an error if the file is not found. Instead, the function will be replaced by an empty string. Defaults to `false`.
+- **type** (optional): either `json`, `string` or `api`. Defaults to `json`. `string` will include the file literally which is useful in combination with `Fn::Sub`. `api` will call any AWS API and return the response which can be included in the template. Choose `json` for both JSON and YAML files. The `literal` type is deprecated and uses the infamous `Fn::Join` syntax.
+- **context** (optional, deprecated): If `type` is `literal` a context object with variables can be provided. The object can contain plain values or references to parameters or resources in the CloudFormation template (e.g. `{ "Ref": "StackId" }`). Use Mustache like syntax in the file. This option is deprecated in favor of the `Fn::Sub` syntax (see examples below).
+- **parser** (optional):
+  - string: default is `"jmespath"`
+  - object `{location, query, parser}`: default is `"jmespath"`
+  - array: `[location, query, parser]`: default is `"lodash"`
+  - string (split |) `location|query|parser`: default is `"lodash"`
+- **query** (optional): If `type` is `json`, `array`, or `string split |`
+  - [JMESPath](http://jmespath.org/) query can be provided. The file to include is then queried using the value as a JMESPath expression.
+  - [Lodash _.get](https://lodash.com/docs/4.17.15#get) query
 
 Only applicable if **type** is `api`:
 
-* **service**: Service to call (see [AWSJavaScriptSDK](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html), case sensitive, e.g. `EC2`, `CloudFormation`)
-* **action**: Action to call (case sensitive, e.g. `updateStack`, `describeRegions`)
-* **parameters** (optional): Parameters passed to **action** (e.g. `{ StackName:  "MyStack" }`)
-* **region** (optional): Either `AWS_DEFAULT_REGION` or this parameter have to be set which specifies the region where the API call is made.
-
+- **service**: Service to call (see [AWSJavaScriptSDK](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html), case sensitive, e.g. `EC2`, `CloudFormation`)
+- **action**: Action to call (case sensitive, e.g. `updateStack`, `describeRegions`)
+- **parameters** (optional): Parameters passed to **action** (e.g. `{ StackName: "MyStack" }`)
+- **region** (optional): Either `AWS_DEFAULT_REGION` or this parameter have to be set which specifies the region where the API call is made.
 You can also use a plain string if you want the default behavior, which is simply including a JSON file.
+- **isGlob** (optional): Forces the usage of [globby](https://www.npmjs.com/package/globby) to spit out an array of includes
+- **inject** (optional): Pass in localized env / options to be injected into a template
 
 ### Examples
 
-Include a file from a URL
+#### Include via Query
+
+```yaml
+# all equivalent
+Fn::Include:
+  location: ./t/includes/complex.json
+  query: bulb[1].c
+
+Fn::Include:
+  location: ./t/includes/complex.json
+  query: bulb.1.c
+  parser: lodash
+
+# Array parser is lodash
+Fn::Include: [./t/includes/complex.json, bulb.1.c]
+
+# Array default parser is lodash
+Fn::Include:
+  - ./t/includes/complex.json
+  - bulb.1.c
+
+# string split "|" default  parser is lodash
+Fn::Include: ./t/includes/complex.json|bulb.1.c
+```
+
+#### Include a file from a URL
 
 ```yaml
 !Include https://example.com/include.json
@@ -166,7 +233,7 @@ Include a file from an S3 bucket. Authentication is handled by `aws-sdk`. See [S
 !Include s3://bucket-name/include1.json
 ```
 
-Include a file in the same folder
+#### Include a file in the same folder
 
 ```yaml
 !Include include.json
@@ -181,14 +248,16 @@ Fn::Sub:
     location: https://example.com/userdata.txt
 ```
 
-Include an AWS API response, e.g. loop through all regions and return the image id of a specific AMI:
+#### Include an AWS API response
+
+IE: loop through all regions and return the image id of a specific AMI:
 
 ```yaml
 Fn::Merge:
   Fn::Map:
     - Fn::Include:
         action: describeRegions
-        query: 'Regions[*].RegionName[]'
+        query: "Regions[*].RegionName[]"
         service: EC2
         type: api
     - _:
@@ -200,7 +269,7 @@ Fn::Merge:
                 - Name: manifest-location
                   Values:
                     - amazon/amzn-ami-hvm-2016.03.3.x86_64-gp2
-            query: 'Images[*].ImageId | [0]'
+            query: "Images[*].ImageId | [0]"
             region: _
             service: EC2
             type: api
@@ -216,9 +285,80 @@ Output as JSON:
 }
 ```
 
+#### Include Globs
+
+Essentially imagine if you had several yaml or json files you wanted to include.
+
+```
+./src/
+  files/
+    - one.yml
+    - two.yml
+    - three.yml
+    - four.yml
+  main.yml
+```
+
+Before Glob you would have to do:
+
+main.yml
+
+```yml
+Fn::Map:
+  - [one, two, three]
+  - [FILE]
+  - Fn::Include: ./files/${FILE}.yml
+```
+
+With Glob
+
+main.yml
+
+```yml
+Fn::Include: ./files/*.yml
+```
+
+or (say you need to ignore something)
+
+```yml
+Fn::Include:
+  location: ./files/!(four).yml
+  isGlob: true
+```
+
+#### Include Inject State
+
+This feature uses the exact same logic as doEnv in that all env variables are traversed and replaced however this is
+with localized state for the included file.
+
+File to inject to:
+
+`toInject.yml` - your include file
+
+```yml
+SomeResource:
+  Name: ${LOCALIZED_NAME}
+```
+
+Consume it and add some custom state
+
+```yml
+Fn::Include:
+  location: ./toInject.yml
+  inject:
+    LOCALIZED_NAME: CustomName
+```
+
+yields
+
+```yml
+SomeResource:
+  Name: CustomName
+```
+
 ## Fn::Map
 
-`Fn::Map` is the equivalent of the JavaScript `map()` function allowing for the transformation of an input array to an output array.
+`Fn::Map` is the equivalent of the lodash [`map()`](https://lodash.com/docs/4.17.15#map) function allowing for the transformation of an input array or object to an output array.
 By default the string `_` is used as the variable in the map function. A custom variable can be provided as a second parameter, see [`Fn::Flatten`](#fnflatten) for an example. If a custom variable is used, the variable will also be replaced if found in the object key, see [`Fn::Merge`](#fnmerge) for an example.
 
 ```yaml
@@ -231,15 +371,18 @@ Fn::Map:
 ```
 
 ```json
-[{
-  "CidrIp": "0.0.0.0/0",
-  "FromPort": "80",
-  "ToPort": "80"
-}, {
-  "CidrIp": "0.0.0.0/0",
-  "FromPort": "443",
-  "ToPort": "443"
-}]
+[
+  {
+    "CidrIp": "0.0.0.0/0",
+    "FromPort": "80",
+    "ToPort": "80"
+  },
+  {
+    "CidrIp": "0.0.0.0/0",
+    "FromPort": "443",
+    "ToPort": "443"
+  }
+]
 ```
 
 Custom variables can be specified as a single value, of as a list of up to three values. If a list is specified, the second variable is used as index and the third (if present) as size.
@@ -301,37 +444,148 @@ SecurityGroupIngress:
 Results in:
 
 ```json
-{ "SecurityGroupIngress": [{
-  "CidrIp": "10.0.0.0/8",
-  "FromPort": "80",
-  "ToPort": "80",
-  "IpProtocol": "tcp"
-}, {
-  "CidrIp": "172.16.0.0/12",
-  "FromPort": "80",
-  "ToPort": "80",
-  "IpProtocol": "tcp"
-}, {
-  "CidrIp": "192.168.0.0/16",
-  "FromPort": "80",
-  "ToPort": "80",
-  "IpProtocol": "tcp"
-}, {
-  "CidrIp": "10.0.0.0/8",
-  "FromPort": "443",
-  "ToPort": "443",
-  "IpProtocol": "tcp"
-}, {
-  "CidrIp": "172.16.0.0/12",
-  "FromPort": "443",
-  "ToPort": "443",
-  "IpProtocol": "tcp"
-}, {
-  "CidrIp": "192.168.0.0/16",
-  "FromPort": "443",
-  "ToPort": "443",
-  "IpProtocol": "tcp"
-}]}
+{
+  "SecurityGroupIngress": [
+    {
+      "CidrIp": "10.0.0.0/8",
+      "FromPort": "80",
+      "ToPort": "80",
+      "IpProtocol": "tcp"
+    },
+    {
+      "CidrIp": "172.16.0.0/12",
+      "FromPort": "80",
+      "ToPort": "80",
+      "IpProtocol": "tcp"
+    },
+    {
+      "CidrIp": "192.168.0.0/16",
+      "FromPort": "80",
+      "ToPort": "80",
+      "IpProtocol": "tcp"
+    },
+    {
+      "CidrIp": "10.0.0.0/8",
+      "FromPort": "443",
+      "ToPort": "443",
+      "IpProtocol": "tcp"
+    },
+    {
+      "CidrIp": "172.16.0.0/12",
+      "FromPort": "443",
+      "ToPort": "443",
+      "IpProtocol": "tcp"
+    },
+    {
+      "CidrIp": "192.168.0.0/16",
+      "FromPort": "443",
+      "ToPort": "443",
+      "IpProtocol": "tcp"
+    }
+  ]
+}
+```
+
+## Fn::FlattenDeep
+
+This function flattens an array as many levels as possible. This is useful for flattening out nested [`Fn::Map`](#fnmap) calls.
+
+```yaml
+SecurityGroupIngress:
+  Fn::FlattenDeep:
+    Fn::Map:
+      - [80, 443]
+      - $
+      - Fn::Map:
+          - [10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16]
+          - Fn::Map:
+              - [tcp, udp]
+              - PROTOCOL
+              - CidrIp: _
+                FromPort: $
+                ToPort: $
+                IpProtocol: PROTOCOL
+```
+
+Results in:
+
+```json
+{
+  "SecurityGroupIngress": [
+    {
+      "CidrIp": "10.0.0.0/8",
+      "FromPort": "80",
+      "ToPort": "80",
+      "IpProtocol": "tcp"
+    },
+    {
+      "CidrIp": "10.0.0.0/8",
+      "FromPort": "80",
+      "ToPort": "80",
+      "IpProtocol": "udp"
+    },
+    {
+      "CidrIp": "172.16.0.0/12",
+      "FromPort": "80",
+      "ToPort": "80",
+      "IpProtocol": "tcp"
+    },
+    {
+      "CidrIp": "172.16.0.0/12",
+      "FromPort": "80",
+      "ToPort": "80",
+      "IpProtocol": "udp"
+    },
+    {
+      "CidrIp": "192.168.0.0/16",
+      "FromPort": "80",
+      "ToPort": "80",
+      "IpProtocol": "tcp"
+    },
+    {
+      "CidrIp": "192.168.0.0/16",
+      "FromPort": "80",
+      "ToPort": "80",
+      "IpProtocol": "udp"
+    },
+    {
+      "CidrIp": "10.0.0.0/8",
+      "FromPort": "443",
+      "ToPort": "443",
+      "IpProtocol": "tcp"
+    },
+    {
+      "CidrIp": "10.0.0.0/8",
+      "FromPort": "443",
+      "ToPort": "443",
+      "IpProtocol": "udp"
+    },
+    {
+      "CidrIp": "172.16.0.0/12",
+      "FromPort": "443",
+      "ToPort": "443",
+      "IpProtocol": "tcp"
+    },
+    {
+      "CidrIp": "172.16.0.0/12",
+      "FromPort": "443",
+      "ToPort": "443",
+      "IpProtocol": "udp"
+    },
+    {
+      "CidrIp": "192.168.0.0/16",
+      "FromPort": "443",
+      "ToPort": "443",
+      "IpProtocol": "tcp"
+    },
+    {
+      "CidrIp": "192.168.0.0/16",
+      "FromPort": "443",
+      "ToPort": "443",
+      "IpProtocol": "udp"
+    }
+  ]
+}
 ```
 
 ## Fn::GetEnv
@@ -486,6 +740,337 @@ cfn-include stack.config.yml > stack.config.json
 aws cloudformation create-stack --cli-input-json file://stack.config.json
 ```
 
+## Fn::Uniq
+
+This function filters only the unique elements of an array
+
+```yaml
+SecurityGroupIngress:
+  Fn::Uniq:
+    Fn::Flatten:
+      - [1, 2]
+      - [3, 4]
+      - [1, 4, 6]
+```
+
+Results in:
+
+```json
+{
+  "SecurityGroupIngress": [
+    1,
+    2,
+    3,
+    4,
+    6
+  ]
+}
+```
+
+## Fn::Compact
+
+This function removes falsy elements same as [lodash](https://lodash.com/docs/4.17.15#compact)
+
+```yaml
+SecurityGroupIngress:
+  Fn::Compact:
+    - 1
+    - a
+    - ""
+    - false
+    - true
+```
+
+Results in:
+
+```json
+{
+  "SecurityGroupIngress": [
+    1,
+    "a",
+    true
+  ]
+}
+```
+
+## Fn::Concat
+
+_.concat
+
+```yaml
+Fn::Concat:
+  - [a, b, c]
+  - d
+```
+
+Results in:
+
+```json
+[
+  "a",
+  "b",
+  "c",
+  "d"
+]
+```
+
+## Fn::Sort
+
+`$ ./bin/cli.js [examples/sort.yaml](examples/sort.yaml)`
+
+```json
+[
+  1,
+  20,
+  22,
+  30,
+  30,
+  33.3,
+  40,
+  5.5,
+  50,
+  50
+]
+```
+
+## Fn::SortedUniq
+
+`$ ./bin/cli.js [examples/sortedUniq.yaml](examples/sortedUniq.yaml)`
+
+```json
+[
+  1,
+  20,
+  22,
+  30,
+  33.3,
+  40,
+  5.5,
+  50
+]
+```
+
+## Fn::SortBy
+
+`$ ./bin/cli.js [examples/sortBy.yaml](examples/sortBy.yaml)`
+
+```json
+[
+  {
+    "name": "Ana",
+    "age": 12
+  },
+  {
+    "name": "Ana",
+    "age": 31
+  },
+  {
+    "name": "Bob",
+    "age": 17
+  },
+  {
+    "name": "Colby",
+    "age": 35
+  },
+  {
+    "name": "Fred",
+    "age": 50
+  },
+  {
+    "name": "Jack",
+    "age": 40
+  },
+  {
+    "name": "Ted",
+    "age": 20
+  },
+  {
+    "name": "Zed",
+    "age": 90
+  }
+]
+```
+
+## Fn::SortObject
+
+See: [examples/sortObject.yaml](examples/sortObject.yaml)
+
+`$ ./bin/cli.js examples/sortObject.yaml`
+
+```json
+{
+  "a": "hi",
+  "c": "z",
+  "h": 20,
+  "i": true,
+  "z": 1
+}
+```
+
+## Fn::ObjectKeys
+
+This function uses [Object.keys](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys)
+
+```yaml
+FamilyNames:
+  Fn::ObjectKeys:
+    Ted: 18 
+    Lucy: 5
+    Tom: 10
+```
+
+Results in:
+
+```yaml
+FamilyNames:
+  - Ted
+  - Lucy
+  - Tom
+```
+
+## Fn::ObjectValues
+
+This function uses [Object.values](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values)
+
+```yaml
+FamilyAges:
+  Fn::ObjectValues:
+    Ted: 18 
+    Lucy: 5
+    Tom: 10
+```
+
+Results in:
+
+```yaml
+FamilyAges:
+  - 18
+  - 5
+  - 10
+```
+
+## Fn::Filenames
+
+```yaml
+Fn::Filenames:
+  location: "../t/fixtures"
+  omitExtension: true
+```
+
+```json
+[
+  "deep",
+  "foobar",
+  "subfolder",
+  "synopsis",
+  "verydeep",
+  "include1",
+  "include2"
+]
+```
+
+## Fn::StringSplit
+
+Useful for injected Includes which you need to run `Fn::Map` upon.
+
+```yaml
+Fn::StringSplit:
+  string: "A,B,C"
+  separator: "," # defaults to this so it can be omitted
+```
+
+```yaml
+- A
+- B
+- C
+```
+
+## Fn::Without
+
+```yaml
+Fn::Without:
+  - ["a", "b", "c", "d"]
+  - ["b", "c"]
+```
+
+```yaml
+- "a",
+- "d"
+```
+
+## Fn::Omit
+
+[omit_object](t/includes/omit_object.json)
+[omit_array](t/includes/omit_array.json)
+
+```yaml
+b: b
+```
+
+## Fn::OmitEmpty
+
+See [omitEmpty test file](t/omitEmpty.json), file and expectations (output). 
+
+In summary falsy values are omitted from an object except `false` and `0`.
+
+## Fn::Eval
+
+```yaml
+Fn::Eval:
+  state: [1, 2, 3]
+  script: >
+    state.map((v) => 2 * v);
+```
+
+```yaml
+- 2
+- 4
+- 6
+```
+
+## Fn::IfEval
+
+```yaml
+Fn::IfEval:
+  inject:
+    lastName: bear
+  # doLog: true
+  evalCond: ('$lastName' === 'bear')
+  truthy:
+    Name: Yogi
+    LastName: Bear
+  falsy:
+    Name: Fred
+    LastName: Flint
+```
+
+```yaml
+Name: Yogi
+LastName: Bear
+```
+
+## Fn::JoinNow
+
+```yaml
+Fn::JoinNow:
+  - ""
+  - - "arn:aws:s3:::c1-acme-iam-cache-engine-"
+    - ${AWS::AccountId}
+    - "-us-east-1$CFT_STACK_SUFFIX"
+```
+
+```yaml
+arn:aws:s3:::c1-acme-iam-cache-engine-${AWS::AccountId}-us-east-1$CFT_STACK_SUFFIX
+```
+
+## Fn::ApplyTags
+
+See [ApplyTags test file](t/tests/applyTags.yml).
+
+Fields:
+`(T|t)ags`: sequence of {Key, Value} objects to me merged in as Tags properties of a taggable resource.
+`resources`: Object mapping of resources, this is usually your root `CFT.Resources` block.
+
 ## Fn::UpperCamelCase
 
 ```yaml
@@ -499,7 +1084,7 @@ This helper transformation simplifies the definition of output variables and exp
 ```yaml
 Outputs:
   Fn::Outputs:
-    Version: !GetEnv [VERSION, '1.0.0']
+    Version: !GetEnv [VERSION, "1.0.0"]
     BucketArn: ${Bucket.Arn}
     BucketPolicy:
       Condition: HasBucketPolicy
@@ -514,7 +1099,7 @@ This will translate into:
 ```yaml
 Outputs:
   Version:
-    Value: !Sub '1.0.0'
+    Value: !Sub "1.0.0"
     Export:
       Name: !Sub ${AWS::StackName}:Version
 
@@ -560,7 +1145,7 @@ Node.js versions 8 and up are supported both on Windows and Linux.
 
     curl https://api.netcubed.de/latest/template?[options] -XPOST -d @<path>
 
-* `path`
+- `path`
 
   the contents of `path` will be `POST`ed to the web service. See `man curl` for details.
 
@@ -568,7 +1153,7 @@ Options:
 
 Options are query parameters.
 
-* `validate=false` do not validate template [true]
+- `validate=false` do not validate template [true]
 
 To compile the synopsis run the following command.
 

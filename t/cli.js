@@ -1,31 +1,41 @@
-var include = require('../index'),
-  assert = require('assert'),
-  fs = require('fs'),
-  exec = require('child_process').execFile;
+const assert = require('assert');
+const exec = require('child_process').execFile;
+
+const extendEnv = require('./tests/extendEnv');
 
 ['cli'].forEach(function (file) {
-  var tests = require('./tests/' + file + '.json');
-  for (var category in tests) {
+  // eslint-disable-next-line global-require, import/no-dynamic-require
+  const tests = require(`./tests/${file}.json`);
+  // eslint-disable-next-line guard-for-in, no-restricted-syntax
+  for (const category in tests) {
     describe(category, function () {
       tests[category].forEach(function (test) {
-        it(test.name || 'include', function (done) {
-          var proc = exec('node',
-            test.template ? ['bin/cli.js', test.template] : ['bin/cli.js'],
-            function (err, out, stderr) {
+        const fn = test.only ? it.only : it;
+        fn(test.name || 'include', function (done) {
+          let cliArgs = test.template ? ['bin/cli.js', test.template] : ['bin/cli.js'];
+          if (test.args) {
+            cliArgs = cliArgs.concat(test.args);
+          }
+          extendEnv(test.env, () => {
+            // console.log({ cliArgs });
+            const proc = exec('node', cliArgs, function (err, out, stderr) {
+              // console.log({ out });
               if (test.exitCode) {
-                assert.ok(stderr.match(new RegExp(test.errorMessage)));
-                assert.equal(test.exitCode, err.code);
+                assert.ok(stderr.match(new RegExp(test.errorMessage)), 'stderr match');
+                assert.equal(test.exitCode, err.code, 'exit code');
                 return done();
               }
-              var json = JSON.parse(out.toString());
+              // console.log({out: out.toString()})
+              const json = JSON.parse(out.toString());
               delete json.Metadata;
               assert.deepEqual(json, test.output);
               done();
             });
-          if (test.stdin) {
-            proc.stdin.write(test.stdin);
-            proc.stdin.end();
-          };
+            if (test.stdin) {
+              proc.stdin.write(test.stdin);
+              proc.stdin.end();
+            }
+          });
         });
       });
     });

@@ -18,12 +18,54 @@
       "foo": "bar"
     }
   }, {
-    "name": "simple load",
+    "name": "simple load yaml",
     "template": "t/includes/yaml/deep.yml",
     "output": {
       "foo": "bar"
     }
   }, {
+    "name": "enable env yaml",
+    "template": "t/includes/yaml/doEnv.yaml",
+    "args": ["--enable", "env"],
+    "env": {
+      "AWS_REGION": "us-east-1",
+      "SOMETHING": "yah"
+    },
+    "output": {
+      "from": {
+        "hi": "hi from east",
+        "replaceMe": "yah"
+      }
+    }
+  }, {
+    "name": "enable env yaml",
+    "template": "t/includes/yaml/doEnvSg-12345678912-use-east-1.yaml",
+    "args": ["--enable", "env"],
+    "env": {
+      "AWS_REGION": "us-east-1",
+      "AWS_ACCOUNT_NUM": "12345678912"
+    },
+    "output": {
+      "SomeSecurityGroups": {
+        "val": ["sg-123456"]
+      }
+    }
+  },
+  {
+    "name": "enable env yaml",
+    "template": "t/includes/yaml/doEnvSg-lodash-12345678912-use-east-1.yaml",
+    "args": ["--enable", "env"],
+    "env": {
+      "AWS_REGION": "us-east-1",
+      "AWS_ACCOUNT_NUM": "12345678912"
+    },
+    "output": {
+      "SomeSecurityGroups": {
+        "val": ["sg-123456"]
+      }
+    }
+  },
+   {
     "name": "flatten",
     "template": "t/includes/cliflatten.json",
     "output": [{

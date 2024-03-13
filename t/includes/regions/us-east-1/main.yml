@@ -1,0 +1,3 @@
+from:
+  hi: "hi from east"
+  replaceMe: $SOMETHING

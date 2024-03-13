@@ -1,0 +1,10 @@
+dist
+coverage.txt
+
+*.zip
+*.DS_Store
+*.log
+
+node_modules
+cache
+tmp

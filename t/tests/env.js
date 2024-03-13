@@ -1,35 +1,35 @@
 module.exports = {
-  "getenv": [
+  getenv: [
     {
-      "name": "get existing variable",
-      "template": {
-        "readme": {
-          "Fn::GetEnv": "README"
-        }
+      name: 'get existing variable',
+      template: {
+        readme: {
+          'Fn::GetEnv': 'README',
+        },
       },
-      "output": {
-        "readme": "readme"
-      }
+      output: {
+        readme: 'readme',
+      },
     },
     {
-      "name": "get non-existing variable",
-      "template": {
-        "readme": {
-          "Fn::GetEnv": "FOOBAR"
-        }
+      name: 'get non-existing variable',
+      template: {
+        readme: {
+          'Fn::GetEnv': 'FOOBAR',
+        },
       },
-      "catch": (err) => (err instanceof Error)
+      catch: (err) => err instanceof Error,
     },
     {
-      "name": "get non-existing variable with default",
-      "template": {
-        "readme": {
-          "Fn::GetEnv": ["FOOBAR", true]
-        }
+      name: 'get non-existing variable with default',
+      template: {
+        readme: {
+          'Fn::GetEnv': ['FOOBAR', true],
+        },
       },
-      "output": {
-        "readme": true
-      }
-    }
-  ]
-}
+      output: {
+        readme: true,
+      },
+    },
+  ],
+};

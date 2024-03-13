@@ -1,0 +1,22 @@
+Fn::SortBy:
+  list:
+    - name: Ted
+      age: 20
+    - name: Zed
+      age: 90
+    - name: Bob
+      age: 17
+    - name: Fred
+      age: 50
+    - name: Colby
+      age: 35
+    - name: Jack
+      age: 40
+    - name: Ana
+      age: 31
+    - name: Ana
+      age: 12
+  iteratees:
+    - name
+    - age
+

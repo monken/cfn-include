@@ -79,5 +79,35 @@
         }
       }
     }
+  },{
+    "name": "merge into existing object w/ include",
+    "template": {
+      "Resources": {
+        "Grabbed": {
+          "Fn::Include": "./fixtures/foobar.json"
+        },
+        "IAMUser": {"Type":"AWS::IAM::User"},
+        "Fn::Merge": {"Fn::Map": [["A","B"],"AZ", {
+            "Subnet${AZ}":{"Type":"AWS::EC2::Subnet"}
+          }]
+        }
+      }
+    },
+    "output": {
+      "Resources": {
+        "Grabbed": {
+          "foo": "bar"
+        },
+        "IAMUser": {
+          "Type":"AWS::IAM::User"
+        },
+        "SubnetA": {
+          "Type": "AWS::EC2::Subnet"
+        },
+        "SubnetB": {
+          "Type": "AWS::EC2::Subnet"
+        }
+      }
+    }
   }]
 }

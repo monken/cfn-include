@@ -1,0 +1,2 @@
+Fn::StringSplit:
+  string: ${FILENAMES}

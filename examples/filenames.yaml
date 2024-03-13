@@ -1,0 +1,3 @@
+Fn::Filenames:
+  location: "../t/fixtures"
+  omitExtension: true
