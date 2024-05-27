@@ -38,7 +38,7 @@ applyTags:
               Url: https://example.com
               ClientIdList:
                 - !Ref RoleOne
-    # NOTE: This test could fail in future updates to @cfn-include/utils and aws-cdk-lib
+    # NOTE: This test could fail in future updates to @znemz/cft-utils and aws-cdk-lib
     # Where resources become taggable upon aws-cdk-lib updates. If it becomes taggable and it wasn't
     # thats a good thing.
     output:
@@ -127,7 +127,7 @@ applyTags:
               Url: https://example.com
               ClientIdList:
                 - !Ref RoleOne
-    # NOTE: This test could fail in future updates to @cfn-include/utils and aws-cdk-lib
+    # NOTE: This test could fail in future updates to @znemz/cft-utils and aws-cdk-lib
     # Where resources become taggable upon aws-cdk-lib updates. If it becomes taggable and it wasn't
     # thats a good thing.
     output:
