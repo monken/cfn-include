@@ -26,7 +26,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['t/**/*.js', 'workspaces/**/*.test.js'],
+      files: ['t/**/*.js'],
       plugins: ['mocha'],
       env: {
         mocha: true,

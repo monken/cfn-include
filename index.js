@@ -10,12 +10,12 @@ const { addProxyToClient } = require('aws-sdk-v3-proxy');
 
 const pathParse = require('path-parse');
 const deepMerge = require('deepmerge');
-const { isTaggableResource } = require('@cfn-include/utils/src/resources/taggable');
+const { isTaggableResource } = require('@znemz/cft-utils/src/resources/taggable');
 
 const request = require('./lib/request');
 const PromiseExt = require('./lib/promise');
 
-const S3 = (opts = {}) => addProxyToClient(new S3Client(opts));
+const S3 = (opts = {}) => addProxyToClient(new S3Client(opts), { throwOnNoProxy: false });
 
 const s3 = S3();
 const yaml = require('./lib/yaml');
