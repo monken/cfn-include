@@ -54,6 +54,7 @@ tests.forEach(function (file) {
           // eslint-disable-next-line n/no-path-concat
           url: `file://${__dirname}/template.json`,
           doEnv: !!test.doEnv || false,
+          doEval: !!test.doEval || false,
         };
         if (test.inject) {
           opts.inject = test.inject;

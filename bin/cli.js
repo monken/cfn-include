@@ -70,8 +70,9 @@ const opts = yargs
     },
     enable: {
       string: true,
-      desc: `enable different options: ['env']`,
-      choices: ['env'],
+      desc: `enable different options: ['env','eval'] or a combination of both via comma.`,
+      choices: ['', 'env', 'env,eval', 'eval,env', 'eval'], // '' hack
+      default: '',
     },
     inject: {
       alias: 'i',
@@ -96,6 +97,9 @@ const opts = yargs
   })
   .parse();
 
+// make enable an array
+opts.enable = opts.enable.split(',');
+
 let promise;
 if (opts.path) {
   let location;
@@ -105,7 +109,8 @@ if (opts.path) {
   else location = `file://${path.join(process.cwd(), opts.path)}`;
   promise = include({
     url: location,
-    doEnv: opts.enable === 'env',
+    doEnv: opts.enable.includes('env'),
+    doEval: opts.enable.includes('eval'),
     inject: opts.inject,
     doLog: opts.doLog,
   });
@@ -126,12 +131,13 @@ if (opts.path) {
       ? path.resolve(opts.context)
       : path.join(process.cwd(), 'template.yml');
 
-    template = opts.enable === 'env' ? replaceEnv(template) : template;
+    template = opts.enable.includes('env') ? replaceEnv(template) : template;
 
     return include({
       template: yaml.load(template),
       url: `file://${location}`,
-      doEnv: opts.enable === 'env',
+      doEnv: opts.enable.includes('env'),
+      doEval: opts.enable.includes('eval'),
       inject: opts.inject,
       doLog: opts.doLog,
     }).catch((err) => console.error(err));

@@ -2,7 +2,7 @@ const url = require('url');
 const path = require('path');
 const { readFile } = require('fs/promises');
 const _ = require('lodash');
-const globby = require('globby');
+const { globSync } = require('glob');
 const Promise = require('bluebird');
 const sortObject = require('@znemz/sort-object');
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
@@ -44,6 +44,7 @@ const { isOurExplicitFunction } = require('./lib/schema');
  *     doEnv: opts.enable === 'env',
  *     inject: opts.inject,
  *     doLog: opts.doLog,
+ *     doEval: opts.doEval, -- allow Fn::Eval to be used
  *   })
  */
 module.exports = async function (options) {
@@ -231,7 +232,7 @@ async function recurse({ base, scope, cft, ...opts }) {
         }
       );
     }
-    if (cft['Fn::Eval']) {
+    if (cft['Fn::Eval'] && opts.doEval) {
       return recurse({ base, scope, cft: cft['Fn::Eval'], ...opts }).then(function (json) {
         // **WARNING** you have now enabled god mode
         // eslint-disable-next-line no-unused-vars, prefer-const
@@ -262,7 +263,7 @@ async function recurse({ base, scope, cft, ...opts }) {
             const absolute = location.relative
               ? path.join(path.dirname(base.path), location.host, location.path || '')
               : [location.host, location.path].join('');
-            const globs = globby.sync(absolute);
+            const globs = globSync(absolute).sort();
             if (json.omitExtension) {
               return globs.map((f) => path.basename(f, path.extname(f)));
             }
@@ -386,7 +387,7 @@ async function recurse({ base, scope, cft, ...opts }) {
       return isString ? seq.map((i) => String.fromCharCode(i)) : seq;
     }
 
-    if (cft['Fn::IfEval']) {
+    if (cft['Fn::IfEval'] && opts.doEval) {
       return recurse({ base, scope, cft: cft['Fn::IfEval'], ...opts }).then(function (json) {
         // eslint-disable-next-line prefer-const
         let { truthy, falsy, evalCond, inject, doLog } = json;
@@ -590,7 +591,7 @@ async function fnInclude({ base, scope, cft, ...opts }) {
 
     handleInjectSetup();
     if (isGlob(cft, absolute)) {
-      const paths = globby.sync(absolute);
+      const paths = globSync(absolute).sort();
       const template = yaml.load(paths.map((_p) => `- Fn::Include: file://${_p}`).join('\n'));
       return recurse({ base, scope, cft: template, ...opts });
     }

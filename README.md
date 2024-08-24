@@ -88,7 +88,7 @@ Options:
 * `--version`        print version and exit
 * `--context`        template full path. only utilized for stdin when the template is piped to this script
   example:          `cat examples/base.template | ./bin/cli.js --context examples/base.template`
-* `--enable`         different options / toggles: ['env']    [string] [choices: "env"]
+* `--enable`         different options / toggles: ['env','eval']    [string] [choices: 'env','eval','env.eval' etc...]
   * `env` pre-process env vars and inject into templates as they are processed looks for $KEY or ${KEY} matches
 * `-i, --inject`     JSON string payload to use for template injection. (Takes precedence over process.env (if enabled) injection and will be merged on top of process.env)
 * `--doLog`          console log out include options in recurse step.
@@ -185,7 +185,7 @@ Only applicable if **type** is `api`:
 - **parameters** (optional): Parameters passed to **action** (e.g. `{ StackName: "MyStack" }`)
 - **region** (optional): Either `AWS_DEFAULT_REGION` or this parameter have to be set which specifies the region where the API call is made.
 You can also use a plain string if you want the default behavior, which is simply including a JSON file.
-- **isGlob** (optional): Forces the usage of [globby](https://www.npmjs.com/package/globby) to spit out an array of includes
+- **isGlob** (optional): Forces the usage of [glob](https://www.npmjs.com/package/glob) to spit out an array of includes
 - **inject** (optional): Pass in localized env / options to be injected into a template
 
 ### Examples
@@ -1015,6 +1015,10 @@ In summary falsy values are omitted from an object except `false` and `0`.
 
 ## Fn::Eval
 
+Opt in to use `eval` in your templates. This is disabled by default.
+
+`--enable eval` is required to turn on options.doEval in the include function.
+
 ```yaml
 Fn::Eval:
   state: [1, 2, 3]
@@ -1029,6 +1033,10 @@ Fn::Eval:
 ```
 
 ## Fn::IfEval
+
+Opt in to use `eval` in your templates. This is disabled by default.
+
+`--enable eval` is required to turn on options.doEval in the include function.
 
 ```yaml
 Fn::IfEval:

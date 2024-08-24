@@ -26,6 +26,7 @@ const extendEnv = require('./tests/extendEnv');
                 return done();
               }
               // console.log({out: out.toString()})
+              out = out || '{}'; // fix for empty output to see failed test
               const json = JSON.parse(out.toString());
               delete json.Metadata;
               assert.deepEqual(json, test.output);
