@@ -1,0 +1,28 @@
+# TODO: ENABLE / UNCOMMENT WHEN NPM_TOKEN IS SET in secrets REPO
+# name: publish
+
+# on:
+#   push:
+#     tags:
+#       - "v*"
+
+# jobs:
+#   tests:
+#     uses: ./.github/workflows/tests.yml
+#   publish-npm:
+#     needs: [tests]
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+#       - name: Use Node.js ${{ matrix.node-version }}
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '20.x'
+#           registry-url: 'https://registry.npmjs.org'
+#       - name: Publish to npm
+#         run: |
+#           npm install
+#           npm publish --access public
+#         env:
+#           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+#           #kick
