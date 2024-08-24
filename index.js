@@ -2,7 +2,7 @@ const url = require('url');
 const path = require('path');
 const { readFile } = require('fs/promises');
 const _ = require('lodash');
-const globby = require('globby');
+const { globSync } = require('glob');
 const Promise = require('bluebird');
 const sortObject = require('@znemz/sort-object');
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
@@ -262,7 +262,7 @@ async function recurse({ base, scope, cft, ...opts }) {
             const absolute = location.relative
               ? path.join(path.dirname(base.path), location.host, location.path || '')
               : [location.host, location.path].join('');
-            const globs = globby.sync(absolute);
+            const globs = globSync(absolute).sort();
             if (json.omitExtension) {
               return globs.map((f) => path.basename(f, path.extname(f)));
             }
@@ -590,7 +590,7 @@ async function fnInclude({ base, scope, cft, ...opts }) {
 
     handleInjectSetup();
     if (isGlob(cft, absolute)) {
-      const paths = globby.sync(absolute);
+      const paths = globSync(absolute).sort();
       const template = yaml.load(paths.map((_p) => `- Fn::Include: file://${_p}`).join('\n'));
       return recurse({ base, scope, cft: template, ...opts });
     }

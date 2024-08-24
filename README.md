@@ -185,7 +185,7 @@ Only applicable if **type** is `api`:
 - **parameters** (optional): Parameters passed to **action** (e.g. `{ StackName: "MyStack" }`)
 - **region** (optional): Either `AWS_DEFAULT_REGION` or this parameter have to be set which specifies the region where the API call is made.
 You can also use a plain string if you want the default behavior, which is simply including a JSON file.
-- **isGlob** (optional): Forces the usage of [globby](https://www.npmjs.com/package/globby) to spit out an array of includes
+- **isGlob** (optional): Forces the usage of [glob](https://www.npmjs.com/package/glob) to spit out an array of includes
 - **inject** (optional): Pass in localized env / options to be injected into a template
 
 ### Examples
