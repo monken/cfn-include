@@ -58,7 +58,11 @@
     "yargs": "17"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19",
+    "@commitlint/config-conventional": "^19",
     "better-npm-audit": "3.7.3",
+    "commit-and-tag-version": "12",
+    "commitlint": "19",
     "eslint": "8",
     "eslint-config-prettier": "9",
     "eslint-config-standard": "17",

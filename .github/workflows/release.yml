@@ -1,0 +1,38 @@
+# TODO: ENABLE / UNCOMMENT WHEN NPM_TOKEN IS SET in secrets REPO
+# name: release
+
+# on:
+#   push:
+#     branches: ["master"]
+#     tags-ignore: ['**']
+
+# jobs:
+#   tests:
+#     uses: ./.github/workflows/tests.yml
+#   tag-release:
+#     runs-on: ubuntu-latest
+#     needs: [tests]
+#     steps:
+#       - uses: actions/checkout@v4
+#         with: # important, must be defined on checkout to kick publish (defining in setup/node doesn't work)
+#           token: ${{ secrets.GH_TOKEN }}
+#       - name: Use Node.js ${{ matrix.node-version }}
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: '20.x'
+#           # cache: "npm" # needs lockfile if enabled
+
+#       - name: tag release
+#         run: |
+#           # ignore if commit message is chore(release): ...
+#           if [[ $(git log -1 --pretty=%B) =~ ^chore\(release\):.* ]]; then
+#             echo "Commit message starts with 'chore(release):', skipping release"
+#             exit 0
+#           fi
+#           git config --local user.email "creadbot@github.com"
+#           git config --local user.name "creadbot_github"
+#           set -v
+#           npm install
+#           npx commit-and-tag-version
+#           git push
+#           git push --tags
