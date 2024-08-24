@@ -44,6 +44,7 @@ const { isOurExplicitFunction } = require('./lib/schema');
  *     doEnv: opts.enable === 'env',
  *     inject: opts.inject,
  *     doLog: opts.doLog,
+ *     doEval: opts.doEval, -- allow Fn::Eval to be used
  *   })
  */
 module.exports = async function (options) {
@@ -231,7 +232,7 @@ async function recurse({ base, scope, cft, ...opts }) {
         }
       );
     }
-    if (cft['Fn::Eval']) {
+    if (cft['Fn::Eval'] && opts.doEval) {
       return recurse({ base, scope, cft: cft['Fn::Eval'], ...opts }).then(function (json) {
         // **WARNING** you have now enabled god mode
         // eslint-disable-next-line no-unused-vars, prefer-const
@@ -386,7 +387,7 @@ async function recurse({ base, scope, cft, ...opts }) {
       return isString ? seq.map((i) => String.fromCharCode(i)) : seq;
     }
 
-    if (cft['Fn::IfEval']) {
+    if (cft['Fn::IfEval'] && opts.doEval) {
       return recurse({ base, scope, cft: cft['Fn::IfEval'], ...opts }).then(function (json) {
         // eslint-disable-next-line prefer-const
         let { truthy, falsy, evalCond, inject, doLog } = json;

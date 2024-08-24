@@ -2,6 +2,7 @@ module.exports = {
   ifEval: [
     {
       name: 'truthy',
+      doEval: true,
       template: {
         'Fn::IfEval': {
           inject: {
@@ -25,6 +26,7 @@ module.exports = {
     },
     {
       name: 'falsy',
+      doEval: true,
       template: {
         'Fn::IfEval': {
           inject: {
@@ -48,6 +50,7 @@ module.exports = {
     },
     {
       name: 'no falsy',
+      doEval: true,
       template: {
         'Fn::IfEval': {
           inject: {
@@ -64,6 +67,7 @@ module.exports = {
     },
     {
       name: 'evalCond required',
+      doEval: true,
       template: {
         'Fn::IfEval': {
           inject: {
