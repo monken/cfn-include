@@ -1,0 +1,10 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/javascript-node
+{
+	"name": "Node.js 22 (Debian Bullseye)",
+	"image": "mcr.microsoft.com/devcontainers/javascript-node:22-bullseye",
+	"features": {
+		"ghcr.io/devcontainers/features/github-cli:1": {}
+	},
+	"postCreateCommand": "npm install -g npm@10"
+}
