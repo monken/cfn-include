@@ -1,0 +1,86 @@
+#!/bin/bash
+# cfn - Execute CloudFormation templates with cfn-include preprocessing
+# Makes CloudFormation templates directly executable via shebang
+set -eo pipefail
+
+TEMPLATE="$1"
+shift
+
+if [ -z "$TEMPLATE" ]; then
+    echo "Usage: cfn <template.yaml> [options]" >&2
+    echo "" >&2
+    echo "Options:" >&2
+    echo "  --deploy              Deploy to AWS after processing" >&2
+    echo "  --stack-name <name>   Override stack name (default: filename)" >&2
+    echo "  --profile <profile>   AWS profile to use" >&2
+    echo "  --region <region>     AWS region" >&2
+    echo "" >&2
+    echo "Environment:" >&2
+    echo "  STACK_NAME           Override stack name" >&2
+    echo "  AWS_PROFILE          AWS profile" >&2
+    echo "  AWS_REGION           AWS region" >&2
+    exit 1
+fi
+
+# Parse arguments
+DEPLOY=false
+STACK_NAME=""
+AWS_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --deploy)
+            DEPLOY=true
+            shift
+            ;;
+        --stack-name)
+            STACK_NAME="$2"
+            shift 2
+            ;;
+        --profile)
+            AWS_ARGS+=(--profile "$2")
+            shift 2
+            ;;
+        --region)
+            AWS_ARGS+=(--region "$2")
+            shift 2
+            ;;
+        *)
+            # Pass through to cfn-include
+            CFN_ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+# Process with cfn-include
+OUTPUT=$(mktemp -t cfn-exec.XXXXXX.json)
+trap "rm -f '$OUTPUT'" EXIT
+
+if ! cfn-include "$TEMPLATE" -o "$OUTPUT" "${CFN_ARGS[@]}"; then
+    echo "❌ cfn-include processing failed" >&2
+    exit 1
+fi
+
+# If not deploying, just print processed template
+if [ "$DEPLOY" = false ]; then
+    cat "$OUTPUT"
+    exit 0
+fi
+
+# Determine stack name
+if [ -z "$STACK_NAME" ]; then
+    STACK_NAME=$(basename "$TEMPLATE" .yaml)
+    STACK_NAME=$(basename "$STACK_NAME" .yml)
+fi
+
+echo "🚀 Deploying stack: $STACK_NAME" >&2
+
+# Deploy to AWS
+aws cloudformation deploy \
+    --template-file "$OUTPUT" \
+    --stack-name "$STACK_NAME" \
+    --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
+    "${AWS_ARGS[@]}"
+
+echo "✅ Stack deployed: $STACK_NAME" >&2

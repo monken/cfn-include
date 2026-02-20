@@ -6,7 +6,13 @@
     "aws",
     "cfn",
     "cloudformation",
-    "include"
+    "include",
+    "executable-yaml",
+    "shebang",
+    "yaml",
+    "preprocessor",
+    "devops-tools",
+    "infrastructure-as-code"
   ],
   "homepage": "https://github.com/brickhouse-tech/cfn-include#readme",
   "bugs": {
@@ -35,10 +41,14 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "cfn-include": "./dist/cli.js"
+    "cfn-include": "./dist/cli.js",
+    "cfn": "./bin/cfn",
+    "yml": "./bin/yml",
+    "yaml": "./bin/yaml"
   },
   "files": [
-    "dist/"
+    "dist/",
+    "bin/"
   ],
   "scripts": {
     "better-audit": "better-npm-audit audit",

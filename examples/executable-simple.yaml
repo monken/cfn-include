@@ -1,0 +1,46 @@
+#!/usr/bin/env yaml
+# vim: ft=yaml
+#
+# Simple Executable YAML Example
+# Usage:
+#   chmod +x executable-simple.yaml
+#   ./executable-simple.yaml              # Preview
+#   ./executable-simple.yaml --deploy     # Deploy to AWS
+
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Simple S3 bucket example with executable YAML
+
+Parameters:
+  BucketPrefix:
+    Type: String
+    Default: my-app
+    Description: Prefix for bucket name
+
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${BucketPrefix}-${AWS::StackName}-${AWS::AccountId}
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: ManagedBy
+          Value: ExecutableYAML
+
+Outputs:
+  BucketName:
+    Description: Name of the S3 bucket
+    Value: !Ref Bucket
+    Export:
+      Name: !Sub ${AWS::StackName}-bucket-name
+
+  BucketArn:
+    Description: ARN of the S3 bucket
+    Value: !GetAtt Bucket.Arn
+    Export:
+      Name: !Sub ${AWS::StackName}-bucket-arn
